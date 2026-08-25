@@ -1,117 +1,13 @@
-"use client";
-
 import Link from "next/link";
-import { useState } from "react";
+import { prisma } from "../../../lib/prisma";
+import DeleteButton from "./DeleteButton";
 
-export default function NewProductPage() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-
-  async function addProduct() {
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
-    const name = (
-      document.getElementById("name") as HTMLInputElement
-    ).value.trim();
-
-    const category = (
-      document.getElementById("category") as HTMLInputElement
-    ).value.trim();
-
-    const price = Number(
-      (document.getElementById("price") as HTMLInputElement).value
-    );
-
-    const stock = Number(
-      (document.getElementById("stock") as HTMLInputElement).value
-    );
-
-    const image = (
-      document.getElementById("image") as HTMLInputElement
-    ).value.trim();
-
-    const description = (
-      document.getElementById("description") as HTMLTextAreaElement
-    ).value.trim();
-
-    const reviews = Number(
-      (document.getElementById("reviews") as HTMLInputElement).value || 0
-    );
-
-    const featured = (
-      document.getElementById("featured") as HTMLInputElement
-    ).checked;
-
-    if (!name) {
-      setError("Product name is required.");
-      setLoading(false);
-      return;
-    }
-
-    if (!category) {
-      setError("Category is required.");
-      setLoading(false);
-      return;
-    }
-
-    if (!Number.isFinite(price) || price < 0) {
-      setError("Please enter a valid price.");
-      setLoading(false);
-      return;
-    }
-
-    if (!Number.isInteger(stock) || stock < 0) {
-      setError("Please enter a valid stock quantity.");
-      setLoading(false);
-      return;
-    }
-
-    if (!description) {
-      setError("Description is required.");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          category,
-          price,
-          stock,
-          image,
-          description,
-          reviews,
-          featured,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        setError(result.error || "Failed to create product.");
-        setLoading(false);
-        return;
-      }
-
-      setSuccess("Product added successfully.");
-
-      setTimeout(() => {
-        window.location.href = "/admin/products";
-      }, 1000);
-    } catch (error) {
-      console.error(error);
-      setError("Something went wrong. Please try again.");
-      setLoading(false);
-    }
-  }
+export default async function ProductsPage() {
+  const products = await prisma.product.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
   return (
     <main className="min-h-screen bg-gray-100 text-gray-900">
@@ -123,201 +19,173 @@ export default function NewProductPage() {
             </h1>
 
             <p className="text-sm text-gray-400">
-              Add New Product
+              Product Management
             </p>
           </div>
 
-          <Link
-            href="/admin/products"
-            className="rounded-md bg-gray-700 px-5 py-2 font-semibold hover:bg-gray-600"
-          >
-            Back to Products
-          </Link>
+          <div className="flex gap-3">
+            <Link
+              href="/admin"
+              className="rounded-md bg-gray-700 px-5 py-2 font-semibold hover:bg-gray-600"
+            >
+              Dashboard
+            </Link>
+
+            <Link
+              href="/admin/products/new"
+              className="rounded-md bg-orange-500 px-5 py-2 font-semibold hover:bg-orange-600"
+            >
+              Add Product
+            </Link>
+          </div>
         </div>
       </header>
 
-      <section className="mx-auto max-w-4xl px-4 py-8">
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold">
-            Add Product
+      <section className="mx-auto max-w-7xl px-4 py-8">
+        <div className="mb-6">
+          <h2 className="text-3xl font-bold">
+            Products
           </h2>
 
           <p className="mt-2 text-gray-500">
-            Enter the details of your new product.
+            Manage all products in your store.
           </p>
+        </div>
 
-          {error && (
-            <div className="mt-6 rounded-md bg-red-100 px-4 py-3 font-semibold text-red-700">
-              {error}
-            </div>
-          )}
+        <div className="overflow-hidden rounded-lg bg-white shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b bg-gray-50 text-sm text-gray-500">
+                  <th className="px-4 py-4">
+                    Product
+                  </th>
 
-          {success && (
-            <div className="mt-6 rounded-md bg-green-100 px-4 py-3 font-semibold text-green-700">
-              {success}
-            </div>
-          )}
+                  <th className="px-4 py-4">
+                    Category
+                  </th>
 
-          <div className="mt-8 space-y-6">
-            <div>
-              <label
-                htmlFor="name"
-                className="mb-2 block font-semibold"
-              >
-                Product Name
-              </label>
+                  <th className="px-4 py-4">
+                    Price
+                  </th>
 
-              <input
-                id="name"
-                type="text"
-                placeholder="Enter product name"
-                className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
-              />
-            </div>
+                  <th className="px-4 py-4">
+                    Stock
+                  </th>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="category"
-                  className="mb-2 block font-semibold"
-                >
-                  Category
-                </label>
+                  <th className="px-4 py-4">
+                    Featured
+                  </th>
 
-                <input
-                  id="category"
-                  type="text"
-                  placeholder="Enter category"
-                  className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
-                />
-              </div>
+                  <th className="px-4 py-4">
+                    Action
+                  </th>
+                </tr>
+              </thead>
 
-              <div>
-                <label
-                  htmlFor="price"
-                  className="mb-2 block font-semibold"
-                >
-                  Price (£)
-                </label>
+              <tbody>
+                {products.map((product) => (
+                  <tr
+                    key={product.id}
+                    className="border-b last:border-b-0"
+                  >
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-4">
+                        <div className="h-16 w-16 overflow-hidden rounded-md bg-gray-100">
+                          {product.image ? (
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-xs text-gray-400">
+                              No Image
+                            </div>
+                          )}
+                        </div>
 
-                <input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="0.00"
-                  className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
-                />
-              </div>
-            </div>
+                        <div>
+                          <p className="font-semibold">
+                            {product.name}
+                          </p>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="stock"
-                  className="mb-2 block font-semibold"
-                >
-                  Stock
-                </label>
+                          <p className="text-sm text-gray-500">
+                            ID: #{product.id}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
 
-                <input
-                  id="stock"
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
-                />
-              </div>
+                    <td className="px-4 py-4">
+                      {product.category}
+                    </td>
 
-              <div>
-                <label
-                  htmlFor="image"
-                  className="mb-2 block font-semibold"
-                >
-                  Image URL
-                </label>
+                    <td className="px-4 py-4 font-semibold">
+                      {"\u00A3"}
+                      {Number(product.price).toFixed(2)}
+                    </td>
 
-                <input
-                  id="image"
-                  type="text"
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
-                />
-              </div>
-            </div>
+                    <td className="px-4 py-4">
+                      <span
+                        className={
+                          product.stock > 0
+                            ? "font-semibold text-green-600"
+                            : "font-semibold text-red-600"
+                        }
+                      >
+                        {product.stock}
+                      </span>
+                    </td>
 
-            <div>
-              <label
-                htmlFor="description"
-                className="mb-2 block font-semibold"
-              >
-                Description
-              </label>
+                    <td className="px-4 py-4">
+                      {product.featured ? (
+                        <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
+                          Yes
+                        </span>
+                      ) : (
+                        <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-600">
+                          No
+                        </span>
+                      )}
+                    </td>
 
-              <textarea
-                id="description"
-                rows={5}
-                placeholder="Enter product description"
-                className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
-              />
-            </div>
+                    <td className="px-4 py-4">
+                      <div className="flex gap-2">
+                        <Link
+                          href={`/admin/products/${product.id}/edit`}
+                          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700"
+                        >
+                          Edit
+                        </Link>
 
-            <div>
-              <label
-                htmlFor="reviews"
-                className="mb-2 block font-semibold"
-              >
-                Reviews
-              </label>
+                        <DeleteButton
+                          productId={product.id}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
 
-              <input
-                id="reviews"
-                type="number"
-                min="0"
-                defaultValue="0"
-                className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
-              />
-            </div>
-
-            <div className="flex items-center gap-3">
-              <input
-                id="featured"
-                type="checkbox"
-                className="h-5 w-5"
-              />
-
-              <label
-                htmlFor="featured"
-                className="font-semibold"
-              >
-                Featured Product
-              </label>
-            </div>
-
-            <div className="flex gap-3 pt-4">
-              <Link
-                href="/admin/products"
-                className="rounded-md bg-gray-200 px-6 py-3 font-semibold hover:bg-gray-300"
-              >
-                Cancel
-              </Link>
-
-              <button
-                type="button"
-                onClick={addProduct}
-                disabled={loading}
-                className="rounded-md bg-orange-500 px-6 py-3 font-bold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:bg-gray-400"
-              >
-                {loading ? "Adding Product..." : "Add Product"}
-              </button>
-            </div>
+                {products.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="px-4 py-12 text-center text-gray-500"
+                    >
+                      No products found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          © 2026 AM Whole Sale UK
+          {"\u00A9"} 2026 AM Whole Sale UK
         </p>
       </footer>
     </main>

@@ -29,19 +29,31 @@ export default function ProductDetails({
 }) {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const [cartError, setCartError] = useState("");
+
+  const outOfStock = product.stock <= 0;
 
   const decreaseQuantity = () => {
     setQuantity((current) => Math.max(1, current - 1));
   };
 
   const increaseQuantity = () => {
+    if (outOfStock) return;
+
     setQuantity((current) =>
       Math.min(product.stock, current + 1)
     );
   };
 
   const addToCart = () => {
+    if (outOfStock) {
+      setCartError("This product is currently out of stock.");
+      return;
+    }
+
     try {
+      setCartError("");
+
       const savedCart = localStorage.getItem("cart");
 
       const cart: CartItem[] = savedCart
@@ -53,17 +65,19 @@ export default function ProductDetails({
       );
 
       if (existingProduct) {
-        existingProduct.quantity = Math.min(
+        const newQuantity = Math.min(
           product.stock,
           existingProduct.quantity + quantity
         );
+
+        existingProduct.quantity = newQuantity;
       } else {
         cart.push({
           id: product.id,
           name: product.name,
           price: product.price,
           image: product.image,
-          quantity: quantity,
+          quantity: Math.min(quantity, product.stock),
         });
       }
 
@@ -76,10 +90,13 @@ export default function ProductDetails({
       }, 2000);
     } catch (error) {
       console.error("Cart error:", error);
+      setCartError("Unable to add product to cart.");
     }
   };
 
   const buyNow = () => {
+    if (outOfStock) return;
+
     addToCart();
 
     setTimeout(() => {
@@ -89,18 +106,15 @@ export default function ProductDetails({
 
   return (
     <>
-      {/* Breadcrumb */}
       <div className="mx-auto max-w-7xl px-4 py-4">
         <p className="text-sm text-gray-500">
           Home / Products / {product.name}
         </p>
       </div>
 
-      {/* Product Section */}
       <section className="mx-auto max-w-7xl px-4 pb-10">
         <div className="grid gap-8 rounded-lg bg-white p-6 md:grid-cols-2 md:p-10">
 
-          {/* Product Image */}
           <div className="relative flex min-h-[450px] items-center justify-center rounded-lg bg-gray-100">
             {product.image ? (
               <img
@@ -119,22 +133,26 @@ export default function ProductDetails({
                 {product.discount}% OFF
               </span>
             ) : null}
+
+            {outOfStock && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/40">
+                <span className="rounded-md bg-red-600 px-6 py-3 text-xl font-bold text-white">
+                  OUT OF STOCK
+                </span>
+              </div>
+            )}
           </div>
 
-          {/* Product Information */}
           <div className="flex flex-col justify-center">
 
-            {/* Store Name */}
             <p className="text-sm font-semibold uppercase tracking-wider text-orange-500">
               AM Whole Sale UK
             </p>
 
-            {/* Product Name */}
             <h1 className="mt-3 text-3xl font-bold md:text-4xl">
               {product.name}
             </h1>
 
-            {/* Rating */}
             <div className="mt-4 text-yellow-500">
               ★★★★★
 
@@ -143,7 +161,6 @@ export default function ProductDetails({
               </span>
             </div>
 
-            {/* Price */}
             <div className="mt-6">
               <span className="text-3xl font-bold text-red-600">
                 £{product.price}
@@ -156,7 +173,6 @@ export default function ProductDetails({
               ) : null}
             </div>
 
-            {/* Description */}
             <div className="mt-6">
               <h2 className="text-lg font-bold">
                 Product Description
@@ -168,20 +184,18 @@ export default function ProductDetails({
               </p>
             </div>
 
-            {/* Stock */}
             <div className="mt-6">
-              {product.stock > 0 ? (
+              {outOfStock ? (
+                <div className="rounded-md bg-red-100 px-4 py-3 font-bold text-red-700">
+                  Out of Stock
+                </div>
+              ) : (
                 <p className="font-semibold text-green-600">
                   ✓ In Stock ({product.stock} available)
-                </p>
-              ) : (
-                <p className="font-semibold text-red-600">
-                  ✕ Out of Stock
                 </p>
               )}
             </div>
 
-            {/* Quantity */}
             <div className="mt-6 flex items-center gap-4">
               <span className="font-semibold">
                 Quantity
@@ -189,27 +203,27 @@ export default function ProductDetails({
 
               <div className="flex items-center overflow-hidden rounded-md border bg-white">
 
-                {/* Minus */}
                 <button
                   type="button"
                   onClick={decreaseQuantity}
-                  disabled={quantity <= 1}
+                  disabled={
+                    outOfStock ||
+                    quantity <= 1
+                  }
                   className="px-5 py-2 text-xl font-bold hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   −
                 </button>
 
-                {/* Quantity */}
                 <span className="min-w-[55px] border-x px-4 py-2 text-center font-semibold">
                   {quantity}
                 </span>
 
-                {/* Plus */}
                 <button
                   type="button"
                   onClick={increaseQuantity}
                   disabled={
-                    product.stock <= 0 ||
+                    outOfStock ||
                     quantity >= product.stock
                   }
                   className="px-5 py-2 text-xl font-bold hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
@@ -220,17 +234,25 @@ export default function ProductDetails({
               </div>
             </div>
 
-            {/* Add To Cart */}
+            {cartError && (
+              <div className="mt-4 rounded-md bg-red-100 px-4 py-3 font-semibold text-red-700">
+                {cartError}
+              </div>
+            )}
+
             <button
               type="button"
               onClick={addToCart}
-              disabled={product.stock <= 0}
+              disabled={outOfStock}
               className="mt-8 rounded-md bg-orange-500 py-4 text-lg font-bold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:bg-gray-400"
             >
-              {added ? "✓ Added to Cart" : "Add to Cart"}
+              {outOfStock
+                ? "Out of Stock"
+                : added
+                  ? "✓ Added to Cart"
+                  : "Add to Cart"}
             </button>
 
-            {/* View Cart */}
             <button
               type="button"
               onClick={() => {
@@ -241,17 +263,15 @@ export default function ProductDetails({
               View Cart
             </button>
 
-            {/* Buy Now */}
             <button
               type="button"
               onClick={buyNow}
-              disabled={product.stock <= 0}
+              disabled={outOfStock}
               className="mt-3 rounded-md border-2 border-orange-500 py-4 text-lg font-bold text-orange-500 transition hover:bg-orange-50 disabled:cursor-not-allowed disabled:border-gray-400 disabled:text-gray-400"
             >
-              Buy Now
+              {outOfStock ? "Out of Stock" : "Buy Now"}
             </button>
 
-            {/* Benefits */}
             <div className="mt-8 grid grid-cols-3 gap-3 border-t pt-6 text-center">
 
               <div>

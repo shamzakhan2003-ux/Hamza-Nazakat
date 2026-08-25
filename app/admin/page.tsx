@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "../lib/prisma";
 import LogoutButton from "./LogoutButton";
+import OrderTable from "./OrderTable";
 
 export default async function AdminPage() {
   const orders = await prisma.order.findMany({
@@ -18,10 +19,37 @@ export default async function AdminPage() {
     (order) => order.status === "Pending"
   ).length;
 
-  const totalSales = orders.reduce(
-    (sum, order) => sum + Number(order.total),
-    0
-  );
+  const confirmedOrders = orders.filter(
+    (order) => order.status === "Confirmed"
+  ).length;
+
+  const shippedOrders = orders.filter(
+    (order) => order.status === "Shipped"
+  ).length;
+
+  const deliveredOrders = orders.filter(
+    (order) => order.status === "Delivered"
+  ).length;
+
+  const cancelledOrders = orders.filter(
+    (order) => order.status === "Cancelled"
+  ).length;
+
+  const totalSales = orders
+    .filter((order) => order.status !== "Cancelled")
+    .reduce((sum, order) => sum + Number(order.total), 0);
+
+  const serializedOrders = orders.map((order) => ({
+    id: order.id,
+    orderNumber: order.orderNumber,
+    customerName: order.customerName,
+    email: order.email,
+    phone: order.phone,
+    total: Number(order.total),
+    status: order.status,
+    createdAt: order.createdAt.toISOString(),
+    itemsCount: order.items.length,
+  }));
 
   return (
     <main className="min-h-screen bg-gray-100 text-gray-900">
@@ -33,14 +61,14 @@ export default async function AdminPage() {
             </h1>
 
             <p className="text-sm text-gray-400">
-              Admin Dashboard
+              Order Management
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="rounded-md bg-orange-500 px-5 py-2 font-semibold hover:bg-orange-600"
+              className="rounded-md bg-orange-500 px-5 py-2 font-semibold transition hover:bg-orange-600"
             >
               View Store
             </Link>
@@ -51,13 +79,20 @@ export default async function AdminPage() {
       </header>
 
       <section className="mx-auto max-w-7xl px-4 py-8">
-        <h2 className="mb-6 text-3xl font-bold">
-          Dashboard
-        </h2>
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold">
+            Order Management
+          </h2>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-lg bg-white p-6 shadow-sm">
-            <p className="text-sm text-gray-500">
+          <p className="mt-2 text-gray-500">
+            Manage customer orders, order status and sales.
+          </p>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="rounded-xl bg-white p-5 shadow-sm">
+            <p className="text-sm font-medium text-gray-500">
               Total Orders
             </p>
 
@@ -66,125 +101,85 @@ export default async function AdminPage() {
             </p>
           </div>
 
-          <div className="rounded-lg bg-white p-6 shadow-sm">
-            <p className="text-sm text-gray-500">
-              Pending Orders
+          <div className="rounded-xl bg-white p-5 shadow-sm">
+            <p className="text-sm font-medium text-gray-500">
+              Pending
             </p>
 
-            <p className="mt-2 text-3xl font-bold text-orange-500">
+            <p className="mt-2 text-3xl font-bold text-yellow-600">
               {pendingOrders}
             </p>
           </div>
 
-          <div className="rounded-lg bg-white p-6 shadow-sm">
-            <p className="text-sm text-gray-500">
-              Total Sales
+          <div className="rounded-xl bg-white p-5 shadow-sm">
+            <p className="text-sm font-medium text-gray-500">
+              Confirmed
+            </p>
+
+            <p className="mt-2 text-3xl font-bold text-blue-600">
+              {confirmedOrders}
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-white p-5 shadow-sm">
+            <p className="text-sm font-medium text-gray-500">
+              Shipped
+            </p>
+
+            <p className="mt-2 text-3xl font-bold text-purple-600">
+              {shippedOrders}
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-white p-5 shadow-sm">
+            <p className="text-sm font-medium text-gray-500">
+              Delivered
             </p>
 
             <p className="mt-2 text-3xl font-bold text-green-600">
-              £{totalSales.toFixed(2)}
+              {deliveredOrders}
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-white p-5 shadow-sm">
+            <p className="text-sm font-medium text-gray-500">
+              Cancelled
+            </p>
+
+            <p className="mt-2 text-3xl font-bold text-red-600">
+              {cancelledOrders}
             </p>
           </div>
         </div>
 
-        <div className="mt-10 rounded-lg bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-bold">
-            Recent Orders
-          </h2>
+        {/* Sales */}
+        <div className="mt-6 rounded-xl bg-white p-6 shadow-sm">
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div>
+              <p className="text-sm text-gray-500">
+                Total Sales
+              </p>
 
-          <div className="mt-6 overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b text-sm text-gray-500">
-                  <th className="px-4 py-3">
-                    Order
-                  </th>
+              <p className="mt-1 text-3xl font-bold text-green-600">
+                £{totalSales.toFixed(2)}
+              </p>
+            </div>
 
-                  <th className="px-4 py-3">
-                    Customer
-                  </th>
-
-                  <th className="px-4 py-3">
-                    Items
-                  </th>
-
-                  <th className="px-4 py-3">
-                    Total
-                  </th>
-
-                  <th className="px-4 py-3">
-                    Status
-                  </th>
-
-                  <th className="px-4 py-3">
-                    Date
-                  </th>
-
-                  <th className="px-4 py-3">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {orders.map((order) => (
-                  <tr
-                    key={order.id}
-                    className="border-b last:border-b-0"
-                  >
-                    <td className="px-4 py-4 font-bold">
-                      #{order.id}
-                    </td>
-
-                    <td className="px-4 py-4">
-                      <p className="font-semibold">
-                        {order.customerName}
-                      </p>
-
-                      <p className="text-sm text-gray-500">
-                        {order.email}
-                      </p>
-                    </td>
-
-                    <td className="px-4 py-4">
-                      {order.items.length}
-                    </td>
-
-                    <td className="px-4 py-4 font-semibold">
-                      £{Number(order.total).toFixed(2)}
-                    </td>
-
-                    <td className="px-4 py-4">
-                      <span className="rounded-full bg-orange-100 px-3 py-1 text-sm font-semibold text-orange-600">
-                        {order.status}
-                      </span>
-                    </td>
-
-                    <td className="px-4 py-4">
-                      {new Date(
-                        order.createdAt
-                      ).toLocaleDateString("en-GB")}
-                    </td>
-
-                    <td className="px-4 py-4">
-                      <Link
-                        href={`/admin/orders/${order.id}`}
-                        className="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700"
-                      >
-                        View
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="rounded-lg bg-green-50 px-5 py-3 text-sm font-semibold text-green-700">
+              Cancelled orders excluded
+            </div>
           </div>
+        </div>
+
+        {/* Orders */}
+        <div className="mt-8">
+          <OrderTable orders={serializedOrders} />
         </div>
       </section>
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          © 2026 AM Whole Sale UK
+          © 2026 AM Whole Sale UK. All rights reserved.
         </p>
       </footer>
     </main>

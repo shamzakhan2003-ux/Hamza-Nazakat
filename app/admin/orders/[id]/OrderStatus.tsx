@@ -7,6 +7,15 @@ type OrderStatusProps = {
   currentStatus: string;
 };
 
+const statuses = [
+  "Pending",
+  "Confirmed",
+  "Shipped",
+  "Out for Delivery",
+  "Delivered",
+  "Cancelled",
+];
+
 export default function OrderStatus({
   orderId,
   currentStatus,
@@ -15,18 +24,26 @@ export default function OrderStatus({
   const [loading, setLoading] = useState(false);
 
   async function updateStatus() {
+    if (status === currentStatus) {
+      alert("Please select a different status.");
+      return;
+    }
+
     try {
       setLoading(true);
 
-      const response = await fetch(`/api/orders/${orderId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status,
-        }),
-      });
+      const response = await fetch(
+        `/api/orders/${orderId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -35,7 +52,7 @@ export default function OrderStatus({
         return;
       }
 
-      alert("Order status updated successfully.");
+      alert("Order status and tracking history updated.");
 
       window.location.reload();
     } catch (error) {
@@ -47,8 +64,7 @@ export default function OrderStatus({
   }
 
   return (
-    <div className="h-fit rounded-lg bg-white p-6 shadow-sm">
-
+    <div className="h-fit rounded-xl bg-white p-6 shadow-sm">
       <h3 className="text-xl font-bold">
         Order Status
       </h3>
@@ -58,11 +74,10 @@ export default function OrderStatus({
       </p>
 
       <div className="mt-2 rounded-md bg-orange-100 px-4 py-3 text-center font-bold text-orange-600">
-        {status}
+        {currentStatus}
       </div>
 
       <div className="mt-6">
-
         <label
           htmlFor="order-status"
           className="mb-2 block font-semibold"
@@ -73,41 +88,34 @@ export default function OrderStatus({
         <select
           id="order-status"
           value={status}
-          onChange={(event) => setStatus(event.target.value)}
-          className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
+          onChange={(event) =>
+            setStatus(event.target.value)
+          }
+          disabled={loading}
+          className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500 disabled:bg-gray-100"
         >
-          <option value="Pending">
-            Pending
-          </option>
-
-          <option value="Confirmed">
-            Confirmed
-          </option>
-
-          <option value="Shipped">
-            Shipped
-          </option>
-
-          <option value="Delivered">
-            Delivered
-          </option>
-
-          <option value="Cancelled">
-            Cancelled
-          </option>
+          {statuses.map((item) => (
+            <option key={item} value={item}>
+              {item}
+            </option>
+          ))}
         </select>
 
         <button
           type="button"
           onClick={updateStatus}
-          disabled={loading}
+          disabled={
+            loading || status === currentStatus
+          }
           className="mt-4 w-full rounded-md bg-orange-500 py-3 font-bold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:bg-gray-400"
         >
-          {loading ? "Updating..." : "Update Status"}
+          {loading
+            ? "Updating..."
+            : status === currentStatus
+            ? "No Changes"
+            : "Update Status"}
         </button>
-
       </div>
-
     </div>
   );
 }

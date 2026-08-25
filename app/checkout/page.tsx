@@ -87,7 +87,7 @@ export default function CheckoutPage() {
       localStorage.removeItem("cart");
 
       alert(
-        `Order placed successfully! Order #${data.order.id}`
+        `Order placed successfully!\n\nOrder Number: ${data.order.orderNumber}`
       );
 
       window.location.href = "/";

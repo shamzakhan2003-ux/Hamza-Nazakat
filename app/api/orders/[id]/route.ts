@@ -1,22 +1,26 @@
-import { NextResponse } from "next/server";
-import { prisma } from "../../../lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "../../../../lib/prisma";
 
-type RouteContext = {
-  params: Promise<{
-    id: string;
-  }>;
-};
+const allowedStatuses = [
+  "Pending",
+  "Confirmed",
+  "Shipped",
+  "Out for Delivery",
+  "Delivered",
+  "Cancelled",
+];
 
 export async function PATCH(
-  request: Request,
-  { params }: RouteContext
+  request: NextRequest,
+  context: {
+    params: Promise<{ id: string }>;
+  }
 ) {
   try {
-    const { id } = await params;
-
+    const { id } = await context.params;
     const orderId = Number(id);
 
-    if (Number.isNaN(orderId)) {
+    if (!Number.isInteger(orderId)) {
       return NextResponse.json(
         { error: "Invalid order ID." },
         { status: 400 }
@@ -25,15 +29,75 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const status = String(body.status);
+    const hasStatus = typeof body.status === "string";
+    const hasTracking =
+      "courier" in body ||
+      "trackingNumber" in body ||
+      "trackingUrl" in body;
 
-    const allowedStatuses = [
-      "Pending",
-      "Confirmed",
-      "Shipped",
-      "Delivered",
-      "Cancelled",
-    ];
+    if (!hasStatus && !hasTracking) {
+      return NextResponse.json(
+        { error: "No update data provided." },
+        { status: 400 }
+      );
+    }
+
+    const order = await prisma.order.findUnique({
+      where: {
+        id: orderId,
+      },
+    });
+
+    if (!order) {
+      return NextResponse.json(
+        { error: "Order not found." },
+        { status: 404 }
+      );
+    }
+
+    // =========================
+    // TRACKING DETAILS UPDATE
+    // =========================
+
+    if (hasTracking) {
+      const updatedOrder = await prisma.order.update({
+        where: {
+          id: orderId,
+        },
+        data: {
+          courier:
+            typeof body.courier === "string"
+              ? body.courier.trim() || null
+              : order.courier,
+
+          trackingNumber:
+            typeof body.trackingNumber === "string"
+              ? body.trackingNumber.trim() || null
+              : order.trackingNumber,
+
+          trackingUrl:
+            typeof body.trackingUrl === "string"
+              ? body.trackingUrl.trim() || null
+              : order.trackingUrl,
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        message:
+          "Delivery tracking details saved successfully.",
+        order: updatedOrder,
+      });
+    }
+
+    // =========================
+    // STATUS UPDATE
+    // =========================
+
+    const status =
+      typeof body.status === "string"
+        ? body.status.trim()
+        : "";
 
     if (!allowedStatuses.includes(status)) {
       return NextResponse.json(
@@ -42,32 +106,71 @@ export async function PATCH(
       );
     }
 
-    const order = await prisma.order.update({
-      where: {
-        id: orderId,
-      },
-      data: {
-        status: status,
-      },
-    });
+    if (order.status === status) {
+      return NextResponse.json({
+        success: true,
+        message:
+          "Order status is already set to this status.",
+        order,
+      });
+    }
+
+    const trackingMessages: Record<string, string> = {
+      Pending: "Order has been placed.",
+      Confirmed:
+        "Order has been confirmed by the seller.",
+      Shipped:
+        "Order has been shipped and handed over to the courier.",
+      "Out for Delivery":
+        "Your order is out for delivery.",
+      Delivered:
+        "Your order has been delivered.",
+      Cancelled:
+        "Order has been cancelled.",
+    };
+
+    const updatedOrder = await prisma.$transaction(
+      async (tx) => {
+        const updated = await tx.order.update({
+          where: {
+            id: orderId,
+          },
+          data: {
+            status,
+          },
+        });
+
+        await tx.orderTracking.create({
+          data: {
+            orderId,
+            status,
+            message:
+              trackingMessages[status] ||
+              `Order status changed to ${status}.`,
+          },
+        });
+
+        return updated;
+      }
+    );
 
     return NextResponse.json({
       success: true,
-      order: {
-        id: order.id,
-        status: order.status,
-      },
+      message:
+        "Order status updated successfully.",
+      order: updatedOrder,
     });
   } catch (error) {
-    console.error("ORDER STATUS ERROR:", error);
+    console.error(
+      "Update order error:",
+      error
+    );
 
     return NextResponse.json(
       {
-        error: "Failed to update order status.",
+        error: "Failed to update order.",
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
