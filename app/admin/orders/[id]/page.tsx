@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "../../../lib/prisma";
 import OrderStatus from "./OrderStatus";
 import DeliveryTracking from "./DeliveryTracking";
@@ -11,16 +12,45 @@ type PageProps = {
 };
 
 const statusStyles: Record<string, string> = {
-  Pending: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  Confirmed: "bg-blue-100 text-blue-700 border-blue-200",
-  Shipped: "bg-purple-100 text-purple-700 border-purple-200",
-  Delivered: "bg-green-100 text-green-700 border-green-200",
-  Cancelled: "bg-red-100 text-red-700 border-red-200",
+  Pending:
+    "bg-yellow-100 text-yellow-700 border-yellow-200",
+
+  Confirmed:
+    "bg-blue-100 text-blue-700 border-blue-200",
+
+  Shipped:
+    "bg-purple-100 text-purple-700 border-purple-200",
+
+  "Out for Delivery":
+    "bg-orange-100 text-orange-700 border-orange-200",
+
+  Delivered:
+    "bg-green-100 text-green-700 border-green-200",
+
+  Cancelled:
+    "bg-red-100 text-red-700 border-red-200",
 };
 
 export default async function OrderDetailsPage({
   params,
 }: PageProps) {
+  // =========================
+  // ADMIN AUTHENTICATION
+  // =========================
+
+  const cookieStore = await cookies();
+
+  const adminSession =
+    cookieStore.get("admin_session");
+
+  if (adminSession?.value !== "authenticated") {
+    redirect("/admin/login");
+  }
+
+  // =========================
+  // ORDER ID
+  // =========================
+
   const { id } = await params;
 
   const orderId = Number(id);
@@ -28,6 +58,10 @@ export default async function OrderDetailsPage({
   if (!Number.isInteger(orderId)) {
     notFound();
   }
+
+  // =========================
+  // GET ORDER
+  // =========================
 
   const order = await prisma.order.findUnique({
     where: {
@@ -42,9 +76,17 @@ export default async function OrderDetailsPage({
     notFound();
   }
 
+  // =========================
+  // STATUS STYLE
+  // =========================
+
   const statusClass =
     statusStyles[order.status] ||
     "bg-gray-100 text-gray-700 border-gray-200";
+
+  // =========================
+  // SUBTOTAL
+  // =========================
 
   const subtotal = order.items.reduce(
     (sum, item) =>
@@ -54,6 +96,10 @@ export default async function OrderDetailsPage({
 
   return (
     <main className="min-h-screen bg-gray-100 text-gray-900">
+
+      {/* =========================
+          HEADER
+      ========================= */}
 
       <header className="bg-gray-900 text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5">
@@ -78,7 +124,15 @@ export default async function OrderDetailsPage({
         </div>
       </header>
 
+      {/* =========================
+          MAIN
+      ========================= */}
+
       <section className="mx-auto max-w-7xl px-4 py-8">
+
+        {/* =========================
+            ORDER HEADER
+        ========================= */}
 
         <div className="mb-8 rounded-xl bg-white p-6 shadow-sm">
 
@@ -137,9 +191,21 @@ export default async function OrderDetailsPage({
 
         </div>
 
+        {/* =========================
+            TWO COLUMN LAYOUT
+        ========================= */}
+
         <div className="grid gap-8 lg:grid-cols-3">
 
+          {/* =========================
+              LEFT COLUMN
+          ========================= */}
+
           <div className="space-y-8 lg:col-span-2">
+
+            {/* =========================
+                CUSTOMER INFORMATION
+            ========================= */}
 
             <div className="rounded-xl bg-white p-6 shadow-sm">
 
@@ -231,6 +297,10 @@ export default async function OrderDetailsPage({
 
             </div>
 
+            {/* =========================
+                ORDERED PRODUCTS
+            ========================= */}
+
             <div className="rounded-xl bg-white shadow-sm">
 
               <div className="border-b px-6 py-5">
@@ -241,8 +311,10 @@ export default async function OrderDetailsPage({
 
                 <p className="mt-1 text-sm text-gray-500">
                   {order.items.length} product
-                  {order.items.length !== 1 ? "s" : ""} in
-                  this order
+                  {order.items.length !== 1
+                    ? "s"
+                    : ""}{" "}
+                  in this order
                 </p>
 
               </div>
@@ -252,7 +324,8 @@ export default async function OrderDetailsPage({
                 {order.items.map((item) => {
 
                   const itemTotal =
-                    Number(item.price) * item.quantity;
+                    Number(item.price) *
+                    item.quantity;
 
                   return (
                     <div
@@ -269,16 +342,20 @@ export default async function OrderDetailsPage({
                         <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-gray-500">
 
                           <span>
-                            Product ID: {item.productId}
+                            Product ID:{" "}
+                            {item.productId}
                           </span>
 
                           <span>
                             Price: £
-                            {Number(item.price).toFixed(2)}
+                            {Number(
+                              item.price
+                            ).toFixed(2)}
                           </span>
 
                           <span>
-                            Quantity: {item.quantity}
+                            Quantity:{" "}
+                            {item.quantity}
                           </span>
 
                         </div>
@@ -288,7 +365,10 @@ export default async function OrderDetailsPage({
                       <div className="text-left sm:text-right">
 
                         <p className="text-lg font-bold">
-                          £{itemTotal.toFixed(2)}
+                          £
+                          {itemTotal.toFixed(
+                            2
+                          )}
                         </p>
 
                         <p className="text-xs text-gray-500">
@@ -303,6 +383,10 @@ export default async function OrderDetailsPage({
 
               </div>
 
+              {/* =========================
+                  TOTAL
+              ========================= */}
+
               <div className="border-t bg-gray-50 px-6 py-6">
 
                 <div className="ml-auto max-w-sm space-y-3">
@@ -314,7 +398,8 @@ export default async function OrderDetailsPage({
                     </span>
 
                     <span className="font-semibold">
-                      £{subtotal.toFixed(2)}
+                      £
+                      {subtotal.toFixed(2)}
                     </span>
 
                   </div>
@@ -326,7 +411,10 @@ export default async function OrderDetailsPage({
                     </span>
 
                     <span className="text-orange-500">
-                      £{Number(order.total).toFixed(2)}
+                      £
+                      {Number(
+                        order.total
+                      ).toFixed(2)}
                     </span>
 
                   </div>
@@ -339,19 +427,41 @@ export default async function OrderDetailsPage({
 
           </div>
 
+          {/* =========================
+              RIGHT COLUMN
+          ========================= */}
+
           <div className="space-y-8">
+
+            {/* =========================
+                ORDER STATUS
+            ========================= */}
 
             <OrderStatus
               orderId={order.id}
               currentStatus={order.status}
             />
 
+            {/* =========================
+                DELIVERY TRACKING
+            ========================= */}
+
             <DeliveryTracking
               orderId={order.id}
-              currentCourier={order.courier}
-              currentTrackingNumber={order.trackingNumber}
-              currentTrackingUrl={order.trackingUrl}
+              currentCourier={
+                order.courier
+              }
+              currentTrackingNumber={
+                order.trackingNumber
+              }
+              currentTrackingUrl={
+                order.trackingUrl
+              }
             />
+
+            {/* =========================
+                ORDER SUMMARY
+            ========================= */}
 
             <div className="rounded-xl bg-white p-6 shadow-sm">
 
@@ -418,7 +528,10 @@ export default async function OrderDetailsPage({
                   </span>
 
                   <span className="text-xl font-extrabold text-orange-500">
-                    £{Number(order.total).toFixed(2)}
+                    £
+                    {Number(
+                      order.total
+                    ).toFixed(2)}
                   </span>
 
                 </div>
@@ -426,6 +539,10 @@ export default async function OrderDetailsPage({
               </div>
 
             </div>
+
+            {/* =========================
+                DELIVERY INFORMATION
+            ========================= */}
 
             <div className="rounded-xl bg-white p-6 shadow-sm">
 
@@ -476,6 +593,10 @@ export default async function OrderDetailsPage({
         </div>
 
       </section>
+
+      {/* =========================
+          FOOTER
+      ========================= */}
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
 

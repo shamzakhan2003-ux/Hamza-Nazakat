@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type CartItem = {
   id: number;
@@ -11,15 +12,24 @@ type CartItem = {
 };
 
 export default function CartPage() {
+  const router = useRouter();
+
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loaded, setLoaded] = useState(false);
 
+  // Load cart from localStorage
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem("cart");
 
       if (savedCart) {
-        setCart(JSON.parse(savedCart));
+        const parsedCart = JSON.parse(savedCart);
+
+        if (Array.isArray(parsedCart)) {
+          setCart(parsedCart);
+        } else {
+          setCart([]);
+        }
       }
     } catch (error) {
       console.error("Error loading cart:", error);
@@ -29,11 +39,21 @@ export default function CartPage() {
     setLoaded(true);
   }, []);
 
+  // Save cart and notify Header
   const saveCart = (updatedCart: CartItem[]) => {
     setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+    localStorage.setItem(
+      "cart",
+      JSON.stringify(updatedCart)
+    );
+
+    window.dispatchEvent(
+      new Event("cartUpdated")
+    );
   };
 
+  // Increase quantity
   const increaseQuantity = (id: number) => {
     const updatedCart = cart.map((item) => {
       if (item.id === id) {
@@ -49,6 +69,7 @@ export default function CartPage() {
     saveCart(updatedCart);
   };
 
+  // Decrease quantity
   const decreaseQuantity = (id: number) => {
     const updatedCart = cart
       .map((item) => {
@@ -66,6 +87,7 @@ export default function CartPage() {
     saveCart(updatedCart);
   };
 
+  // Remove item
   const removeItem = (id: number) => {
     const updatedCart = cart.filter(
       (item) => item.id !== id
@@ -74,23 +96,41 @@ export default function CartPage() {
     saveCart(updatedCart);
   };
 
+  // Clear entire cart
   const clearCart = () => {
     setCart([]);
+
     localStorage.removeItem("cart");
+
+    window.dispatchEvent(
+      new Event("cartUpdated")
+    );
   };
 
+  // Checkout
   const goToCheckout = () => {
-    window.location.href = "/checkout";
+    if (cart.length === 0) {
+      alert("Your cart is empty.");
+      return;
+    }
+
+    router.push("/checkout");
   };
 
+  // Total price
   const total = cart.reduce((sum, item) => {
-    return sum + Number(item.price) * item.quantity;
+    return (
+      sum +
+      Number(item.price) * item.quantity
+    );
   }, 0);
 
+  // Total quantity
   const totalItems = cart.reduce((sum, item) => {
     return sum + item.quantity;
   }, 0);
 
+  // Loading
   if (!loaded) {
     return (
       <main className="min-h-screen bg-gray-100 p-6">
@@ -110,21 +150,21 @@ export default function CartPage() {
       <header className="bg-white shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5">
 
+          {/* Logo */}
           <button
             type="button"
-            onClick={() => {
-              window.location.href = "/";
-            }}
+            onClick={() => router.push("/")}
             className="text-2xl font-bold text-orange-500"
           >
             AM Whole Sale UK
           </button>
 
+          {/* Continue Shopping */}
           <button
             type="button"
-            onClick={() => {
-              window.location.href = "/products";
-            }}
+            onClick={() =>
+              router.push("/products")
+            }
             className="font-semibold text-gray-700 hover:text-orange-500"
           >
             Continue Shopping
@@ -133,15 +173,26 @@ export default function CartPage() {
         </div>
       </header>
 
-      {/* Cart Section */}
+      {/* Main Cart */}
       <section className="mx-auto max-w-7xl px-4 py-8">
 
+        {/* Title */}
         <div className="mb-6 flex items-center justify-between">
 
-          <h1 className="text-3xl font-bold">
-            Shopping Cart
-          </h1>
+          <div>
+            <h1 className="text-3xl font-bold">
+              Shopping Cart
+            </h1>
 
+            {cart.length > 0 && (
+              <p className="mt-1 text-sm text-gray-500">
+                {totalItems} item
+                {totalItems !== 1 ? "s" : ""}
+              </p>
+            )}
+          </div>
+
+          {/* Clear Cart */}
           {cart.length > 0 && (
             <button
               type="button"
@@ -173,9 +224,9 @@ export default function CartPage() {
 
             <button
               type="button"
-              onClick={() => {
-                window.location.href = "/products";
-              }}
+              onClick={() =>
+                router.push("/products")
+              }
               className="mt-6 rounded-md bg-orange-500 px-8 py-3 font-bold text-white hover:bg-orange-600"
             >
               Start Shopping
@@ -226,7 +277,8 @@ export default function CartPage() {
                     </h2>
 
                     <p className="mt-2 font-semibold text-orange-500">
-                      £{Number(item.price).toFixed(2)}
+                      £
+                      {Number(item.price).toFixed(2)}
                     </p>
 
                     {/* Quantity */}
@@ -260,7 +312,7 @@ export default function CartPage() {
 
                   </div>
 
-                  {/* Total + Remove */}
+                  {/* Item Total */}
                   <div className="flex items-center justify-between gap-5 sm:block sm:text-right">
 
                     <p className="text-lg font-bold">
@@ -298,7 +350,9 @@ export default function CartPage() {
 
               <div className="mt-6 space-y-4">
 
+                {/* Items */}
                 <div className="flex justify-between text-gray-600">
+
                   <span>
                     Items
                   </span>
@@ -306,9 +360,12 @@ export default function CartPage() {
                   <span>
                     {totalItems}
                   </span>
+
                 </div>
 
+                {/* Subtotal */}
                 <div className="flex justify-between text-gray-600">
+
                   <span>
                     Subtotal
                   </span>
@@ -316,9 +373,12 @@ export default function CartPage() {
                   <span>
                     £{total.toFixed(2)}
                   </span>
+
                 </div>
 
+                {/* Delivery */}
                 <div className="flex justify-between text-gray-600">
+
                   <span>
                     Delivery
                   </span>
@@ -326,8 +386,10 @@ export default function CartPage() {
                   <span>
                     Calculated at checkout
                   </span>
+
                 </div>
 
+                {/* Total */}
                 <div className="border-t pt-4">
 
                   <div className="flex justify-between text-xl font-bold">
@@ -346,7 +408,7 @@ export default function CartPage() {
 
               </div>
 
-              {/* Proceed to Checkout */}
+              {/* Checkout */}
               <button
                 type="button"
                 onClick={goToCheckout}
@@ -358,9 +420,9 @@ export default function CartPage() {
               {/* Continue Shopping */}
               <button
                 type="button"
-                onClick={() => {
-                  window.location.href = "/products";
-                }}
+                onClick={() =>
+                  router.push("/products")
+                }
                 className="mt-3 w-full rounded-md border-2 border-gray-300 py-3 font-semibold text-gray-700 hover:bg-gray-50"
               >
                 Continue Shopping

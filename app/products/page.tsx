@@ -2,12 +2,88 @@ import Header from "../components/Header";
 import { prisma } from "../lib/prisma";
 import Link from "next/link";
 
-export default async function ProductsPage() {
+type ProductsPageProps = {
+  searchParams: Promise<{
+    search?: string;
+    category?: string;
+    deals?: string;
+    new?: string;
+  }>;
+};
+
+export default async function ProductsPage({
+  searchParams,
+}: ProductsPageProps) {
+  const params = await searchParams;
+
+  const search = (params.search || "").trim();
+  const category = (params.category || "").trim();
+  const deals = params.deals === "true";
+  const newArrivals = params.new === "true";
+
   const products = await prisma.product.findMany({
+    where: {
+      ...(search
+        ? {
+            OR: [
+              {
+                name: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+              {
+                description: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : {}),
+
+      ...(category
+        ? {
+            category: {
+              equals: category,
+              mode: "insensitive",
+            },
+          }
+        : {}),
+
+      ...(deals
+        ? {
+            flashDeal: true,
+          }
+        : {}),
+
+      ...(newArrivals
+        ? {
+            createdAt: {
+              gte: new Date(
+                Date.now() - 30 * 24 * 60 * 60 * 1000
+              ),
+            },
+          }
+        : {}),
+    },
+
     orderBy: {
       createdAt: "desc",
     },
   });
+
+  let pageTitle = "All Products";
+
+  if (category) {
+    pageTitle = category;
+  } else if (deals) {
+    pageTitle = "Flash Deals";
+  } else if (newArrivals) {
+    pageTitle = "New Arrivals";
+  } else if (search) {
+    pageTitle = `Search Results for "${search}"`;
+  }
 
   return (
     <main className="min-h-screen bg-gray-100 text-gray-900">
@@ -21,11 +97,19 @@ export default async function ProductsPage() {
           </p>
 
           <h1 className="mt-2 text-3xl font-bold">
-            All Products
+            {pageTitle}
           </h1>
 
           <p className="mt-2 text-gray-500">
-            Browse our complete collection of products.
+            {search
+              ? `Products matching keyword "${search}".`
+              : category
+              ? `Browse products in ${category}.`
+              : deals
+              ? "Limited-time offers and special deals."
+              : newArrivals
+              ? "Our latest products."
+              : "Browse our complete collection of products."}
           </p>
         </div>
       </section>
@@ -34,19 +118,44 @@ export default async function ProductsPage() {
       <section className="mx-auto max-w-7xl px-4 py-8">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-bold">
-            {products.length} Products
+            {products.length}{" "}
+            {products.length === 1
+              ? "Product"
+              : "Products"}
           </h2>
 
-          <button className="rounded-md border bg-white px-4 py-2 text-sm">
+          <button
+            type="button"
+            className="rounded-md border bg-white px-4 py-2 text-sm"
+          >
             Sort by: Latest
           </button>
         </div>
 
         {products.length === 0 ? (
           <div className="rounded-lg bg-white py-20 text-center">
-            <p className="text-gray-500">
-              No products available.
+            <p className="text-2xl font-bold text-gray-700">
+              No Products Found
             </p>
+
+            <p className="mt-2 text-gray-500">
+              {category
+                ? `There are currently no products in ${category}.`
+                : search
+                ? `No products matched "${search}".`
+                : deals
+                ? "There are currently no flash deals."
+                : newArrivals
+                ? "There are currently no new arrivals."
+                : "No products are available."}
+            </p>
+
+            <Link
+              href="/products"
+              className="mt-6 inline-block rounded-md bg-orange-500 px-6 py-3 font-bold text-white hover:bg-orange-600"
+            >
+              View All Products
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

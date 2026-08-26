@@ -1,9 +1,19 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { prisma } from "../lib/prisma";
 import LogoutButton from "./LogoutButton";
 import OrderTable from "./OrderTable";
 
 export default async function AdminPage() {
+  // Check admin session
+  const cookieStore = await cookies();
+  const adminSession = cookieStore.get("admin_session");
+
+  if (adminSession?.value !== "authenticated") {
+    redirect("/admin/login");
+  }
+
   const orders = await prisma.order.findMany({
     include: {
       items: true,
@@ -28,28 +38,40 @@ export default async function AdminPage() {
   ).length;
 
   const deliveredOrders = orders.filter(
-    (order) => order.status === "Delivered"
+    (order) =>
+      order.status === "Delivered"
   ).length;
 
   const cancelledOrders = orders.filter(
-    (order) => order.status === "Cancelled"
+    (order) =>
+      order.status === "Cancelled"
   ).length;
 
   const totalSales = orders
-    .filter((order) => order.status !== "Cancelled")
-    .reduce((sum, order) => sum + Number(order.total), 0);
+    .filter(
+      (order) =>
+        order.status !== "Cancelled"
+    )
+    .reduce(
+      (sum, order) =>
+        sum + Number(order.total),
+      0
+    );
 
-  const serializedOrders = orders.map((order) => ({
-    id: order.id,
-    orderNumber: order.orderNumber,
-    customerName: order.customerName,
-    email: order.email,
-    phone: order.phone,
-    total: Number(order.total),
-    status: order.status,
-    createdAt: order.createdAt.toISOString(),
-    itemsCount: order.items.length,
-  }));
+  const serializedOrders = orders.map(
+    (order) => ({
+      id: order.id,
+      orderNumber: order.orderNumber,
+      customerName: order.customerName,
+      email: order.email,
+      phone: order.phone,
+      total: Number(order.total),
+      status: order.status,
+      createdAt:
+        order.createdAt.toISOString(),
+      itemsCount: order.items.length,
+    })
+  );
 
   return (
     <main className="min-h-screen bg-gray-100 text-gray-900">
@@ -85,12 +107,14 @@ export default async function AdminPage() {
           </h2>
 
           <p className="mt-2 text-gray-500">
-            Manage customer orders, order status and sales.
+            Manage customer orders, order status
+            and sales.
           </p>
         </div>
 
-        {/* Summary Cards */}
+        {/* SUMMARY CARDS */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+
           <div className="rounded-xl bg-white p-5 shadow-sm">
             <p className="text-sm font-medium text-gray-500">
               Total Orders
@@ -150,11 +174,13 @@ export default async function AdminPage() {
               {cancelledOrders}
             </p>
           </div>
+
         </div>
 
-        {/* Sales */}
+        {/* SALES */}
         <div className="mt-6 rounded-xl bg-white p-6 shadow-sm">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+
             <div>
               <p className="text-sm text-gray-500">
                 Total Sales
@@ -168,13 +194,17 @@ export default async function AdminPage() {
             <div className="rounded-lg bg-green-50 px-5 py-3 text-sm font-semibold text-green-700">
               Cancelled orders excluded
             </div>
+
           </div>
         </div>
 
-        {/* Orders */}
+        {/* ORDERS */}
         <div className="mt-8">
-          <OrderTable orders={serializedOrders} />
+          <OrderTable
+            orders={serializedOrders}
+          />
         </div>
+
       </section>
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">

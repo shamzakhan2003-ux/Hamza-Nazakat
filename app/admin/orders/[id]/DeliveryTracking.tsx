@@ -22,6 +22,51 @@ const couriers = [
   "Other",
 ];
 
+function getCourierTrackingUrl(
+  courier: string,
+  trackingNumber: string
+) {
+  const number = encodeURIComponent(
+    trackingNumber.trim()
+  );
+
+  if (!number) {
+    return "";
+  }
+
+  switch (courier) {
+    case "TCS":
+      return `https://www.tcsexpress.com/track/${number}`;
+
+    case "Leopards Courier":
+      return `https://www.leopardscourier.com/track/${number}`;
+
+    case "M&P Courier":
+      return `https://www.mulphilog.com/track/${number}`;
+
+    case "Pakistan Post":
+      return `https://ep.gov.pk/`;
+
+    case "BlueEX":
+      return `https://www.blue-ex.com/track`;
+
+    case "Trax":
+      return `https://trax.pk/`;
+
+    case "Rider":
+      return `https://rider.pk/`;
+
+    case "Call Courier":
+      return `https://callcourier.com.pk/`;
+
+    case "PostEx":
+      return `https://postex.pk/`;
+
+    default:
+      return "";
+  }
+}
+
 export default function DeliveryTracking({
   orderId,
   currentCourier,
@@ -40,7 +85,53 @@ export default function DeliveryTracking({
 
   const [loading, setLoading] = useState(false);
 
+  function handleCourierChange(
+    value: string
+  ) {
+    setCourier(value);
+
+    if (trackingNumber) {
+      const generatedUrl =
+        getCourierTrackingUrl(
+          value,
+          trackingNumber
+        );
+
+      if (generatedUrl) {
+        setTrackingUrl(generatedUrl);
+      }
+    }
+  }
+
+  function handleTrackingNumberChange(
+    value: string
+  ) {
+    setTrackingNumber(value);
+
+    if (courier) {
+      const generatedUrl =
+        getCourierTrackingUrl(
+          courier,
+          value
+        );
+
+      if (generatedUrl) {
+        setTrackingUrl(generatedUrl);
+      }
+    }
+  }
+
   async function saveTracking() {
+    if (!courier) {
+      alert("Please select a courier.");
+      return;
+    }
+
+    if (!trackingNumber.trim()) {
+      alert("Please enter a tracking number.");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -53,8 +144,10 @@ export default function DeliveryTracking({
           },
           body: JSON.stringify({
             courier,
-            trackingNumber,
-            trackingUrl,
+            trackingNumber:
+              trackingNumber.trim(),
+            trackingUrl:
+              trackingUrl.trim() || null,
           }),
         }
       );
@@ -86,6 +179,12 @@ export default function DeliveryTracking({
     }
   }
 
+  const generatedUrl =
+    getCourierTrackingUrl(
+      courier,
+      trackingNumber
+    );
+
   return (
     <div className="rounded-xl bg-white p-6 shadow-sm">
 
@@ -94,8 +193,8 @@ export default function DeliveryTracking({
       </h3>
 
       <p className="mt-1 text-sm text-gray-500">
-        Add courier and tracking information for
-        this order.
+        Add courier and tracking information
+        for this order.
       </p>
 
       {/* COURIER */}
@@ -112,9 +211,12 @@ export default function DeliveryTracking({
           id="courier"
           value={courier}
           onChange={(event) =>
-            setCourier(event.target.value)
+            handleCourierChange(
+              event.target.value
+            )
           }
-          className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+          disabled={loading}
+          className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 disabled:bg-gray-100"
         >
           <option value="">
             Select Courier
@@ -147,12 +249,13 @@ export default function DeliveryTracking({
           type="text"
           value={trackingNumber}
           onChange={(event) =>
-            setTrackingNumber(
+            handleTrackingNumberChange(
               event.target.value
             )
           }
+          disabled={loading}
           placeholder="e.g. 123456789"
-          className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+          className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 disabled:bg-gray-100"
         />
 
       </div>
@@ -176,9 +279,18 @@ export default function DeliveryTracking({
               event.target.value
             )
           }
-          placeholder="https://..."
-          className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+          disabled={loading}
+          placeholder="Automatically generated"
+          className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 disabled:bg-gray-100"
         />
+
+        {generatedUrl &&
+          !trackingUrl && (
+            <p className="mt-2 text-xs text-gray-500">
+              Tracking link will be generated
+              automatically.
+            </p>
+          )}
 
       </div>
 
@@ -206,6 +318,17 @@ export default function DeliveryTracking({
               </span>{" "}
               {trackingNumber}
             </p>
+          )}
+
+          {trackingUrl && (
+            <a
+              href={trackingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-block text-sm font-semibold text-orange-600 hover:text-orange-700 hover:underline"
+            >
+              Track on Courier Website →
+            </a>
           )}
 
         </div>

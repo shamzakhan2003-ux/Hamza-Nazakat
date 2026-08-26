@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "../../../../lib/prisma";
+import { cookies } from "next/headers";
+import { prisma } from "../../../lib/prisma";
 
 const allowedStatuses = [
   "Pending",
@@ -17,6 +18,27 @@ export async function PATCH(
   }
 ) {
   try {
+    // =========================
+    // ADMIN AUTHENTICATION
+    // =========================
+
+    const cookieStore = await cookies();
+    const adminSession =
+      cookieStore.get("admin_session");
+
+    if (adminSession?.value !== "authenticated") {
+      return NextResponse.json(
+        {
+          error: "Unauthorized. Admin login required.",
+        },
+        { status: 401 }
+      );
+    }
+
+    // =========================
+    // ORDER ID
+    // =========================
+
     const { id } = await context.params;
     const orderId = Number(id);
 
@@ -27,9 +49,15 @@ export async function PATCH(
       );
     }
 
+    // =========================
+    // REQUEST BODY
+    // =========================
+
     const body = await request.json();
 
-    const hasStatus = typeof body.status === "string";
+    const hasStatus =
+      typeof body.status === "string";
+
     const hasTracking =
       "courier" in body ||
       "trackingNumber" in body ||
@@ -41,6 +69,10 @@ export async function PATCH(
         { status: 400 }
       );
     }
+
+    // =========================
+    // FIND ORDER
+    // =========================
 
     const order = await prisma.order.findUnique({
       where: {
@@ -60,27 +92,28 @@ export async function PATCH(
     // =========================
 
     if (hasTracking) {
-      const updatedOrder = await prisma.order.update({
-        where: {
-          id: orderId,
-        },
-        data: {
-          courier:
-            typeof body.courier === "string"
-              ? body.courier.trim() || null
-              : order.courier,
+      const updatedOrder =
+        await prisma.order.update({
+          where: {
+            id: orderId,
+          },
+          data: {
+            courier:
+              typeof body.courier === "string"
+                ? body.courier.trim() || null
+                : order.courier,
 
-          trackingNumber:
-            typeof body.trackingNumber === "string"
-              ? body.trackingNumber.trim() || null
-              : order.trackingNumber,
+            trackingNumber:
+              typeof body.trackingNumber === "string"
+                ? body.trackingNumber.trim() || null
+                : order.trackingNumber,
 
-          trackingUrl:
-            typeof body.trackingUrl === "string"
-              ? body.trackingUrl.trim() || null
-              : order.trackingUrl,
-        },
-      });
+            trackingUrl:
+              typeof body.trackingUrl === "string"
+                ? body.trackingUrl.trim() || null
+                : order.trackingUrl,
+          },
+        });
 
       return NextResponse.json({
         success: true,
@@ -101,7 +134,9 @@ export async function PATCH(
 
     if (!allowedStatuses.includes(status)) {
       return NextResponse.json(
-        { error: "Invalid order status." },
+        {
+          error: "Invalid order status.",
+        },
         { status: 400 }
       );
     }
@@ -115,44 +150,63 @@ export async function PATCH(
       });
     }
 
-    const trackingMessages: Record<string, string> = {
-      Pending: "Order has been placed.",
+    // =========================
+    // TRACKING MESSAGES
+    // =========================
+
+    const trackingMessages: Record<
+      string,
+      string
+    > = {
+      Pending:
+        "Order has been placed.",
+
       Confirmed:
         "Order has been confirmed by the seller.",
+
       Shipped:
         "Order has been shipped and handed over to the courier.",
+
       "Out for Delivery":
         "Your order is out for delivery.",
+
       Delivered:
         "Your order has been delivered.",
+
       Cancelled:
         "Order has been cancelled.",
     };
 
-    const updatedOrder = await prisma.$transaction(
-      async (tx) => {
-        const updated = await tx.order.update({
-          where: {
-            id: orderId,
-          },
-          data: {
-            status,
-          },
-        });
+    // =========================
+    // UPDATE ORDER + HISTORY
+    // =========================
 
-        await tx.orderTracking.create({
-          data: {
-            orderId,
-            status,
-            message:
-              trackingMessages[status] ||
-              `Order status changed to ${status}.`,
-          },
-        });
+    const updatedOrder =
+      await prisma.$transaction(
+        async (tx) => {
+          const updated =
+            await tx.order.update({
+              where: {
+                id: orderId,
+              },
+              data: {
+                status,
+              },
+            });
 
-        return updated;
-      }
-    );
+          await tx.orderTracking.create({
+            data: {
+              orderId,
+              status,
+              message:
+                trackingMessages[status] ||
+                `Order status changed to ${status}.`,
+            },
+          });
+
+          return updated;
+        }
+      );
 
     return NextResponse.json({
       success: true,

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../lib/prisma";
+import { getCurrentCustomer } from "@/app/lib/customerAuth";
 
 function generateOrderNumber() {
   const timestamp = Date.now().toString().slice(-8);
@@ -19,7 +20,6 @@ export async function POST(request: Request) {
       address,
       city,
       postcode,
-      total,
       items,
     } = body;
 
@@ -48,8 +48,24 @@ export async function POST(request: Request) {
       );
     }
 
+    // =========================
+    // GET LOGGED-IN CUSTOMER
+    // =========================
+
+    const currentCustomer = await getCurrentCustomer();
+
+    // =========================
+    // CREATE ORDER
+    // =========================
+
     const order = await prisma.$transaction(async (tx) => {
       const orderItems = [];
+
+      let serverTotal = 0;
+
+      // =========================
+      // CHECK PRODUCTS
+      // =========================
 
       for (const item of items) {
         const productId = Number(item.id);
@@ -75,11 +91,27 @@ export async function POST(request: Request) {
           );
         }
 
+        // =========================
+        // STOCK CHECK
+        // =========================
+
         if (product.stock < quantity) {
           throw new Error(
             `"${product.name}" only has ${product.stock} item(s) in stock.`
           );
         }
+
+        // =========================
+        // SERVER PRICE
+        // =========================
+
+        const productPrice = Number(product.price);
+
+        serverTotal += productPrice * quantity;
+
+        // =========================
+        // DECREASE STOCK
+        // =========================
 
         await tx.product.update({
           where: {
@@ -92,26 +124,50 @@ export async function POST(request: Request) {
           },
         });
 
+        // =========================
+        // ORDER ITEM
+        // =========================
+
         orderItems.push({
           productId,
           name: product.name,
-          price: Number(product.price),
+          price: productPrice,
           quantity,
         });
       }
 
+      serverTotal =
+        Math.round(serverTotal * 100) / 100;
+
       const orderNumber = generateOrderNumber();
+
+      // =========================
+      // CREATE ORDER
+      // =========================
 
       return await tx.order.create({
         data: {
           orderNumber,
-          customerName: String(customerName),
-          email: String(email),
-          phone: String(phone),
-          address: String(address),
-          city: String(city),
-          postcode: String(postcode),
-          total: Number(total),
+
+          // IMPORTANT
+          // Save logged-in customer's ID
+          customerId: currentCustomer
+            ? currentCustomer.id
+            : null,
+
+          customerName: String(customerName).trim(),
+
+          email: String(email).trim(),
+
+          phone: String(phone).trim(),
+
+          address: String(address).trim(),
+
+          city: String(city).trim(),
+
+          postcode: String(postcode).trim(),
+
+          total: serverTotal,
 
           items: {
             create: orderItems,
