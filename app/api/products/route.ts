@@ -10,6 +10,48 @@ async function checkAdmin() {
   return adminSession?.value === "authenticated";
 }
 
+// =========================
+// GET PRODUCTS
+// =========================
+
+export async function GET() {
+  try {
+    const isAdmin = await checkAdmin();
+
+    if (!isAdmin) {
+      return NextResponse.json(
+        {
+          error: "Unauthorized. Admin login required.",
+        },
+        { status: 401 }
+      );
+    }
+
+    const products = await prisma.product.findMany({
+      orderBy: {
+        id: "desc",
+      },
+    });
+
+    return NextResponse.json(products, {
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Get products error:", error);
+
+    return NextResponse.json(
+      {
+        error: "Failed to load products.",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// =========================
+// CREATE PRODUCT
+// =========================
+
 export async function POST(request: Request) {
   try {
     // =========================
@@ -41,16 +83,36 @@ export async function POST(request: Request) {
     const image2 = String(body.image2 || "").trim();
     const image3 = String(body.image3 || "").trim();
     const image4 = String(body.image4 || "").trim();
+
     const descriptionImage = String(
       body.descriptionImage || ""
     ).trim();
 
     const price = Number(body.price);
+
+    const oldPrice =
+      body.oldPrice === null ||
+      body.oldPrice === undefined ||
+      body.oldPrice === ""
+        ? null
+        : Number(body.oldPrice);
+
     const stock = Number(body.stock);
 
     const reviews = Number(body.reviews || 0);
 
     const featured = body.featured === true;
+
+    const flashDeal = body.flashDeal === true;
+
+    const newArrival = body.newArrival === true;
+
+    const discount =
+      body.discount === null ||
+      body.discount === undefined ||
+      body.discount === ""
+        ? null
+        : Number(body.discount);
 
     // =========================
     // VALIDATION
@@ -92,6 +154,18 @@ export async function POST(request: Request) {
       );
     }
 
+    if (
+      oldPrice !== null &&
+      (!Number.isFinite(oldPrice) || oldPrice < 0)
+    ) {
+      return NextResponse.json(
+        {
+          error: "Please enter a valid old price.",
+        },
+        { status: 400 }
+      );
+    }
+
     if (!Number.isInteger(stock) || stock < 0) {
       return NextResponse.json(
         {
@@ -105,6 +179,30 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error: "Please enter a valid reviews number.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (
+      discount !== null &&
+      (!Number.isInteger(discount) ||
+        discount < 1 ||
+        discount > 100)
+    ) {
+      return NextResponse.json(
+        {
+          error: "Discount must be between 1% and 100%.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (flashDeal && discount === null) {
+      return NextResponse.json(
+        {
+          error:
+            "Please enter a discount percentage for the Flash Deal.",
         },
         { status: 400 }
       );
@@ -127,10 +225,26 @@ export async function POST(request: Request) {
         image4: image4 || null,
         descriptionImage: descriptionImage || null,
 
+        // Pricing
         price: price.toFixed(2),
+
+        oldPrice:
+          oldPrice !== null
+            ? oldPrice.toFixed(2)
+            : null,
+
+        discount,
+
+        // Stock
         stock,
+
+        // Reviews
         reviews,
+
+        // Product status
         featured,
+        flashDeal,
+        newArrival,
       },
     });
 

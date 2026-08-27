@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "../../../lib/prisma";
 
@@ -10,8 +10,7 @@ type RouteContext = {
 
 async function checkAdmin() {
   const cookieStore = await cookies();
-  const adminSession =
-    cookieStore.get("admin_session");
+  const adminSession = cookieStore.get("admin_session");
 
   return adminSession?.value === "authenticated";
 }
@@ -24,7 +23,6 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-
     const productId = Number(id);
 
     if (!Number.isInteger(productId)) {
@@ -34,12 +32,11 @@ export async function GET(
       );
     }
 
-    const product =
-      await prisma.product.findUnique({
-        where: {
-          id: productId,
-        },
-      });
+    const product = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
 
     if (!product) {
       return NextResponse.json(
@@ -52,10 +49,7 @@ export async function GET(
       product,
     });
   } catch (error) {
-    console.error(
-      "Get product error:",
-      error
-    );
+    console.error("Get product error:", error);
 
     return NextResponse.json(
       {
@@ -81,15 +75,13 @@ export async function PUT(
     if (!isAdmin) {
       return NextResponse.json(
         {
-          error:
-            "Unauthorized. Admin login required.",
+          error: "Unauthorized. Admin login required.",
         },
         { status: 401 }
       );
     }
 
     const { id } = await params;
-
     const productId = Number(id);
 
     if (!Number.isInteger(productId)) {
@@ -103,28 +95,53 @@ export async function PUT(
 
     const body = await request.json();
 
-    const name =
-      String(body.name || "").trim();
+    // =========================
+    // PRODUCT FIELDS
+    // =========================
 
-    const category =
-      String(body.category || "").trim();
+    const name = String(body.name || "").trim();
+    const category = String(body.category || "").trim();
+    const description = String(body.description || "").trim();
 
-    const description =
-      String(body.description || "").trim();
-
-    const image =
-      String(body.image || "").trim();
+    const image = String(body.image || "").trim();
+    const image2 = String(body.image2 || "").trim();
+    const image3 = String(body.image3 || "").trim();
+    const image4 = String(body.image4 || "").trim();
+    const descriptionImage = String(
+      body.descriptionImage || ""
+    ).trim();
 
     const price = Number(body.price);
+
+    const oldPrice =
+      body.oldPrice === null ||
+      body.oldPrice === undefined ||
+      body.oldPrice === ""
+        ? null
+        : Number(body.oldPrice);
+
     const stock = Number(body.stock);
     const reviews = Number(body.reviews || 0);
+
+    const discount =
+      body.discount === null ||
+      body.discount === undefined ||
+      body.discount === ""
+        ? null
+        : Number(body.discount);
+
     const featured = body.featured === true;
+    const flashDeal = body.flashDeal === true;
+    const newArrival = body.newArrival === true;
+
+    // =========================
+    // VALIDATION
+    // =========================
 
     if (!name) {
       return NextResponse.json(
         {
-          error:
-            "Product name is required.",
+          error: "Product name is required.",
         },
         { status: 400 }
       );
@@ -142,51 +159,78 @@ export async function PUT(
     if (!description) {
       return NextResponse.json(
         {
-          error:
-            "Description is required.",
+          error: "Description is required.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!Number.isFinite(price) || price < 0) {
+      return NextResponse.json(
+        {
+          error: "Please enter a valid price.",
         },
         { status: 400 }
       );
     }
 
     if (
-      !Number.isFinite(price) ||
-      price < 0
+      oldPrice !== null &&
+      (!Number.isFinite(oldPrice) || oldPrice < 0)
     ) {
       return NextResponse.json(
         {
-          error:
-            "Please enter a valid price.",
+          error: "Please enter a valid old price.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!Number.isInteger(stock) || stock < 0) {
+      return NextResponse.json(
+        {
+          error: "Please enter a valid stock quantity.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!Number.isInteger(reviews) || reviews < 0) {
+      return NextResponse.json(
+        {
+          error: "Please enter a valid reviews number.",
         },
         { status: 400 }
       );
     }
 
     if (
-      !Number.isInteger(stock) ||
-      stock < 0
+      discount !== null &&
+      (!Number.isInteger(discount) ||
+        discount < 1 ||
+        discount > 100)
     ) {
       return NextResponse.json(
         {
-          error:
-            "Please enter a valid stock quantity.",
+          error: "Discount must be between 1% and 100%.",
         },
         { status: 400 }
       );
     }
 
-    if (
-      !Number.isInteger(reviews) ||
-      reviews < 0
-    ) {
+    if (flashDeal && discount === null) {
       return NextResponse.json(
         {
           error:
-            "Please enter a valid reviews number.",
+            "Please enter a discount percentage for the Flash Deal.",
         },
         { status: 400 }
       );
     }
+
+    // =========================
+    // CHECK PRODUCT
+    // =========================
 
     const existingProduct =
       await prisma.product.findUnique({
@@ -204,6 +248,10 @@ export async function PUT(
       );
     }
 
+    // =========================
+    // UPDATE PRODUCT
+    // =========================
+
     const product =
       await prisma.product.update({
         where: {
@@ -213,29 +261,41 @@ export async function PUT(
           name,
           category,
           description,
-          image: image || null,
+
           price: price.toFixed(2),
+
+          oldPrice:
+            oldPrice === null
+              ? null
+              : oldPrice.toFixed(2),
+
           stock,
           reviews,
+
+          discount,
           featured,
+          flashDeal,
+          newArrival,
+
+          image: image || null,
+          image2: image2 || null,
+          image3: image3 || null,
+          image4: image4 || null,
+          descriptionImage:
+            descriptionImage || null,
         },
       });
 
     return NextResponse.json({
-      message:
-        "Product updated successfully.",
+      message: "Product updated successfully.",
       product,
     });
   } catch (error) {
-    console.error(
-      "Update product error:",
-      error
-    );
+    console.error("Update product error:", error);
 
     return NextResponse.json(
       {
-        error:
-          "Failed to update product.",
+        error: "Failed to update product.",
       },
       { status: 500 }
     );
@@ -257,15 +317,13 @@ export async function DELETE(
     if (!isAdmin) {
       return NextResponse.json(
         {
-          error:
-            "Unauthorized. Admin login required.",
+          error: "Unauthorized. Admin login required.",
         },
         { status: 401 }
       );
     }
 
     const { id } = await params;
-
     const productId = Number(id);
 
     if (!Number.isInteger(productId)) {
@@ -301,14 +359,10 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message:
-        "Product deleted successfully.",
+      message: "Product deleted successfully.",
     });
   } catch (error) {
-    console.error(
-      "Delete product error:",
-      error
-    );
+    console.error("Delete product error:", error);
 
     return NextResponse.json(
       {

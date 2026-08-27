@@ -56,13 +56,10 @@ export default function Header() {
 
   const loadCustomer = async () => {
     try {
-      const response = await fetch(
-        "/api/customer/me",
-        {
-          method: "GET",
-          cache: "no-store",
-        }
-      );
+      const response = await fetch("/api/customer/me", {
+        method: "GET",
+        cache: "no-store",
+      });
 
       if (!response.ok) {
         setCustomer(null);
@@ -73,11 +70,7 @@ export default function Header() {
 
       setCustomer(data.customer || null);
     } catch (error) {
-      console.error(
-        "Customer loading error:",
-        error
-      );
-
+      console.error("Customer loading error:", error);
       setCustomer(null);
     } finally {
       setLoadingCustomer(false);
@@ -100,16 +93,8 @@ export default function Header() {
       loadCustomer();
     };
 
-    window.addEventListener(
-      "cartUpdated",
-      handleCartUpdated
-    );
-
-    window.addEventListener(
-      "storage",
-      handleStorage
-    );
-
+    window.addEventListener("cartUpdated", handleCartUpdated);
+    window.addEventListener("storage", handleStorage);
     window.addEventListener(
       "customerUpdated",
       handleCustomerUpdated
@@ -176,24 +161,18 @@ export default function Header() {
 
       window.location.href = "/";
     } catch (error) {
-      console.error(
-        "Logout error:",
-        error
-      );
+      console.error("Logout error:", error);
     }
   };
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
-
       {/* ========================= */}
       {/* TOP HEADER */}
       {/* ========================= */}
 
       <div className="border-b">
-
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:gap-5">
-
           {/* LOGO */}
 
           <Link
@@ -209,7 +188,6 @@ export default function Header() {
           {/* SEARCH */}
 
           <div className="hidden flex-1 overflow-hidden rounded-md border-2 border-orange-500 sm:flex">
-
             <input
               type="text"
               value={search}
@@ -225,18 +203,16 @@ export default function Header() {
               type="button"
               onClick={handleSearch}
               className="bg-orange-500 px-6 text-white transition hover:bg-orange-600"
+              aria-label="Search"
             >
               🔍
             </button>
-
           </div>
 
           {/* ACCOUNT */}
 
           <div className="hidden md:block">
-
             {loadingCustomer ? (
-
               <button
                 type="button"
                 className="min-w-fit text-left text-sm"
@@ -249,27 +225,20 @@ export default function Header() {
                   Account & Orders
                 </span>
               </button>
-
             ) : customer ? (
-
               <div className="relative">
-
                 <Link
                   href="/account"
                   className="block min-w-fit text-left text-sm"
                 >
-
                   <span className="block text-xs text-gray-500">
                     Hello,{" "}
-                    {customer.fullName.split(
-                      " "
-                    )[0]}
+                    {customer.fullName.split(" ")[0]}
                   </span>
 
                   <span className="font-semibold hover:text-orange-500">
                     Account & Orders
                   </span>
-
                 </Link>
 
                 <button
@@ -279,16 +248,12 @@ export default function Header() {
                 >
                   Sign out
                 </button>
-
               </div>
-
             ) : (
-
               <Link
                 href="/login"
                 className="block min-w-fit text-sm"
               >
-
                 <span className="block text-xs text-gray-500">
                   Hello, Sign in
                 </span>
@@ -296,11 +261,8 @@ export default function Header() {
                 <span className="font-semibold hover:text-orange-500">
                   Account & Orders
                 </span>
-
               </Link>
-
             )}
-
           </div>
 
           {/* CART */}
@@ -309,7 +271,6 @@ export default function Header() {
             href="/cart"
             className="relative min-w-fit text-xl"
           >
-
             🛒
 
             <span className="ml-1 text-sm font-semibold">
@@ -318,22 +279,16 @@ export default function Header() {
 
             {cartCount > 0 && (
               <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-xs font-bold text-white">
-                {cartCount > 99
-                  ? "99+"
-                  : cartCount}
+                {cartCount > 99 ? "99+" : cartCount}
               </span>
             )}
-
           </Link>
-
         </div>
 
         {/* MOBILE SEARCH */}
 
         <div className="px-4 pb-4 sm:hidden">
-
           <div className="flex overflow-hidden rounded-md border-2 border-orange-500">
-
             <input
               type="text"
               value={search}
@@ -349,14 +304,12 @@ export default function Header() {
               type="button"
               onClick={handleSearch}
               className="bg-orange-500 px-4 text-white"
+              aria-label="Search"
             >
               🔍
             </button>
-
           </div>
-
         </div>
-
       </div>
 
       {/* ========================= */}
@@ -364,15 +317,17 @@ export default function Header() {
       {/* ========================= */}
 
       <div className="bg-gray-900 text-white">
-
         <div className="mx-auto flex max-w-7xl items-center gap-5 overflow-x-auto px-4">
+          {/* CATEGORIES */}
 
           <Link
-            href="/products"
+            href="/categories"
             className="whitespace-nowrap py-3 font-semibold hover:text-orange-400"
           >
             ☰ Categories
           </Link>
+
+          {/* HOME */}
 
           <Link
             href="/"
@@ -381,6 +336,8 @@ export default function Header() {
             Home
           </Link>
 
+          {/* ALL PRODUCTS */}
+
           <Link
             href="/products"
             className="whitespace-nowrap py-3 hover:text-orange-400"
@@ -388,19 +345,25 @@ export default function Header() {
             All Products
           </Link>
 
+          {/* FLASH DEALS */}
+
           <Link
-            href="/products?deal=true"
+            href="/products?deals=true"
             className="whitespace-nowrap py-3 hover:text-orange-400"
           >
             🔥 Flash Deals
           </Link>
 
+          {/* NEW ARRIVALS */}
+
           <Link
             href="/products?new=true"
             className="whitespace-nowrap py-3 hover:text-orange-400"
           >
-            New Arrivals
+            🆕 New Arrivals
           </Link>
+
+          {/* CONTACT */}
 
           <Link
             href="/contact"
@@ -408,11 +371,8 @@ export default function Header() {
           >
             Contact
           </Link>
-
         </div>
-
       </div>
-
     </header>
   );
 }

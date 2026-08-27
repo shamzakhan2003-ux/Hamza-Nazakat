@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { CldUploadWidget } from "next-cloudinary";
@@ -20,10 +20,7 @@ const imageFields: {
   { key: "image2", label: "Image 2" },
   { key: "image3", label: "Image 3" },
   { key: "image4", label: "Image 4" },
-  {
-    key: "descriptionImage",
-    label: "Description Image",
-  },
+  { key: "descriptionImage", label: "Description Image" },
 ];
 
 type CloudinaryInfo = {
@@ -32,25 +29,27 @@ type CloudinaryInfo = {
 
 export default function NewProductPage() {
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] =
-    useState<ImageField | null>(null);
+  const [uploading, setUploading] = useState<ImageField | null>(null);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const [images, setImages] =
-    useState<Record<ImageField, string>>({
-      image: "",
-      image2: "",
-      image3: "",
-      image4: "",
-      descriptionImage: "",
-    });
+  const [images, setImages] = useState<Record<ImageField, string>>({
+    image: "",
+    image2: "",
+    image3: "",
+    image4: "",
+    descriptionImage: "",
+  });
 
-  function setImage(
-    field: ImageField,
-    url: string
-  ) {
+  const [flashDeal, setFlashDeal] = useState(false);
+  const [newArrival, setNewArrival] = useState(false);
+
+  const [priceValue, setPriceValue] = useState("");
+  const [oldPriceValue, setOldPriceValue] = useState("");
+  const [discount, setDiscount] = useState("");
+
+  function setImage(field: ImageField, url: string) {
     setImages((previous) => ({
       ...previous,
       [field]: url,
@@ -64,123 +63,187 @@ export default function NewProductPage() {
     }));
   }
 
+  function calculateDiscount(
+    oldPrice: string,
+    currentPrice: string
+  ) {
+    const oldPriceNumber = Number(oldPrice);
+    const currentPriceNumber = Number(currentPrice);
+
+    if (
+      oldPriceNumber > 0 &&
+      currentPriceNumber >= 0 &&
+      currentPriceNumber < oldPriceNumber
+    ) {
+      const calculatedDiscount = Math.round(
+        ((oldPriceNumber - currentPriceNumber) /
+          oldPriceNumber) *
+          100
+      );
+
+      setDiscount(String(calculatedDiscount));
+    } else {
+      setDiscount("");
+    }
+  }
+
+  function autoSelectCategory(value: string) {
+    const name = value.toLowerCase();
+
+    let category = "Other";
+
+    if (
+      /toy|toys|aeroplane|airplane|doll|puzzle|game|lego|car toy|robot|kids/.test(name)
+    ) {
+      category = "Toys";
+    } else if (
+      /iphone|phone|mobile|tablet|laptop|computer|camera|charger|usb|watch/.test(name)
+    ) {
+      category = "Electronics";
+    } else if (
+      /speaker|headphone|earphone|earbuds|bluetooth|soundbar|audio/.test(name)
+    ) {
+      category = "Audio";
+    } else if (
+      /football|basketball|cricket|bat|ball|sports|fitness|gym/.test(name)
+    ) {
+      category = "Sports";
+    } else if (
+      /beauty|makeup|cosmetic|lipstick|cream|perfume|skincare/.test(name)
+    ) {
+      category = "Beauty";
+    } else if (
+      /chair|table|kitchen|home|garden|lamp|light|decor/.test(name)
+    ) {
+      category = "Home & Garden";
+    }
+
+    const categoryElement = document.getElementById(
+      "category"
+    ) as HTMLSelectElement | null;
+
+    if (categoryElement) {
+      categoryElement.value = category;
+    }
+  }
   async function addProduct() {
     setLoading(true);
     setError("");
     setSuccess("");
 
     const name = (
-      document.getElementById(
-        "name"
-      ) as HTMLInputElement
+      document.getElementById("name") as HTMLInputElement
     ).value.trim();
 
     const category = (
-      document.getElementById(
-        "category"
-      ) as HTMLInputElement
+      document.getElementById("category") as HTMLInputElement
     ).value.trim();
 
-    const price = Number(
-      (
-        document.getElementById(
-          "price"
-        ) as HTMLInputElement
-      ).value
-    );
+    const price = Number(priceValue);
+
+    const oldPrice = oldPriceValue
+      ? Number(oldPriceValue)
+      : null;
 
     const stock = Number(
-      (
-        document.getElementById(
-          "stock"
-        ) as HTMLInputElement
-      ).value
+      (document.getElementById("stock") as HTMLInputElement).value
     );
 
     const description = (
-      document.getElementById(
-        "description"
-      ) as HTMLTextAreaElement
+      document.getElementById("description") as HTMLTextAreaElement
     ).value.trim();
 
     const reviews = Number(
-      (
-        document.getElementById(
-          "reviews"
-        ) as HTMLInputElement
-      ).value || 0
+      (document.getElementById("reviews") as HTMLInputElement).value || 0
     );
 
     const featured = (
-      document.getElementById(
-        "featured"
-      ) as HTMLInputElement
+      document.getElementById("featured") as HTMLInputElement
     ).checked;
+
+    const discountNumber = discount
+      ? Number(discount)
+      : null;
 
     // =========================
     // VALIDATION
     // =========================
 
     if (!name) {
-      setError(
-        "Product name is required."
-      );
+      setError("Product name is required.");
       setLoading(false);
       return;
     }
 
     if (!category) {
-      setError(
-        "Category is required."
-      );
+      setError("Category is required.");
+      setLoading(false);
+      return;
+    }
+
+    if (!Number.isFinite(price) || price < 0) {
+      setError("Please enter a valid price.");
       setLoading(false);
       return;
     }
 
     if (
-      !Number.isFinite(price) ||
-      price < 0
+      oldPrice !== null &&
+      (!Number.isFinite(oldPrice) || oldPrice < 0)
     ) {
-      setError(
-        "Please enter a valid price."
-      );
+      setError("Please enter a valid old price.");
       setLoading(false);
       return;
     }
 
     if (
-      !Number.isInteger(stock) ||
-      stock < 0
+      oldPrice !== null &&
+      oldPrice > 0 &&
+      price > oldPrice
     ) {
-      setError(
-        "Please enter a valid stock quantity."
-      );
+      setError("Price cannot be higher than the old price.");
+      setLoading(false);
+      return;
+    }
+
+    if (!Number.isInteger(stock) || stock < 0) {
+      setError("Please enter a valid stock quantity.");
       setLoading(false);
       return;
     }
 
     if (!description) {
-      setError(
-        "Description is required."
-      );
+      setError("Description is required.");
       setLoading(false);
       return;
     }
 
     if (!images.image) {
-      setError(
-        "Main Image is required."
-      );
+      setError("Main Image is required.");
+      setLoading(false);
+      return;
+    }
+
+    if (!Number.isInteger(reviews) || reviews < 0) {
+      setError("Please enter a valid reviews number.");
       setLoading(false);
       return;
     }
 
     if (
-      !Number.isInteger(reviews) ||
-      reviews < 0
+      discountNumber !== null &&
+      (!Number.isInteger(discountNumber) ||
+        discountNumber < 1 ||
+        discountNumber > 100)
     ) {
+      setError("Discount must be between 1% and 100%.");
+      setLoading(false);
+      return;
+    }
+
+    if (flashDeal && discountNumber === null) {
       setError(
-        "Please enter a valid reviews number."
+        "Please enter a valid old price and sale price for the Flash Deal."
       );
       setLoading(false);
       return;
@@ -191,61 +254,51 @@ export default function NewProductPage() {
     // =========================
 
     try {
-      const response = await fetch(
-        "/api/products",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            category,
-            price,
-            stock,
-            description,
-            reviews,
-            featured,
+      const response = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          category,
+          price,
+          oldPrice,
+          stock,
+          description,
+          reviews,
+          featured,
 
-            image: images.image,
-            image2:
-              images.image2 || null,
-            image3:
-              images.image3 || null,
-            image4:
-              images.image4 || null,
-            descriptionImage:
-              images.descriptionImage ||
-              null,
-          }),
-        }
-      );
+          flashDeal,
+          newArrival,
+          discount: discountNumber,
 
-      const result =
-        await response.json();
+          image: images.image,
+          image2: images.image2 || null,
+          image3: images.image3 || null,
+          image4: images.image4 || null,
+          descriptionImage:
+            images.descriptionImage || null,
+        }),
+      });
+
+      const result = await response.json();
 
       if (!response.ok) {
         setError(
-          result.error ||
-            "Failed to create product."
+          result.error || "Failed to create product."
         );
         setLoading(false);
         return;
       }
 
-      setSuccess(
-        "Product added successfully."
-      );
+      setSuccess("Product added successfully.");
 
       setTimeout(() => {
-        window.location.href =
-          "/admin/products";
+        window.location.href = "/admin/products";
       }, 1000);
     } catch (requestError) {
-      console.error(
-        requestError
-      );
+      console.error(requestError);
 
       setError(
         "Something went wrong. Please try again."
@@ -258,9 +311,7 @@ export default function NewProductPage() {
   return (
     <main className="min-h-screen bg-gray-100 text-gray-900">
 
-      {/* =========================
-          HEADER
-      ========================= */}
+      {/* HEADER */}
 
       <header className="bg-gray-900 text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5">
@@ -285,9 +336,7 @@ export default function NewProductPage() {
         </div>
       </header>
 
-      {/* =========================
-          MAIN
-      ========================= */}
+      {/* MAIN */}
 
       <section className="mx-auto max-w-4xl px-4 py-8">
 
@@ -301,15 +350,11 @@ export default function NewProductPage() {
             Enter the details of your new product.
           </p>
 
-          {/* ERROR */}
-
           {error && (
             <div className="mt-6 rounded-md bg-red-100 px-4 py-3 font-semibold text-red-700">
               {error}
             </div>
           )}
-
-          {/* SUCCESS */}
 
           {success && (
             <div className="mt-6 rounded-md bg-green-100 px-4 py-3 font-semibold text-green-700">
@@ -319,9 +364,7 @@ export default function NewProductPage() {
 
           <div className="mt-8 space-y-6">
 
-            {/* =========================
-                PRODUCT NAME
-            ========================= */}
+            {/* PRODUCT NAME */}
 
             <div>
               <label
@@ -335,13 +378,14 @@ export default function NewProductPage() {
                 id="name"
                 type="text"
                 placeholder="Enter product name"
+                onChange={(event) =>
+                  autoSelectCategory(event.target.value)
+                }
                 className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
               />
             </div>
 
-            {/* =========================
-                CATEGORY + PRICE
-            ========================= */}
+            {/* CATEGORY + PRICE */}
 
             <div className="grid gap-6 md:grid-cols-2">
 
@@ -353,12 +397,20 @@ export default function NewProductPage() {
                   Category
                 </label>
 
-                <input
+                <select
                   id="category"
-                  type="text"
-                  placeholder="Enter category"
-                  className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
-                />
+                  defaultValue=""
+                  className="w-full rounded-md border bg-white px-4 py-3 outline-none focus:border-orange-500"
+                >
+                  <option value="">Select category</option>
+                  <option value="Toys">Toys</option>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Audio">Audio</option>
+                  <option value="Home & Garden">Home & Garden</option>
+                  <option value="Sports">Sports</option>
+                  <option value="Beauty">Beauty</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
 
               <div>
@@ -366,7 +418,7 @@ export default function NewProductPage() {
                   htmlFor="price"
                   className="mb-2 block font-semibold"
                 >
-                  Price (£)
+                  Price (Â£)
                 </label>
 
                 <input
@@ -375,15 +427,60 @@ export default function NewProductPage() {
                   step="0.01"
                   min="0"
                   placeholder="0.00"
+                  value={priceValue}
+                  onChange={(event) => {
+                    const newPrice = event.target.value;
+
+                    setPriceValue(newPrice);
+
+                    calculateDiscount(
+                      oldPriceValue,
+                      newPrice
+                    );
+                  }}
                   className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
                 />
               </div>
 
             </div>
 
-            {/* =========================
-                STOCK
-            ========================= */}
+            {/* OLD PRICE */}
+
+            <div>
+              <label
+                htmlFor="oldPrice"
+                className="mb-2 block font-semibold"
+              >
+                Old Price (Â£)
+
+                <span className="ml-2 text-sm font-normal text-gray-400">
+                  Optional
+                </span>
+              </label>
+
+              <input
+                id="oldPrice"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="Example: 199.99"
+                value={oldPriceValue}
+                onChange={(event) => {
+                  const newOldPrice =
+                    event.target.value;
+
+                  setOldPriceValue(newOldPrice);
+
+                  calculateDiscount(
+                    newOldPrice,
+                    priceValue
+                  );
+                }}
+                className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
+              />
+            </div>
+
+            {/* STOCK */}
 
             <div>
               <label
@@ -402,9 +499,150 @@ export default function NewProductPage() {
               />
             </div>
 
-            {/* =========================
-                PRODUCT IMAGES
-            ========================= */}
+            {/* PRODUCT STATUS */}
+
+            <div className="rounded-lg border bg-gray-50 p-5">
+
+              <h3 className="text-lg font-bold">
+                Product Status
+              </h3>
+
+              <p className="mt-1 text-sm text-gray-500">
+                Choose where this product should appear in the store.
+              </p>
+
+              <div className="mt-5 space-y-4">
+
+                {/* FLASH DEAL */}
+
+                <div className="rounded-md border bg-white p-4">
+
+                  <div className="flex items-center gap-3">
+
+                    <input
+                      id="flashDeal"
+                      type="checkbox"
+                      checked={flashDeal}
+                      onChange={(event) =>
+                        setFlashDeal(event.target.checked)
+                      }
+                      className="h-5 w-5"
+                    />
+
+                    <label
+                      htmlFor="flashDeal"
+                      className="font-semibold"
+                    >
+                      ðŸ”¥ Flash Deal
+                    </label>
+
+                  </div>
+
+                  <p className="mt-2 text-sm text-gray-500">
+                    Turn this ON if this product should appear in Flash Deals.
+                  </p>
+
+                  {flashDeal && (
+                    <div className="mt-4">
+
+                      <label
+                        htmlFor="discount"
+                        className="mb-2 block font-semibold"
+                      >
+                        Discount Percentage
+                      </label>
+
+                      <div className="flex max-w-xs overflow-hidden rounded-md border bg-white">
+
+                        <input
+                          id="discount"
+                          type="number"
+                          min="1"
+                          max="100"
+                          value={discount}
+                          readOnly
+                          placeholder="Auto calculated"
+                          className="w-full bg-gray-100 px-4 py-3 outline-none"
+                        />
+
+                        <span className="flex items-center bg-gray-100 px-4 font-bold">
+                          %
+                        </span>
+
+                      </div>
+
+                      <p className="mt-2 text-xs text-gray-500">
+                        Automatically calculated from Old Price and Price.
+                      </p>
+
+                    </div>
+                  )}
+
+                </div>
+
+                {/* NEW ARRIVAL */}
+
+                <div className="rounded-md border bg-white p-4">
+
+                  <div className="flex items-center gap-3">
+
+                    <input
+                      id="newArrival"
+                      type="checkbox"
+                      checked={newArrival}
+                      onChange={(event) =>
+                        setNewArrival(event.target.checked)
+                      }
+                      className="h-5 w-5"
+                    />
+
+                    <label
+                      htmlFor="newArrival"
+                      className="font-semibold"
+                    >
+                      ðŸ†• New Arrival
+                    </label>
+
+                  </div>
+
+                  <p className="mt-2 text-sm text-gray-500">
+                    Turn this ON if this product should appear in New Arrivals.
+                  </p>
+
+                </div>
+
+                {/* FEATURED */}
+
+                <div className="rounded-md border bg-white p-4">
+
+                  <div className="flex items-center gap-3">
+
+                    <input
+                      id="featured"
+                      type="checkbox"
+                      className="h-5 w-5"
+                    />
+
+                    <label
+                      htmlFor="featured"
+                      className="font-semibold"
+                    >
+                      â­ Featured Product
+                    </label>
+
+                  </div>
+
+                  <p className="mt-2 text-sm text-gray-500">
+                    Turn this ON if you want to feature this product on the store.
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* PRODUCT IMAGES */}
 
             <div>
 
@@ -414,193 +652,168 @@ export default function NewProductPage() {
 
               <div className="grid gap-6 md:grid-cols-2">
 
-                {imageFields.map(
-                  (field) => (
-                    <div
-                      key={field.key}
-                      className="rounded-lg border p-4"
-                    >
+                {imageFields.map((field) => (
+                  <div
+                    key={field.key}
+                    className="rounded-lg border p-4"
+                  >
 
-                      <label className="mb-3 block font-semibold">
-                        {field.label}
+                    <label className="mb-3 block font-semibold">
 
-                        {field.required && (
-                          <span className="ml-1 text-red-500">
-                            *
-                          </span>
-                        )}
-                      </label>
+                      {field.label}
 
-                      {/* CLOUDINARY UPLOAD WIDGET */}
-
-                      <CldUploadWidget
-                        uploadPreset="am_wholesale"
-                        options={{
-                          resourceType: "image",
-
-                          clientAllowedFormats: [
-                            "jpg",
-                            "jpeg",
-                            "png",
-                            "webp",
-                            "gif",
-                          ],
-
-                          maxFileSize:
-                            5 * 1024 * 1024,
-
-                          multiple: false,
-
-                          folder:
-                            "am-wholesale-uk/products",
-
-                          sources: [
-                            "local",
-                            "camera",
-                            "url",
-                            "google_drive",
-                            "dropbox",
-                          ],
-                        }}
-
-                        onOpen={() => {
-                          setError("");
-                          setUploading(
-                            field.key
-                          );
-                        }}
-
-                        onSuccess={(result) => {
-                          const info =
-                            result.info as
-                              | CloudinaryInfo
-                              | string
-                              | undefined;
-
-                          if (
-                            typeof info ===
-                              "object" &&
-                            info !== null &&
-                            typeof info.secure_url ===
-                              "string"
-                          ) {
-                            setImage(
-                              field.key,
-                              info.secure_url
-                            );
-
-                            setError("");
-                          } else {
-                            setError(
-                              "Image uploaded but Cloudinary did not return the image URL."
-                            );
-                          }
-
-                          setUploading(null);
-                        }}
-
-                        onError={(uploadError) => {
-                          console.error(
-                            "Cloudinary upload error:",
-                            uploadError
-                          );
-
-                          setError(
-                            "Cloudinary upload failed. Please check your Cloud Name and Upload Preset."
-                          );
-
-                          setUploading(null);
-                        }}
-
-                        onClose={() => {
-                          setUploading(null);
-                        }}
-                      >
-                        {({ open }) => (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              open()
-                            }
-                            disabled={
-                              loading ||
-                              uploading !==
-                                null
-                            }
-                            className="w-full rounded-md border-2 border-dashed border-gray-300 px-4 py-6 text-sm font-semibold text-gray-700 transition hover:border-orange-500 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            {uploading ===
-                            field.key
-                              ? "Opening Upload..."
-                              : images[
-                                    field.key
-                                  ]
-                                ? "Choose Another Image"
-                                : "Choose Image"}
-                          </button>
-                        )}
-                      </CldUploadWidget>
-
-                      {/* IMAGE PREVIEW */}
-
-                      {images[field.key] && (
-                        <div className="mt-4">
-
-                          <img
-                            src={
-                              images[
-                                field.key
-                              ]
-                            }
-                            alt={
-                              field.label
-                            }
-                            className="h-40 w-full rounded-md border object-contain"
-                          />
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              removeImage(
-                                field.key
-                              )
-                            }
-                            disabled={
-                              loading ||
-                              uploading !==
-                                null
-                            }
-                            className="mt-3 rounded-md bg-red-100 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-200 disabled:opacity-50"
-                          >
-                            Remove Image
-                          </button>
-
-                        </div>
+                      {field.required && (
+                        <span className="ml-1 text-red-500">
+                          *
+                        </span>
                       )}
 
-                    </div>
-                  )
-                )}
+                    </label>
+
+                    <CldUploadWidget
+                      uploadPreset="am_wholesale"
+                      options={{
+                        resourceType: "image",
+
+                        clientAllowedFormats: [
+                          "jpg",
+                          "jpeg",
+                          "png",
+                          "webp",
+                          "gif",
+                        ],
+
+                        maxFileSize:
+                          5 * 1024 * 1024,
+
+                        multiple: false,
+
+                        folder:
+                          "am-wholesale-uk/products",
+
+                        sources: [
+                          "local",
+                          "camera",
+                          "url",
+                          "google_drive",
+                          "dropbox",
+                        ],
+                      }}
+
+                      onOpen={() => {
+                        setError("");
+                        setUploading(field.key);
+                      }}
+
+                      onSuccess={(result) => {
+                        const info =
+                          result.info as
+                            | CloudinaryInfo
+                            | string
+                            | undefined;
+
+                        if (
+                          typeof info === "object" &&
+                          info !== null &&
+                          typeof info.secure_url === "string"
+                        ) {
+                          setImage(
+                            field.key,
+                            info.secure_url
+                          );
+
+                          setError("");
+                        } else {
+                          setError(
+                            "Image uploaded but Cloudinary did not return the image URL."
+                          );
+                        }
+
+                        setUploading(null);
+                      }}
+
+                      onError={(uploadError) => {
+                        console.error(
+                          "Cloudinary upload error:",
+                          uploadError
+                        );
+
+                        setError(
+                          "Cloudinary upload failed. Please check your Cloud Name and Upload Preset."
+                        );
+
+                        setUploading(null);
+                      }}
+
+                      onClose={() => {
+                        setUploading(null);
+                      }}
+                    >
+
+                      {({ open }) => (
+                        <button
+                          type="button"
+                          onClick={() => open()}
+                          disabled={
+                            loading ||
+                            uploading !== null
+                          }
+                          className="w-full rounded-md border-2 border-dashed border-gray-300 px-4 py-6 text-sm font-semibold text-gray-700 transition hover:border-orange-500 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {uploading === field.key
+                            ? "Opening Upload..."
+                            : images[field.key]
+                              ? "Choose Another Image"
+                              : "Choose Image"}
+                        </button>
+                      )}
+
+                    </CldUploadWidget>
+
+                    {images[field.key] && (
+                      <div className="mt-4">
+
+                        <img
+                          src={images[field.key]}
+                          alt={field.label}
+                          className="h-40 w-full rounded-md border object-contain"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            removeImage(field.key)
+                          }
+                          disabled={
+                            loading ||
+                            uploading !== null
+                          }
+                          className="mt-3 rounded-md bg-red-100 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-200 disabled:opacity-50"
+                        >
+                          Remove Image
+                        </button>
+
+                      </div>
+                    )}
+
+                  </div>
+                ))}
 
               </div>
 
               <p className="mt-3 text-sm text-gray-500">
                 Maximum size: 5MB per image.
-                JPG, PNG, WEBP and GIF are
-                supported.
+                JPG, PNG, WEBP and GIF are supported.
               </p>
 
               <p className="mt-2 text-sm text-gray-400">
-                Upload options: Computer,
-                Camera, URL, Google Drive and
-                Dropbox.
+                Upload options: Computer, Camera, URL,
+                Google Drive and Dropbox.
               </p>
 
             </div>
 
-            {/* =========================
-                DESCRIPTION
-            ========================= */}
+            {/* DESCRIPTION */}
 
             <div>
 
@@ -620,9 +833,7 @@ export default function NewProductPage() {
 
             </div>
 
-            {/* =========================
-                REVIEWS
-            ========================= */}
+            {/* REVIEWS */}
 
             <div>
 
@@ -643,30 +854,7 @@ export default function NewProductPage() {
 
             </div>
 
-            {/* =========================
-                FEATURED
-            ========================= */}
-
-            <div className="flex items-center gap-3">
-
-              <input
-                id="featured"
-                type="checkbox"
-                className="h-5 w-5"
-              />
-
-              <label
-                htmlFor="featured"
-                className="font-semibold"
-              >
-                Featured Product
-              </label>
-
-            </div>
-
-            {/* =========================
-                BUTTONS
-            ========================= */}
+            {/* BUTTONS */}
 
             <div className="flex gap-3 pt-4">
 
@@ -701,14 +889,12 @@ export default function NewProductPage() {
 
       </section>
 
-      {/* =========================
-          FOOTER
-      ========================= */}
+      {/* FOOTER */}
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
 
         <p className="text-sm text-gray-400">
-          © 2026 AM Whole Sale UK
+          Â© 2026 AM Whole Sale UK
         </p>
 
       </footer>
@@ -716,3 +902,5 @@ export default function NewProductPage() {
     </main>
   );
 }
+
+

@@ -1,32 +1,63 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import {
+  FormEvent,
+  useEffect,
+  useState,
+} from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [step, setStep] = useState<"signup" | "otp">("signup");
+  const redirectTo =
+    searchParams.get("redirect") || "/";
+
+  const verifyMode =
+    searchParams.get("verify") === "1";
+
+  const verifyPhone =
+    searchParams.get("phone") || "";
+
+  const [step, setStep] = useState<
+    "signup" | "otp"
+  >(verifyMode ? "otp" : "signup");
+
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState("");
-  const [developmentOtp, setDevelopmentOtp] = useState("");
+  const [developmentOtp, setDevelopmentOtp] =
+    useState("");
 
   const [form, setForm] = useState({
     fullName: "",
     email: "",
-    phone: "",
+    phone: verifyPhone,
     password: "",
     confirmPassword: "",
   });
 
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+  useEffect(() => {
+    if (verifyMode && verifyPhone) {
+      setForm((current) => ({
+        ...current,
+        phone: verifyPhone,
+      }));
+    }
+  }, [verifyMode, verifyPhone]);
+
+  function handleChange(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
     setForm({
       ...form,
       [event.target.name]: event.target.value,
     });
   }
 
-  async function handleSignup(event: FormEvent<HTMLFormElement>) {
+  async function handleSignup(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
 
     if (form.password !== form.confirmPassword) {
@@ -35,25 +66,30 @@ export default function SignupPage() {
     }
 
     if (form.password.length < 8) {
-      alert("Password must be at least 8 characters.");
+      alert(
+        "Password must be at least 8 characters."
+      );
       return;
     }
 
     try {
       setLoading(true);
 
-      const response = await fetch("/api/customer/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullName: form.fullName,
-          email: form.email,
-          phone: form.phone,
-          password: form.password,
-        }),
-      });
+      const response = await fetch(
+        "/api/customer/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fullName: form.fullName,
+            email: form.email,
+            phone: form.phone,
+            password: form.password,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -62,52 +98,79 @@ export default function SignupPage() {
         return;
       }
 
-      setDevelopmentOtp(data.developmentOtp || "");
+      setDevelopmentOtp(
+        data.developmentOtp || ""
+      );
+
       setStep("otp");
     } catch (error) {
-      console.error(error);
-      alert("Something went wrong. Please try again.");
+      console.error(
+        "Signup error:",
+        error
+      );
+
+      alert(
+        "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleVerifyOtp(event: FormEvent<HTMLFormElement>) {
+  async function handleVerifyOtp(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
 
     if (!otp || otp.length !== 6) {
-      alert("Please enter the 6-digit OTP.");
+      alert(
+        "Please enter the 6-digit OTP."
+      );
       return;
     }
 
     try {
       setLoading(true);
 
-      const response = await fetch("/api/customer/verify-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          phone: form.phone,
-          otp,
-        }),
-      });
+      const response = await fetch(
+        "/api/customer/verify-otp",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            phone: form.phone,
+            otp,
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.error || "OTP verification failed.");
+        alert(
+          data.error ||
+            "OTP verification failed."
+        );
         return;
       }
 
-      alert("Account verified successfully!");
+      alert(
+        "Account verified successfully!"
+      );
 
-      router.push("/");
+      router.push(redirectTo);
       router.refresh();
     } catch (error) {
-      console.error(error);
-      alert("Something went wrong. Please try again.");
+      console.error(
+        "OTP verification error:",
+        error
+      );
+
+      alert(
+        "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -205,6 +268,7 @@ export default function SignupPage() {
                     value={form.password}
                     onChange={handleChange}
                     placeholder="Minimum 8 characters"
+                    autoComplete="new-password"
                     className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
                   />
                 </div>
@@ -221,6 +285,7 @@ export default function SignupPage() {
                     value={form.confirmPassword}
                     onChange={handleChange}
                     placeholder="Confirm your password"
+                    autoComplete="new-password"
                     className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
                   />
                 </div>
@@ -228,18 +293,27 @@ export default function SignupPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-md bg-orange-500 py-3 font-bold text-white hover:bg-orange-600 disabled:bg-gray-400"
+                  className="w-full rounded-md bg-orange-500 py-3 font-bold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:bg-gray-400"
                 >
-                  {loading ? "Creating Account..." : "Create Account"}
+                  {loading
+                    ? "Creating Account..."
+                    : "Create Account"}
                 </button>
 
               </form>
 
               <p className="mt-6 text-center text-sm text-gray-500">
                 Already have an account?{" "}
+
                 <button
                   type="button"
-                  onClick={() => router.push("/login")}
+                  onClick={() =>
+                    router.push(
+                      `/login?redirect=${encodeURIComponent(
+                        redirectTo
+                      )}`
+                    )
+                  }
                   className="font-semibold text-orange-500 hover:underline"
                 >
                   Login
@@ -262,6 +336,7 @@ export default function SignupPage() {
 
               {developmentOtp && (
                 <div className="mt-5 rounded-md border border-yellow-300 bg-yellow-50 p-4">
+
                   <p className="text-sm font-semibold text-yellow-800">
                     Development OTP
                   </p>
@@ -273,6 +348,7 @@ export default function SignupPage() {
                   <p className="mt-1 text-xs text-yellow-700">
                     Temporary testing only. Real SMS will be connected later.
                   </p>
+
                 </div>
               )}
 
@@ -293,7 +369,10 @@ export default function SignupPage() {
                     value={otp}
                     onChange={(event) =>
                       setOtp(
-                        event.target.value.replace(/\D/g, "")
+                        event.target.value.replace(
+                          /\D/g,
+                          ""
+                        )
                       )
                     }
                     placeholder="Enter 6-digit OTP"
@@ -304,9 +383,11 @@ export default function SignupPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-md bg-orange-500 py-3 font-bold text-white hover:bg-orange-600 disabled:bg-gray-400"
+                  className="w-full rounded-md bg-orange-500 py-3 font-bold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:bg-gray-400"
                 >
-                  {loading ? "Verifying..." : "Verify Mobile"}
+                  {loading
+                    ? "Verifying..."
+                    : "Verify Mobile"}
                 </button>
 
               </form>

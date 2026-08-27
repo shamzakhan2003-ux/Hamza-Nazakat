@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type CartItem = {
   id: number;
@@ -10,9 +11,21 @@ type CartItem = {
   quantity: number;
 };
 
+type Customer = {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  mobileVerified: boolean;
+};
+
 export default function CheckoutPage() {
+  const router = useRouter();
+
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [customer, setCustomer] = useState<Customer | null>(null);
   const [loading, setLoading] = useState(true);
+  const [checkingCustomer, setCheckingCustomer] = useState(true);
   const [placingOrder, setPlacingOrder] = useState(false);
 
   const [form, setForm] = useState({
@@ -25,22 +38,93 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    try {
-      const savedCart = localStorage.getItem("cart");
+    const loadCheckout = async () => {
+      try {
+        // Load cart first. Never remove it here.
+        const savedCart = localStorage.getItem("cart");
 
-      if (savedCart) {
-        setCart(JSON.parse(savedCart));
+        if (savedCart) {
+          const parsedCart = JSON.parse(savedCart);
+
+          if (Array.isArray(parsedCart)) {
+            setCart(parsedCart);
+          }
+        }
+
+        // Check logged-in customer
+        const response = await fetch("/api/customer/me", {
+          method: "GET",
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          router.replace(
+            "/login?redirect=/checkout"
+          );
+          return;
+        }
+
+        const data = await response.json();
+
+        if (!data.loggedIn || !data.customer) {
+          router.replace(
+            "/login?redirect=/checkout"
+          );
+          return;
+        }
+
+        const loggedInCustomer: Customer =
+          data.customer;
+
+        // Mobile verification is compulsory
+        if (!loggedInCustomer.mobileVerified) {
+          alert(
+            "Please verify your mobile number before checkout."
+          );
+
+          router.replace(
+            `/signup?verify=1&phone=${encodeURIComponent(
+              loggedInCustomer.phone
+            )}&redirect=/checkout`
+          );
+
+          return;
+        }
+
+        setCustomer(loggedInCustomer);
+
+        setForm({
+          customerName:
+            loggedInCustomer.fullName || "",
+          email: loggedInCustomer.email || "",
+          phone: loggedInCustomer.phone || "",
+          address: "",
+          city: "",
+          postcode: "",
+        });
+      } catch (error) {
+        console.error(
+          "Checkout loading error:",
+          error
+        );
+
+        router.replace(
+          "/login?redirect=/checkout"
+        );
+      } finally {
+        setLoading(false);
+        setCheckingCustomer(false);
       }
-    } catch (error) {
-      console.error("Cart loading error:", error);
-      setCart([]);
-    }
+    };
 
-    setLoading(false);
-  }, []);
+    loadCheckout();
+  }, [router]);
 
   const total = cart.reduce((sum, item) => {
-    return sum + Number(item.price) * item.quantity;
+    return (
+      sum +
+      Number(item.price) * Number(item.quantity)
+    );
   }, 0);
 
   const handleChange = (
@@ -57,6 +141,26 @@ export default function CheckoutPage() {
   ) => {
     event.preventDefault();
 
+    if (!customer) {
+      alert(
+        "Please sign in before placing an order."
+      );
+
+      router.push(
+        "/login?redirect=/checkout"
+      );
+
+      return;
+    }
+
+    if (!customer.mobileVerified) {
+      alert(
+        "Please verify your mobile number before placing an order."
+      );
+
+      return;
+    }
+
     if (cart.length === 0) {
       alert("Your cart is empty.");
       return;
@@ -65,46 +169,76 @@ export default function CheckoutPage() {
     try {
       setPlacingOrder(true);
 
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...form,
-          total,
-          items: cart,
-        }),
-      });
+      const response = await fetch(
+        "/api/orders",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            customerName: form.customerName,
+            email: form.email,
+            phone: form.phone,
+            address: form.address,
+            city: form.city,
+            postcode: form.postcode,
+            items: cart,
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.error || "Failed to place order.");
+        alert(
+          data.error ||
+            "Failed to place order."
+        );
         return;
       }
 
+      // Cart is removed ONLY after successful order creation.
       localStorage.removeItem("cart");
+
+      window.dispatchEvent(
+        new Event("cartUpdated")
+      );
 
       alert(
         `Order placed successfully!\n\nOrder Number: ${data.order.orderNumber}`
       );
 
-      window.location.href = "/";
+      router.push("/");
+      router.refresh();
     } catch (error) {
-      console.error("Order error:", error);
-      alert("Something went wrong. Please try again.");
+      console.error(
+        "Order error:",
+        error
+      );
+
+      alert(
+        "Something went wrong. Please try again."
+      );
     } finally {
       setPlacingOrder(false);
     }
   };
 
-  if (loading) {
+  if (loading || checkingCustomer) {
     return (
       <main className="min-h-screen bg-gray-100 p-8">
-        <p>Loading checkout...</p>
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-lg font-semibold">
+            Checking your account...
+          </p>
+        </div>
       </main>
     );
+  }
+
+  if (!customer) {
+    return null;
   }
 
   if (cart.length === 0) {
@@ -123,9 +257,9 @@ export default function CheckoutPage() {
 
           <button
             type="button"
-            onClick={() => {
-              window.location.href = "/products";
-            }}
+            onClick={() =>
+              router.push("/products")
+            }
             className="mt-6 rounded-md bg-orange-500 px-8 py-3 font-bold text-white hover:bg-orange-600"
           >
             Continue Shopping
@@ -137,14 +271,11 @@ export default function CheckoutPage() {
 
   return (
     <main className="min-h-screen bg-gray-100 text-gray-900">
-
       <header className="bg-white shadow-sm">
         <div className="mx-auto max-w-7xl px-4 py-5">
           <button
             type="button"
-            onClick={() => {
-              window.location.href = "/";
-            }}
+            onClick={() => router.push("/")}
             className="text-2xl font-bold text-orange-500"
           >
             AM Whole Sale UK
@@ -153,13 +284,11 @@ export default function CheckoutPage() {
       </header>
 
       <section className="mx-auto max-w-7xl px-4 py-8">
-
         <h1 className="mb-8 text-3xl font-bold">
           Checkout
         </h1>
 
         <div className="grid gap-8 lg:grid-cols-3">
-
           <form
             onSubmit={placeOrder}
             className="rounded-lg bg-white p-6 shadow-sm lg:col-span-2"
@@ -169,7 +298,6 @@ export default function CheckoutPage() {
             </h2>
 
             <div className="mt-6 grid gap-5 md:grid-cols-2">
-
               <div>
                 <label className="mb-2 block font-semibold">
                   Full Name
@@ -261,7 +389,6 @@ export default function CheckoutPage() {
                   placeholder="Postcode"
                 />
               </div>
-
             </div>
 
             <button
@@ -273,17 +400,14 @@ export default function CheckoutPage() {
                 ? "Placing Order..."
                 : "Place Order"}
             </button>
-
           </form>
 
           <div className="h-fit rounded-lg bg-white p-6 shadow-sm">
-
             <h2 className="text-xl font-bold">
               Order Summary
             </h2>
 
             <div className="mt-6 space-y-4">
-
               {cart.map((item) => (
                 <div
                   key={item.id}
@@ -299,14 +423,19 @@ export default function CheckoutPage() {
                     </p>
 
                     <p className="text-sm text-gray-500">
-                      £{Number(item.price).toFixed(2)} each
+                      £
+                      {Number(item.price).toFixed(
+                        2
+                      )}{" "}
+                      each
                     </p>
                   </div>
 
                   <p className="font-semibold">
                     £
                     {(
-                      Number(item.price) * item.quantity
+                      Number(item.price) *
+                      item.quantity
                     ).toFixed(2)}
                   </p>
                 </div>
@@ -319,13 +448,9 @@ export default function CheckoutPage() {
                   £{total.toFixed(2)}
                 </span>
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </section>
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
@@ -333,7 +458,6 @@ export default function CheckoutPage() {
           © 2026 AM Whole Sale UK. All rights reserved.
         </p>
       </footer>
-
     </main>
   );
 }

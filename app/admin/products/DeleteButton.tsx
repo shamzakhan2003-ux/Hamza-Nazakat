@@ -2,14 +2,18 @@
 
 import { useState } from "react";
 
+type DeleteButtonProps = {
+  productId: number;
+  onDeleted?: () => void;
+};
+
 export default function DeleteButton({
   productId,
-}: {
-  productId: number;
-}) {
-  const [loading, setLoading] = useState(false);
+  onDeleted,
+}: DeleteButtonProps) {
+  const [deleting, setDeleting] = useState(false);
 
-  async function deleteProduct() {
+  async function handleDelete() {
     const confirmed = window.confirm(
       "Are you sure you want to delete this product?"
     );
@@ -18,37 +22,62 @@ export default function DeleteButton({
       return;
     }
 
-    setLoading(true);
-
     try {
+      setDeleting(true);
+
       const response = await fetch(`/api/products/${productId}`, {
         method: "DELETE",
       });
 
-      const data = await response.json();
+      const text = await response.text();
 
-      if (!response.ok) {
-        alert(data.error || "Failed to delete product.");
-        setLoading(false);
-        return;
+      let result: unknown = null;
+
+      if (text.trim()) {
+        try {
+          result = JSON.parse(text);
+        } catch {
+          result = null;
+        }
       }
 
-      window.location.reload();
+      if (!response.ok) {
+        const errorMessage =
+          typeof result === "object" &&
+          result !== null &&
+          "error" in result &&
+          typeof result.error === "string"
+            ? result.error
+            : "Failed to delete product.";
+
+        throw new Error(errorMessage);
+      }
+
+      if (onDeleted) {
+        onDeleted();
+      }
     } catch (error) {
-      console.error(error);
-      alert("Something went wrong. Please try again.");
-      setLoading(false);
+      console.error("Delete product error:", error);
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to delete product.";
+
+      window.alert(message);
+    } finally {
+      setDeleting(false);
     }
   }
 
   return (
     <button
       type="button"
-      onClick={deleteProduct}
-      disabled={loading}
-      className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+      onClick={handleDelete}
+      disabled={deleting}
+      className="rounded-md bg-red-100 px-3 py-2 text-sm font-bold text-red-700 transition hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-50"
     >
-      {loading ? "Deleting..." : "Delete"}
+      {deleting ? "Deleting..." : "Delete"}
     </button>
   );
 }

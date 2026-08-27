@@ -27,25 +27,23 @@ model Product {
   image3           String?
   image4           String?
   descriptionImage String?
+  newArrival       Boolean  @default(false)
 }
 
 model Customer {
-  id             Int     @id @default(autoincrement())
+  id             Int               @id @default(autoincrement())
   fullName       String
-  email          String  @unique
-  phone          String  @unique
+  email          String            @unique
+  phone          String            @unique
   passwordHash   String
-  mobileVerified Boolean @default(false)
-
-  otpHash      String?
-  otpExpiresAt DateTime?
-  otpAttempts  Int       @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  sessions CustomerSession[]
-  orders   Order[]
+  mobileVerified Boolean           @default(false)
+  otpHash        String?
+  otpExpiresAt   DateTime?
+  otpAttempts    Int               @default(0)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  sessions       CustomerSession[]
+  orders         Order[]
 }
 
 model CustomerSession {
@@ -54,32 +52,29 @@ model CustomerSession {
   tokenHash  String   @unique
   expiresAt  DateTime
   createdAt  DateTime @default(now())
-
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   @@index([customerId])
 }
 
 model Order {
-  id             Int      @id @default(autoincrement())
-  customerName   String
-  email          String
-  phone          String
-  address        String
-  city           String
-  postcode       String
-  total          Decimal  @db.Decimal(10, 2)
-  status         String   @default("Pending")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  orderNumber    String?  @unique
-  courier        String?
-  trackingNumber String?
-  trackingUrl    String?
-
-  customerId Int?
-  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
-
+  id              Int             @id @default(autoincrement())
+  customerName    String
+  email           String
+  phone           String
+  address         String
+  city            String
+  postcode        String
+  total           Decimal         @db.Decimal(10, 2)
+  status          String          @default("Pending")
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  orderNumber     String?         @unique
+  courier         String?
+  trackingNumber  String?
+  trackingUrl     String?
+  customerId      Int?
+  customer        Customer?       @relation(fields: [customerId], references: [id])
   items           OrderItem[]
   trackingHistory OrderTracking[]
 }
