@@ -2,12 +2,13 @@
 
 import {
   FormEvent,
+  Suspense,
   useEffect,
   useState,
 } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function SignupPage() {
+function SignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -185,7 +186,7 @@ export default function SignupPage() {
           onClick={() => router.push("/")}
           className="mb-8 block text-2xl font-bold text-orange-500"
         >
-          AM Whole Sale UK
+          AM Whole Sale Pakistan
         </button>
 
         <div className="rounded-xl bg-white p-6 shadow-sm">
@@ -397,5 +398,13 @@ export default function SignupPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupContent />
+    </Suspense>
   );
 }

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AM Whole Sale UK",
-  description: "AM Whole Sale UK - Online Store",
+  title: "AM Whole Sale Pakistan",
+  description: "AM Whole Sale Pakistan - Online Store",
 };
 
 type RootLayoutProps = {

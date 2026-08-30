@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -189,10 +189,7 @@ export default function AccountPage() {
             onClick={() => router.push("/")}
             className="text-2xl font-extrabold"
           >
-            AM Whole Sale{" "}
-            <span className="text-orange-500">
-              UK
-            </span>
+            AM Whole Sale{" "}<span className="text-orange-500">Pakistan</span>
           </button>
 
           <button
@@ -224,7 +221,7 @@ export default function AccountPage() {
 
             {customer.mobileVerified && (
               <div className="w-fit rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
-                ✓ Mobile Verified
+                âœ“ Mobile Verified
               </div>
             )}
           </div>
@@ -273,7 +270,7 @@ export default function AccountPage() {
           {orders.length === 0 ? (
             <div className="mt-5 rounded-xl bg-white p-10 text-center shadow-sm">
               <div className="text-5xl">
-                🛒
+                ðŸ›’
               </div>
 
               <h3 className="mt-4 text-xl font-bold">
@@ -322,7 +319,7 @@ export default function AccountPage() {
 
                     <div className="sm:text-right">
                       <p className="text-lg font-bold">
-                        £
+                        ï¿½Rs. 
                         {Number(
                           order.total
                         ).toFixed(2)}
@@ -357,7 +354,7 @@ export default function AccountPage() {
                           </div>
 
                           <p className="font-semibold">
-                            £
+                            ï¿½Rs. 
                             {(
                               Number(
                                 item.price
@@ -379,7 +376,7 @@ export default function AccountPage() {
                       <p className="mt-1 text-sm">
                         {order.courier ||
                           "Courier"}{" "}
-                        —{" "}
+                        â€”{" "}
                         {order.trackingNumber}
                       </p>
 
@@ -392,7 +389,7 @@ export default function AccountPage() {
                           rel="noopener noreferrer"
                           className="mt-2 inline-block text-sm font-semibold text-orange-500 hover:underline"
                         >
-                          Track Shipment →
+                          Track Shipment â†’
                         </a>
                       )}
                     </div>
@@ -422,8 +419,10 @@ export default function AccountPage() {
       </section>
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-sm text-gray-400">
-        © 2026 AM Whole Sale UK. All rights reserved.
+        Â© 2026 AM Whole Sale Pakistan. All rights reserved.
       </footer>
     </main>
   );
 }
+
+

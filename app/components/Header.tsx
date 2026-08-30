@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -95,22 +95,11 @@ export default function Header() {
 
     window.addEventListener("cartUpdated", handleCartUpdated);
     window.addEventListener("storage", handleStorage);
-    window.addEventListener(
-      "customerUpdated",
-      handleCustomerUpdated
-    );
+    window.addEventListener("customerUpdated", handleCustomerUpdated);
 
     return () => {
-      window.removeEventListener(
-        "cartUpdated",
-        handleCartUpdated
-      );
-
-      window.removeEventListener(
-        "storage",
-        handleStorage
-      );
-
+      window.removeEventListener("cartUpdated", handleCartUpdated);
+      window.removeEventListener("storage", handleStorage);
       window.removeEventListener(
         "customerUpdated",
         handleCustomerUpdated
@@ -155,9 +144,7 @@ export default function Header() {
 
       setCustomer(null);
 
-      window.dispatchEvent(
-        new Event("customerUpdated")
-      );
+      window.dispatchEvent(new Event("customerUpdated"));
 
       window.location.href = "/";
     } catch (error) {
@@ -180,9 +167,7 @@ export default function Header() {
             className="min-w-fit text-xl font-extrabold tracking-tight md:text-2xl"
           >
             AM Whole Sale{" "}
-            <span className="text-orange-500">
-              UK
-            </span>
+            <span className="text-orange-500">Pakistan</span>
           </Link>
 
           {/* SEARCH */}
@@ -191,9 +176,7 @@ export default function Header() {
             <input
               type="text"
               value={search}
-              onChange={(event) =>
-                setSearch(event.target.value)
-              }
+              onChange={(event) => setSearch(event.target.value)}
               onKeyDown={handleSearchKeyDown}
               placeholder="Search products..."
               className="w-full px-4 py-3 text-sm outline-none"
@@ -205,7 +188,7 @@ export default function Header() {
               className="bg-orange-500 px-6 text-white transition hover:bg-orange-600"
               aria-label="Search"
             >
-              🔍
+              {"\u{1F50D}"}
             </button>
           </div>
 
@@ -232,8 +215,7 @@ export default function Header() {
                   className="block min-w-fit text-left text-sm"
                 >
                   <span className="block text-xs text-gray-500">
-                    Hello,{" "}
-                    {customer.fullName.split(" ")[0]}
+                    Hello, {customer.fullName.split(" ")[0]}
                   </span>
 
                   <span className="font-semibold hover:text-orange-500">
@@ -271,7 +253,7 @@ export default function Header() {
             href="/cart"
             className="relative min-w-fit text-xl"
           >
-            🛒
+            {"\u{1F6D2}"}
 
             <span className="ml-1 text-sm font-semibold">
               Cart
@@ -292,9 +274,7 @@ export default function Header() {
             <input
               type="text"
               value={search}
-              onChange={(event) =>
-                setSearch(event.target.value)
-              }
+              onChange={(event) => setSearch(event.target.value)}
               onKeyDown={handleSearchKeyDown}
               placeholder="Search products..."
               className="w-full px-3 py-2.5 text-sm outline-none"
@@ -306,7 +286,7 @@ export default function Header() {
               className="bg-orange-500 px-4 text-white"
               aria-label="Search"
             >
-              🔍
+              {"\u{1F50D}"}
             </button>
           </div>
         </div>
@@ -324,7 +304,7 @@ export default function Header() {
             href="/categories"
             className="whitespace-nowrap py-3 font-semibold hover:text-orange-400"
           >
-            ☰ Categories
+            {"\u{2630}"} Categories
           </Link>
 
           {/* HOME */}
@@ -351,7 +331,7 @@ export default function Header() {
             href="/products?deals=true"
             className="whitespace-nowrap py-3 hover:text-orange-400"
           >
-            🔥 Flash Deals
+            {"\u{1F525}"} Flash Deals
           </Link>
 
           {/* NEW ARRIVALS */}
@@ -360,7 +340,7 @@ export default function Header() {
             href="/products?new=true"
             className="whitespace-nowrap py-3 hover:text-orange-400"
           >
-            🆕 New Arrivals
+            {"\u{1F195}"} New Arrivals
           </Link>
 
           {/* CONTACT */}

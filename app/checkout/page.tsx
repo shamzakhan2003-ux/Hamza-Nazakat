@@ -278,7 +278,7 @@ export default function CheckoutPage() {
             onClick={() => router.push("/")}
             className="text-2xl font-bold text-orange-500"
           >
-            AM Whole Sale UK
+            AM Whole Sale Pakistan
           </button>
         </div>
       </header>
@@ -377,7 +377,7 @@ export default function CheckoutPage() {
 
               <div>
                 <label className="mb-2 block font-semibold">
-                  Postcode
+                  postcode
                 </label>
 
                 <input
@@ -386,7 +386,7 @@ export default function CheckoutPage() {
                   value={form.postcode}
                   onChange={handleChange}
                   className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
-                  placeholder="Postcode"
+                  placeholder="postcode"
                 />
               </div>
             </div>
@@ -423,7 +423,7 @@ export default function CheckoutPage() {
                     </p>
 
                     <p className="text-sm text-gray-500">
-                      £
+                      �Rs. 
                       {Number(item.price).toFixed(
                         2
                       )}{" "}
@@ -432,7 +432,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <p className="font-semibold">
-                    £
+                    �Rs. 
                     {(
                       Number(item.price) *
                       item.quantity
@@ -445,7 +445,7 @@ export default function CheckoutPage() {
                 <span>Total</span>
 
                 <span className="text-orange-500">
-                  £{total.toFixed(2)}
+                  �Rs. {total.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -455,7 +455,7 @@ export default function CheckoutPage() {
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          © 2026 AM Whole Sale UK. All rights reserved.
+          © 2026 AM Whole Sale Pakistan. All rights reserved.
         </p>
       </footer>
     </main>

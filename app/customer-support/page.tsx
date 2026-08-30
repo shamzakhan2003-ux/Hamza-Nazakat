@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 
@@ -12,7 +12,7 @@ export default function CustomerSupportPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      text: "Hello! 👋 Welcome to AM Whole Sale UK Customer Support. How can I help you today?",
+      text: "Hello! ðŸ‘‹ Welcome to AM Whole Sale Pakistan Customer Support. How can I help you today?",
     },
   ]);
   const [loading, setLoading] = useState(false);
@@ -101,10 +101,7 @@ export default function CustomerSupportPage() {
             href="/"
             className="text-xl font-extrabold md:text-2xl"
           >
-            AM Whole Sale{" "}
-            <span className="text-orange-500">
-              UK
-            </span>
+            AM Whole Sale{" "}<span className="text-orange-500">Pakistan</span>
           </a>
 
           <a
@@ -129,7 +126,7 @@ export default function CustomerSupportPage() {
             <div className="flex items-center gap-4">
 
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-2xl">
-                🤖
+                ðŸ¤–
               </div>
 
               <div>
@@ -138,7 +135,7 @@ export default function CustomerSupportPage() {
                 </h1>
 
                 <p className="mt-1 text-sm text-gray-300">
-                  AI Assistant • Available 24/7
+                  AI Assistant â€¢ Available 24/7
                 </p>
               </div>
 
@@ -232,9 +229,10 @@ export default function CustomerSupportPage() {
       {/* Footer */}
 
       <footer className="mt-8 bg-gray-900 py-6 text-center text-sm text-gray-400">
-        © 2026 AM Whole Sale UK. All rights reserved.
+        Â© 2026 AM Whole Sale Pakistan. All rights reserved.
       </footer>
 
     </main>
   );
 }
+

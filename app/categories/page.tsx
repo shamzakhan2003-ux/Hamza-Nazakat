@@ -47,7 +47,7 @@ export default async function CategoriesPage() {
       <section className="border-b bg-white">
         <div className="mx-auto max-w-7xl px-4 py-10">
           <p className="text-sm font-semibold uppercase tracking-wider text-orange-500">
-            AM Whole Sale UK
+            AM Whole Sale Pakistan
           </p>
 
           <h1 className="mt-2 text-3xl font-bold md:text-4xl">
@@ -121,7 +121,7 @@ export default async function CategoriesPage() {
       <footer className="mt-10 bg-gray-900 text-white">
         <div className="mx-auto max-w-7xl px-4 py-10 text-center">
           <p className="text-sm text-gray-400">
-            © 2026 AM Whole Sale UK. All rights reserved.
+            © 2026 AM Whole Sale Pakistan. All rights reserved.
           </p>
         </div>
       </footer>

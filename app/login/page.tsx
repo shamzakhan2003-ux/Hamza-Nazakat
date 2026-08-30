@@ -1,9 +1,9 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -20,28 +20,23 @@ export default function LoginPage() {
     event.preventDefault();
 
     if (!identifier.trim() || !password) {
-      alert(
-        "Email/mobile number and password are required."
-      );
+      alert("Email/mobile number and password are required.");
       return;
     }
 
     try {
       setLoading(true);
 
-      const response = await fetch(
-        "/api/customer/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            identifier: identifier.trim(),
-            password,
-          }),
-        }
-      );
+      const response = await fetch("/api/customer/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          identifier: identifier.trim(),
+          password,
+        }),
+      });
 
       const data = await response.json();
 
@@ -58,9 +53,7 @@ export default function LoginPage() {
         router.push(
           `/signup?verify=1&phone=${encodeURIComponent(
             data.phone || identifier
-          )}&redirect=${encodeURIComponent(
-            redirectTo
-          )}`
+          )}&redirect=${encodeURIComponent(redirectTo)}`
         );
 
         return;
@@ -70,9 +63,7 @@ export default function LoginPage() {
       router.refresh();
     } catch (error) {
       console.error("Login error:", error);
-      alert(
-        "Something went wrong. Please try again."
-      );
+      alert("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -87,7 +78,7 @@ export default function LoginPage() {
           onClick={() => router.push("/")}
           className="mb-8 block text-2xl font-extrabold text-orange-500"
         >
-          AM Whole Sale UK
+          AM Whole Sale Pakistan
         </button>
 
         <div className="rounded-xl bg-white p-6 shadow-sm">
@@ -145,9 +136,7 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full rounded-md bg-orange-500 py-3 font-bold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:bg-gray-400"
             >
-              {loading
-                ? "Signing in..."
-                : "Sign In"}
+              {loading ? "Signing in..." : "Sign In"}
             </button>
 
           </form>
@@ -162,9 +151,7 @@ export default function LoginPage() {
               type="button"
               onClick={() =>
                 router.push(
-                  `/signup?redirect=${encodeURIComponent(
-                    redirectTo
-                  )}`
+                  `/signup?redirect=${encodeURIComponent(redirectTo)}`
                 )
               }
               className="mt-2 font-semibold text-orange-500 hover:underline"
@@ -189,5 +176,21 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-gray-100 px-4 py-12">
+          <div className="mx-auto max-w-md text-center">
+            Loading...
+          </div>
+        </main>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

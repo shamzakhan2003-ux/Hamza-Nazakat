@@ -156,7 +156,7 @@ export default function CartPage() {
             onClick={() => router.push("/")}
             className="text-2xl font-bold text-orange-500"
           >
-            AM Whole Sale UK
+            AM Whole Sale Pakistan
           </button>
 
           {/* Continue Shopping */}
@@ -277,7 +277,7 @@ export default function CartPage() {
                     </h2>
 
                     <p className="mt-2 font-semibold text-orange-500">
-                      £
+                      �Rs. 
                       {Number(item.price).toFixed(2)}
                     </p>
 
@@ -316,7 +316,7 @@ export default function CartPage() {
                   <div className="flex items-center justify-between gap-5 sm:block sm:text-right">
 
                     <p className="text-lg font-bold">
-                      £
+                      �Rs. 
                       {(
                         Number(item.price) *
                         item.quantity
@@ -371,7 +371,7 @@ export default function CartPage() {
                   </span>
 
                   <span>
-                    £{total.toFixed(2)}
+                    �Rs. {total.toFixed(2)}
                   </span>
 
                 </div>
@@ -399,7 +399,7 @@ export default function CartPage() {
                     </span>
 
                     <span className="text-orange-500">
-                      £{total.toFixed(2)}
+                      �Rs. {total.toFixed(2)}
                     </span>
 
                   </div>
@@ -440,7 +440,7 @@ export default function CartPage() {
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
 
         <p className="text-sm text-gray-400">
-          © 2026 AM Whole Sale UK. All rights reserved.
+          © 2026 AM Whole Sale Pakistan. All rights reserved.
         </p>
 
       </footer>

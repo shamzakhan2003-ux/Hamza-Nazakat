@@ -243,7 +243,7 @@ export default function ProductDetails({
           <div className="flex flex-col justify-center">
 
             <p className="text-sm font-semibold uppercase tracking-wider text-orange-500">
-              AM Whole Sale UK
+              AM Whole Sale Pakistan
             </p>
 
             <h1 className="mt-3 text-3xl font-bold md:text-4xl">
@@ -265,12 +265,12 @@ export default function ProductDetails({
             <div className="mt-6">
 
               <span className="text-3xl font-bold text-red-600">
-                £{product.price}
+                �Rs. {product.price}
               </span>
 
               {product.oldPrice ? (
                 <span className="ml-3 text-lg text-gray-400 line-through">
-                  £{product.oldPrice}
+                  �Rs. {product.oldPrice}
                 </span>
               ) : null}
 
@@ -286,7 +286,7 @@ export default function ProductDetails({
 
               <p className="mt-2 leading-7 text-gray-600">
                 {product.description ||
-                  "High-quality product available from AM Whole Sale UK. Order now and enjoy great value and reliable UK delivery."}
+                  "High-quality product available from AM Whole Sale Pakistan. Order now and enjoy great value and reliable Pakistan delivery."}
               </p>
 
               {/* DESCRIPTION IMAGE */}

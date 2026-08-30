@@ -53,10 +53,10 @@ export default async function Home() {
 
       {/* Hero Banner */}
       <section className="mx-auto max-w-7xl px-4 py-5">
-        <div className="grid overflow-hidden rounded-lg bg-orange-500 md:grid-cols-2">
+        <div className="overflow-hidden rounded-lg bg-orange-500">
           <div className="flex flex-col justify-center px-8 py-14 text-white md:px-14">
             <p className="mb-3 text-sm font-semibold uppercase tracking-widest">
-              AM Whole Sale UK
+              AM Whole Sale Pakistan
             </p>
 
             <h1 className="text-4xl font-extrabold leading-tight md:text-5xl">
@@ -76,12 +76,6 @@ export default async function Home() {
             >
               Shop Now
             </Link>
-          </div>
-
-          <div className="flex min-h-[320px] items-center justify-center bg-gray-200">
-            <span className="text-gray-500">
-              Promotional Image
-            </span>
           </div>
         </div>
       </section>
@@ -119,7 +113,7 @@ export default async function Home() {
                   {category.toLowerCase().includes("toy")
                     ? "🧸"
                     : category.toLowerCase().includes("electronic")
-                    ? "📱"
+                    ? "💻"
                     : category.toLowerCase().includes("audio")
                     ? "🔊"
                     : category.toLowerCase().includes("home")
@@ -127,10 +121,10 @@ export default async function Home() {
                     : category.toLowerCase().includes("beauty")
                     ? "💄"
                     : category.toLowerCase().includes("fashion")
-                    ? "👗"
+                    ? "👕"
                     : category.toLowerCase().includes("sport")
                     ? "⚽"
-                    : "🛒"}
+                    : "🛍️"}
                 </div>
 
                 <h3 className="text-sm font-semibold">
@@ -204,12 +198,12 @@ export default async function Home() {
 
                     <div className="mt-3">
                       <span className="text-xl font-bold text-red-600">
-                        £{product.price.toString()}
+                        Rs. {product.price.toString()}
                       </span>
 
                       {product.oldPrice ? (
                         <span className="ml-2 text-sm text-gray-400 line-through">
-                          £{product.oldPrice.toString()}
+                          Rs. {product.oldPrice.toString()}
                         </span>
                       ) : null}
                     </div>
@@ -294,12 +288,12 @@ export default async function Home() {
 
                     <div className="mt-3">
                       <span className="text-xl font-bold text-red-600">
-                        £{product.price.toString()}
+                        Rs. {product.price.toString()}
                       </span>
 
                       {product.oldPrice ? (
                         <span className="ml-2 text-sm text-gray-400 line-through">
-                          £{product.oldPrice.toString()}
+                          Rs. {product.oldPrice.toString()}
                         </span>
                       ) : null}
                     </div>
@@ -325,26 +319,20 @@ export default async function Home() {
       {/* Why Shop With Us */}
       <section className="mx-auto max-w-7xl px-4 py-5">
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-          <Link
-            href="/shipping"
-            className="rounded-lg bg-white p-6 text-center transition hover:-translate-y-1 hover:shadow-md"
-          >
-            <div className="text-3xl">🚚</div>
+          <div className="rounded-lg bg-white p-6 text-center transition hover:-translate-y-1 hover:shadow-md">
+            <div className="text-3xl">&#128666;</div>
 
             <h3 className="mt-3 font-bold">
-              Fast UK Delivery
+              Fast Pakistan Delivery
             </h3>
 
             <p className="mt-1 text-sm text-gray-500">
               Shop with confidence
             </p>
-          </Link>
+          </div>
 
-          <Link
-            href="/privacy"
-            className="rounded-lg bg-white p-6 text-center transition hover:-translate-y-1 hover:shadow-md"
-          >
-            <div className="text-3xl">🔒</div>
+          <div className="rounded-lg bg-white p-6 text-center transition hover:-translate-y-1 hover:shadow-md">
+            <div className="text-3xl">&#128274;</div>
 
             <h3 className="mt-3 font-bold">
               Secure Shopping
@@ -353,13 +341,10 @@ export default async function Home() {
             <p className="mt-1 text-sm text-gray-500">
               Your information is protected
             </p>
-          </Link>
+          </div>
 
-          <Link
-            href="/products"
-            className="rounded-lg bg-white p-6 text-center transition hover:-translate-y-1 hover:shadow-md"
-          >
-            <div className="text-3xl">💰</div>
+          <div className="rounded-lg bg-white p-6 text-center transition hover:-translate-y-1 hover:shadow-md">
+            <div className="text-3xl">&#128176;</div>
 
             <h3 className="mt-3 font-bold">
               Great Prices
@@ -368,13 +353,13 @@ export default async function Home() {
             <p className="mt-1 text-sm text-gray-500">
               Quality products at great prices
             </p>
-          </Link>
+          </div>
 
           <Link
             href="/contact"
             className="rounded-lg bg-white p-6 text-center transition hover:-translate-y-1 hover:shadow-md"
           >
-            <div className="text-3xl">💬</div>
+            <div className="text-3xl">&#128172;</div>
 
             <h3 className="mt-3 font-bold">
               Customer Support
@@ -391,14 +376,13 @@ export default async function Home() {
       <footer className="mt-8 bg-gray-900 text-white">
         <div className="mx-auto max-w-7xl px-4 py-12">
           <div className="grid gap-8 md:grid-cols-4">
-
             {/* Brand */}
             <div>
               <Link
                 href="/"
                 className="text-xl font-bold hover:text-orange-400"
               >
-                AM Whole Sale UK
+                AM Whole Sale Pakistan
               </Link>
 
               <p className="mt-3 text-sm text-gray-400">
@@ -513,7 +497,7 @@ export default async function Home() {
           </div>
 
           <div className="mt-10 border-t border-gray-700 pt-6 text-center text-sm text-gray-500">
-            © 2026 AM Whole Sale UK. All rights reserved.
+            © 2026 AM Whole Sale Pakistan. All rights reserved.
           </div>
         </div>
       </footer>

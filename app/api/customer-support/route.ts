@@ -83,13 +83,13 @@ export async function POST(request: Request) {
 CUSTOMER MESSAGE:
 ${message}
 
-CURRENT AM WHOLE SALE UK PRODUCT CATALOGUE:
+CURRENT AM WHOLE SALE PAKISTAN PRODUCT CATALOGUE:
 ${JSON.stringify(productData, null, 2)}
       `,
 
       config: {
         systemInstruction: `
-You are the official AI Customer Support Assistant for AM Whole Sale UK.
+You are the official AI Customer Support Assistant for AM Whole Sale Pakistan.
 
 You are a friendly shopping assistant.
 
@@ -198,11 +198,11 @@ Give a short summary based ONLY on the actual catalogue.
 
 Answer using the most relevant product from the catalogue.
 
-21. Prices are in GBP.
+21. Prices are in PKR.
 
-22. Use the £ symbol correctly.
+22. Use the �Rs.  symbol correctly.
 
-23. Use UK English.
+23. Use English.
 
 24. Be friendly, professional and concise.
 

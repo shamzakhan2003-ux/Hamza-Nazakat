@@ -327,7 +327,7 @@ export default function DeliveryTracking({
               rel="noopener noreferrer"
               className="mt-3 inline-block text-sm font-semibold text-orange-600 hover:text-orange-700 hover:underline"
             >
-              Track on Courier Website →
+              Track on Courier Website ?
             </a>
           )}
 

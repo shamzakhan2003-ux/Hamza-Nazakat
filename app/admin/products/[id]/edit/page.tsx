@@ -310,7 +310,7 @@ export default function EditProductPage({
       <header className="bg-gray-900 text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5">
           <div>
-            <h1 className="text-2xl font-bold">AM Whole Sale UK</h1>
+            <h1 className="text-2xl font-bold">AM Whole Sale Pakistan</h1>
 
             <p className="text-sm text-gray-400">
               Edit Product #{product.id}
@@ -390,7 +390,7 @@ export default function EditProductPage({
                   htmlFor="price"
                   className="mb-2 block font-semibold"
                 >
-                  Price (£)
+                  Price (Rs. )
                 </label>
 
                 <input
@@ -411,7 +411,7 @@ export default function EditProductPage({
                 htmlFor="oldPrice"
                 className="mb-2 block font-semibold"
               >
-                Old Price (£)
+                Old Price (Rs. )
                 <span className="ml-2 text-sm font-normal text-gray-400">
                   Optional
                 </span>
@@ -537,7 +537,7 @@ export default function EditProductPage({
                       htmlFor="newArrival"
                       className="font-semibold"
                     >
-                      🆕 New Arrival
+                      ✨ New Arrival
                     </label>
                   </div>
 
@@ -608,7 +608,7 @@ export default function EditProductPage({
                           "gif",
                         ],
                         maxFileSize: 5242880,
-                        folder: "am-wholesale-uk/products",
+                        folder: "am-wholesale-pakistan/products",
                         multiple: false,
                       }}
                       onOpen={() => {
@@ -780,7 +780,7 @@ export default function EditProductPage({
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          © 2026 AM Whole Sale UK
+          © 2026 AM Whole Sale Pakistan
         </p>
       </footer>
     </main>

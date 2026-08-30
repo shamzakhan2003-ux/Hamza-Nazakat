@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { CldUploadWidget } from "next-cloudinary";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type ImageField =
   | "image"
@@ -49,6 +49,51 @@ export default function NewProductPage() {
   const [oldPriceValue, setOldPriceValue] = useState("");
   const [discount, setDiscount] = useState("");
 
+  const [categories, setCategories] = useState<string[]>([]);
+  const [categoryMode, setCategoryMode] = useState<"select" | "manual">(
+    "select"
+  );
+  const [categoryValue, setCategoryValue] = useState("");
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const response = await fetch("/api/products", {
+          method: "GET",
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const result = await response.json();
+
+        const products: { category?: string }[] = Array.isArray(result)
+          ? result
+          : Array.isArray(result.products)
+            ? result.products
+            : [];
+
+        const uniqueCategories: string[] = Array.from(
+          new Set<string>(
+            products
+              .map((product) =>
+                String(product.category || "").trim()
+              )
+              .filter(Boolean)
+          )
+        ).sort((a, b) => a.localeCompare(b));
+
+        setCategories(uniqueCategories);
+      } catch (categoryError) {
+        console.error("Load categories error:", categoryError);
+      }
+    }
+
+    loadCategories();
+  }, []);
+
   function setImage(field: ImageField, url: string) {
     setImages((previous) => ({
       ...previous,
@@ -63,10 +108,7 @@ export default function NewProductPage() {
     }));
   }
 
-  function calculateDiscount(
-    oldPrice: string,
-    currentPrice: string
-  ) {
+  function calculateDiscount(oldPrice: string, currentPrice: string) {
     const oldPriceNumber = Number(oldPrice);
     const currentPriceNumber = Number(currentPrice);
 
@@ -76,9 +118,7 @@ export default function NewProductPage() {
       currentPriceNumber < oldPriceNumber
     ) {
       const calculatedDiscount = Math.round(
-        ((oldPriceNumber - currentPriceNumber) /
-          oldPriceNumber) *
-          100
+        ((oldPriceNumber - currentPriceNumber) / oldPriceNumber) * 100
       );
 
       setDiscount(String(calculatedDiscount));
@@ -90,42 +130,58 @@ export default function NewProductPage() {
   function autoSelectCategory(value: string) {
     const name = value.toLowerCase();
 
-    let category = "Other";
+    let suggestedCategory = "";
 
     if (
-      /toy|toys|aeroplane|airplane|doll|puzzle|game|lego|car toy|robot|kids/.test(name)
+      /toy|toys|aeroplane|airplane|doll|puzzle|game|lego|car toy|robot|kids/.test(
+        name
+      )
     ) {
-      category = "Toys";
+      suggestedCategory = "Toys";
     } else if (
-      /iphone|phone|mobile|tablet|laptop|computer|camera|charger|usb|watch/.test(name)
+      /iphone|phone|mobile|tablet|laptop|computer|camera|charger|usb|watch/.test(
+        name
+      )
     ) {
-      category = "Electronics";
+      suggestedCategory = "Electronics";
     } else if (
-      /speaker|headphone|earphone|earbuds|bluetooth|soundbar|audio/.test(name)
+      /speaker|headphone|earphone|earbuds|bluetooth|soundbar|audio/.test(
+        name
+      )
     ) {
-      category = "Audio";
+      suggestedCategory = "Audio";
     } else if (
       /football|basketball|cricket|bat|ball|sports|fitness|gym/.test(name)
     ) {
-      category = "Sports";
+      suggestedCategory = "Sports";
     } else if (
       /beauty|makeup|cosmetic|lipstick|cream|perfume|skincare/.test(name)
     ) {
-      category = "Beauty";
+      suggestedCategory = "Beauty";
     } else if (
       /chair|table|kitchen|home|garden|lamp|light|decor/.test(name)
     ) {
-      category = "Home & Garden";
+      suggestedCategory = "Home & Garden";
     }
 
-    const categoryElement = document.getElementById(
-      "category"
-    ) as HTMLSelectElement | null;
+    if (!suggestedCategory) {
+      return;
+    }
 
-    if (categoryElement) {
-      categoryElement.value = category;
+    const existingCategory = categories.find(
+      (category) =>
+        category.toLowerCase() === suggestedCategory.toLowerCase()
+    );
+
+    if (existingCategory) {
+      setCategoryMode("select");
+      setCategoryValue(existingCategory);
+    } else {
+      setCategoryMode("manual");
+      setCategoryValue(suggestedCategory);
     }
   }
+
   async function addProduct() {
     setLoading(true);
     setError("");
@@ -135,9 +191,7 @@ export default function NewProductPage() {
       document.getElementById("name") as HTMLInputElement
     ).value.trim();
 
-    const category = (
-      document.getElementById("category") as HTMLInputElement
-    ).value.trim();
+    const category = categoryValue.trim();
 
     const price = Number(priceValue);
 
@@ -161,13 +215,10 @@ export default function NewProductPage() {
       document.getElementById("featured") as HTMLInputElement
     ).checked;
 
-    const discountNumber = discount
-      ? Number(discount)
-      : null;
-
-    // =========================
-    // VALIDATION
-    // =========================
+    const discountNumber =
+      flashDeal && discount
+        ? Number(discount)
+        : null;
 
     if (!name) {
       setError("Product name is required.");
@@ -201,7 +252,7 @@ export default function NewProductPage() {
       oldPrice > 0 &&
       price > oldPrice
     ) {
-      setError("Price cannot be higher than the old price.");
+      setError("Sale price cannot be higher than the old price.");
       setLoading(false);
       return;
     }
@@ -230,28 +281,25 @@ export default function NewProductPage() {
       return;
     }
 
-    if (
-      discountNumber !== null &&
-      (!Number.isInteger(discountNumber) ||
+    if (flashDeal) {
+      if (oldPrice === null || !discountNumber) {
+        setError(
+          "Flash Deal requires a valid Old Price and Sale Price."
+        );
+        setLoading(false);
+        return;
+      }
+
+      if (
+        !Number.isInteger(discountNumber) ||
         discountNumber < 1 ||
-        discountNumber > 100)
-    ) {
-      setError("Discount must be between 1% and 100%.");
-      setLoading(false);
-      return;
+        discountNumber > 100
+      ) {
+        setError("Discount must be between 1% and 100%.");
+        setLoading(false);
+        return;
+      }
     }
-
-    if (flashDeal && discountNumber === null) {
-      setError(
-        "Please enter a valid old price and sale price for the Flash Deal."
-      );
-      setLoading(false);
-      return;
-    }
-
-    // =========================
-    // CREATE PRODUCT
-    // =========================
 
     try {
       const response = await fetch("/api/products", {
@@ -271,23 +319,21 @@ export default function NewProductPage() {
 
           flashDeal,
           newArrival,
-          discount: discountNumber,
+
+          discount: flashDeal ? discountNumber : null,
 
           image: images.image,
           image2: images.image2 || null,
           image3: images.image3 || null,
           image4: images.image4 || null,
-          descriptionImage:
-            images.descriptionImage || null,
+          descriptionImage: images.descriptionImage || null,
         }),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
-        setError(
-          result.error || "Failed to create product."
-        );
+        setError(result.error || "Failed to create product.");
         setLoading(false);
         return;
       }
@@ -300,9 +346,7 @@ export default function NewProductPage() {
     } catch (requestError) {
       console.error(requestError);
 
-      setError(
-        "Something went wrong. Please try again."
-      );
+      setError("Something went wrong. Please try again.");
 
       setLoading(false);
     }
@@ -310,15 +354,11 @@ export default function NewProductPage() {
 
   return (
     <main className="min-h-screen bg-gray-100 text-gray-900">
-
-      {/* HEADER */}
-
       <header className="bg-gray-900 text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5">
-
           <div>
             <h1 className="text-2xl font-bold">
-              AM Whole Sale UK
+              AM Whole Sale Pakistan
             </h1>
 
             <p className="text-sm text-gray-400">
@@ -328,20 +368,15 @@ export default function NewProductPage() {
 
           <Link
             href="/admin/products"
-            className="rounded-md bg-gray-700 px-5 py-2 font-semibold hover:bg-gray-600"
+            className="rounded-md bg-gray-700 px-5 py-2 font-semibold transition hover:bg-gray-600"
           >
             Back to Products
           </Link>
-
         </div>
       </header>
 
-      {/* MAIN */}
-
       <section className="mx-auto max-w-4xl px-4 py-8">
-
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-
+        <div className="rounded-xl bg-white p-6 shadow-sm md:p-8">
           <h2 className="text-2xl font-bold">
             Add Product
           </h2>
@@ -351,21 +386,18 @@ export default function NewProductPage() {
           </p>
 
           {error && (
-            <div className="mt-6 rounded-md bg-red-100 px-4 py-3 font-semibold text-red-700">
+            <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 font-semibold text-red-700">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="mt-6 rounded-md bg-green-100 px-4 py-3 font-semibold text-green-700">
+            <div className="mt-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 font-semibold text-green-700">
               {success}
             </div>
           )}
 
-          <div className="mt-8 space-y-6">
-
-            {/* PRODUCT NAME */}
-
+          <div className="mt-8 space-y-7">
             <div>
               <label
                 htmlFor="name"
@@ -381,44 +413,101 @@ export default function NewProductPage() {
                 onChange={(event) =>
                   autoSelectCategory(event.target.value)
                 }
-                className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
               />
             </div>
 
-            {/* CATEGORY + PRICE */}
-
-            <div className="grid gap-6 md:grid-cols-2">
-
-              <div>
+            <div>
+              <div className="mb-2 flex items-center justify-between">
                 <label
                   htmlFor="category"
-                  className="mb-2 block font-semibold"
+                  className="block font-semibold"
                 >
                   Category
                 </label>
 
-                <select
-                  id="category"
-                  defaultValue=""
-                  className="w-full rounded-md border bg-white px-4 py-3 outline-none focus:border-orange-500"
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (categoryMode === "select") {
+                      setCategoryMode("manual");
+                      setCategoryValue("");
+                    } else {
+                      setCategoryMode("select");
+                      setCategoryValue("");
+                    }
+                  }}
+                  className="text-sm font-bold text-orange-600 hover:text-orange-700"
                 >
-                  <option value="">Select category</option>
-                  <option value="Toys">Toys</option>
-                  <option value="Electronics">Electronics</option>
-                  <option value="Audio">Audio</option>
-                  <option value="Home & Garden">Home & Garden</option>
-                  <option value="Sports">Sports</option>
-                  <option value="Beauty">Beauty</option>
-                  <option value="Other">Other</option>
-                </select>
+                  {categoryMode === "select"
+                    ? "+ Add New Category"
+                    : "← Select Existing Category"}
+                </button>
               </div>
 
+              {categoryMode === "select" ? (
+                <select
+                  id="category"
+                  value={categoryValue}
+                  onChange={(event) =>
+                    setCategoryValue(event.target.value)
+                  }
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                >
+                  <option value="">
+                    {categories.length > 0
+                      ? "Select category"
+                      : "No categories found"}
+                  </option>
+
+                  {categories.map((category) => (
+                    <option
+                      key={category}
+                      value={category}
+                    >
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  id="category"
+                  type="text"
+                  value={categoryValue}
+                  onChange={(event) =>
+                    setCategoryValue(event.target.value)
+                  }
+                  placeholder="Enter new category e.g. Car Accessories"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                />
+              )}
+
+              <p className="mt-2 text-sm text-gray-500">
+                {categoryMode === "select"
+                  ? "Select an existing category or add a new one."
+                  : "Enter any new category name. It will automatically appear on the Home Page after saving the product."}
+              </p>
+
+              {categoryValue && (
+                <div className="mt-3 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3">
+                  <span className="text-sm font-semibold text-gray-600">
+                    Selected Category:
+                  </span>
+
+                  <span className="ml-2 font-bold text-orange-700">
+                    {categoryValue}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
               <div>
                 <label
                   htmlFor="price"
                   className="mb-2 block font-semibold"
                 >
-                  Price (Â£)
+                  Sale Price (Rs.)
                 </label>
 
                 <input
@@ -438,49 +527,49 @@ export default function NewProductPage() {
                       newPrice
                     );
                   }}
-                  className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
                 />
               </div>
 
+              <div>
+                <label
+                  htmlFor="oldPrice"
+                  className="mb-2 block font-semibold"
+                >
+                  Old Price (Rs.)
+                  <span className="ml-2 text-sm font-normal text-gray-400">
+                    Optional
+                  </span>
+                </label>
+
+                <input
+                  id="oldPrice"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="Example: 122000"
+                  value={oldPriceValue}
+                  onChange={(event) => {
+                    const newOldPrice =
+                      event.target.value;
+
+                    setOldPriceValue(newOldPrice);
+
+                    calculateDiscount(
+                      newOldPrice,
+                      priceValue
+                    );
+                  }}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                />
+
+                {discount && (
+                  <p className="mt-2 font-semibold text-green-600">
+                    Automatic Discount: {discount}% OFF
+                  </p>
+                )}
+              </div>
             </div>
-
-            {/* OLD PRICE */}
-
-            <div>
-              <label
-                htmlFor="oldPrice"
-                className="mb-2 block font-semibold"
-              >
-                Old Price (Â£)
-
-                <span className="ml-2 text-sm font-normal text-gray-400">
-                  Optional
-                </span>
-              </label>
-
-              <input
-                id="oldPrice"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="Example: 199.99"
-                value={oldPriceValue}
-                onChange={(event) => {
-                  const newOldPrice =
-                    event.target.value;
-
-                  setOldPriceValue(newOldPrice);
-
-                  calculateDiscount(
-                    newOldPrice,
-                    priceValue
-                  );
-                }}
-                className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
-              />
-            </div>
-
-            {/* STOCK */}
 
             <div>
               <label
@@ -495,14 +584,11 @@ export default function NewProductPage() {
                 type="number"
                 min="0"
                 placeholder="0"
-                className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
               />
             </div>
 
-            {/* PRODUCT STATUS */}
-
-            <div className="rounded-lg border bg-gray-50 p-5">
-
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
               <h3 className="text-lg font-bold">
                 Product Status
               </h3>
@@ -512,13 +598,8 @@ export default function NewProductPage() {
               </p>
 
               <div className="mt-5 space-y-4">
-
-                {/* FLASH DEAL */}
-
-                <div className="rounded-md border bg-white p-4">
-
+                <div className="rounded-lg border border-orange-200 bg-white p-5">
                   <div className="flex items-center gap-3">
-
                     <input
                       id="flashDeal"
                       type="checkbox"
@@ -526,66 +607,74 @@ export default function NewProductPage() {
                       onChange={(event) =>
                         setFlashDeal(event.target.checked)
                       }
-                      className="h-5 w-5"
+                      className="h-5 w-5 accent-orange-500"
                     />
 
                     <label
                       htmlFor="flashDeal"
-                      className="font-semibold"
+                      className="font-bold"
                     >
-                      ðŸ”¥ Flash Deal
+                      🔥 Flash Deal
                     </label>
-
                   </div>
 
                   <p className="mt-2 text-sm text-gray-500">
-                    Turn this ON if this product should appear in Flash Deals.
+                    Turn this ON to create a special promotional
+                    deal for this product.
                   </p>
 
                   {flashDeal && (
-                    <div className="mt-4">
+                    <div className="mt-5">
+                      <div className="rounded-lg border border-orange-200 bg-orange-50 p-5">
+                        <p className="text-sm font-semibold text-gray-600">
+                          Promotion Discount
+                        </p>
 
-                      <label
-                        htmlFor="discount"
-                        className="mb-2 block font-semibold"
-                      >
-                        Discount Percentage
-                      </label>
+                        <div className="mt-2 flex items-center gap-3">
+                          <span className="text-3xl font-extrabold text-orange-600">
+                            {discount || "0"}%
+                          </span>
 
-                      <div className="flex max-w-xs overflow-hidden rounded-md border bg-white">
+                          <span className="font-bold text-gray-600">
+                            OFF
+                          </span>
+                        </div>
 
-                        <input
-                          id="discount"
-                          type="number"
-                          min="1"
-                          max="100"
-                          value={discount}
-                          readOnly
-                          placeholder="Auto calculated"
-                          className="w-full bg-gray-100 px-4 py-3 outline-none"
-                        />
-
-                        <span className="flex items-center bg-gray-100 px-4 font-bold">
-                          %
-                        </span>
-
+                        <p className="mt-2 text-xs text-gray-500">
+                          Automatically calculated from Old Price
+                          and Sale Price.
+                        </p>
                       </div>
 
-                      <p className="mt-2 text-xs text-gray-500">
-                        Automatically calculated from Old Price and Price.
-                      </p>
+                      {discount && (
+                        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-gray-600">
+                              Flash Deal
+                            </span>
 
+                            <span className="rounded-full bg-red-600 px-3 py-1 text-xs font-extrabold text-white">
+                              {discount}% OFF
+                            </span>
+                          </div>
+
+                          <div className="mt-3 flex items-end gap-3">
+                            <span className="text-sm font-semibold text-gray-400 line-through">
+                              Rs. {oldPriceValue || "0"}
+                            </span>
+
+                            <span className="text-2xl font-black text-red-600">
+                              Rs. {priceValue || "0"}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
-
                 </div>
 
-                {/* NEW ARRIVAL */}
-
-                <div className="rounded-md border bg-white p-4">
-
+                <div className="rounded-lg border border-gray-200 bg-white p-4">
                   <div className="flex items-center gap-3">
-
                     <input
                       id="newArrival"
                       type="checkbox"
@@ -593,73 +682,59 @@ export default function NewProductPage() {
                       onChange={(event) =>
                         setNewArrival(event.target.checked)
                       }
-                      className="h-5 w-5"
+                      className="h-5 w-5 accent-orange-500"
                     />
 
                     <label
                       htmlFor="newArrival"
                       className="font-semibold"
                     >
-                      ðŸ†• New Arrival
+                      🆕 New Arrival
                     </label>
-
                   </div>
 
                   <p className="mt-2 text-sm text-gray-500">
-                    Turn this ON if this product should appear in New Arrivals.
+                    Turn this ON if this product should appear in
+                    New Arrivals.
                   </p>
-
                 </div>
 
-                {/* FEATURED */}
-
-                <div className="rounded-md border bg-white p-4">
-
+                <div className="rounded-lg border border-gray-200 bg-white p-4">
                   <div className="flex items-center gap-3">
-
                     <input
                       id="featured"
                       type="checkbox"
-                      className="h-5 w-5"
+                      className="h-5 w-5 accent-orange-500"
                     />
 
                     <label
                       htmlFor="featured"
                       className="font-semibold"
                     >
-                      â­ Featured Product
+                      ⭐ Featured Product
                     </label>
-
                   </div>
 
                   <p className="mt-2 text-sm text-gray-500">
-                    Turn this ON if you want to feature this product on the store.
+                    Turn this ON if you want to feature this product
+                    on the store.
                   </p>
-
                 </div>
-
               </div>
-
             </div>
 
-            {/* PRODUCT IMAGES */}
-
             <div>
-
               <h3 className="mb-4 text-lg font-bold">
                 Product Images
               </h3>
 
               <div className="grid gap-6 md:grid-cols-2">
-
                 {imageFields.map((field) => (
                   <div
                     key={field.key}
-                    className="rounded-lg border p-4"
+                    className="rounded-lg border border-gray-200 bg-white p-4"
                   >
-
                     <label className="mb-3 block font-semibold">
-
                       {field.label}
 
                       {field.required && (
@@ -667,7 +742,6 @@ export default function NewProductPage() {
                           *
                         </span>
                       )}
-
                     </label>
 
                     <CldUploadWidget
@@ -683,13 +757,12 @@ export default function NewProductPage() {
                           "gif",
                         ],
 
-                        maxFileSize:
-                          5 * 1024 * 1024,
+                        maxFileSize: 5 * 1024 * 1024,
 
                         multiple: false,
 
                         folder:
-                          "am-wholesale-uk/products",
+                          "am-wholesale-pakistan/products",
 
                         sources: [
                           "local",
@@ -699,12 +772,10 @@ export default function NewProductPage() {
                           "dropbox",
                         ],
                       }}
-
                       onOpen={() => {
                         setError("");
                         setUploading(field.key);
                       }}
-
                       onSuccess={(result) => {
                         const info =
                           result.info as
@@ -731,7 +802,6 @@ export default function NewProductPage() {
 
                         setUploading(null);
                       }}
-
                       onError={(uploadError) => {
                         console.error(
                           "Cloudinary upload error:",
@@ -744,12 +814,10 @@ export default function NewProductPage() {
 
                         setUploading(null);
                       }}
-
                       onClose={() => {
                         setUploading(null);
                       }}
                     >
-
                       {({ open }) => (
                         <button
                           type="button"
@@ -758,7 +826,7 @@ export default function NewProductPage() {
                             loading ||
                             uploading !== null
                           }
-                          className="w-full rounded-md border-2 border-dashed border-gray-300 px-4 py-6 text-sm font-semibold text-gray-700 transition hover:border-orange-500 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-6 text-sm font-semibold text-gray-700 transition hover:border-orange-500 hover:bg-orange-50 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {uploading === field.key
                             ? "Opening Upload..."
@@ -767,16 +835,14 @@ export default function NewProductPage() {
                               : "Choose Image"}
                         </button>
                       )}
-
                     </CldUploadWidget>
 
                     {images[field.key] && (
                       <div className="mt-4">
-
                         <img
                           src={images[field.key]}
                           alt={field.label}
-                          className="h-40 w-full rounded-md border object-contain"
+                          className="h-40 w-full rounded-lg border bg-gray-50 object-contain"
                         />
 
                         <button
@@ -788,17 +854,14 @@ export default function NewProductPage() {
                             loading ||
                             uploading !== null
                           }
-                          className="mt-3 rounded-md bg-red-100 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-200 disabled:opacity-50"
+                          className="mt-3 rounded-md bg-red-100 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-200 disabled:opacity-50"
                         >
                           Remove Image
                         </button>
-
                       </div>
                     )}
-
                   </div>
                 ))}
-
               </div>
 
               <p className="mt-3 text-sm text-gray-500">
@@ -810,13 +873,9 @@ export default function NewProductPage() {
                 Upload options: Computer, Camera, URL,
                 Google Drive and Dropbox.
               </p>
-
             </div>
 
-            {/* DESCRIPTION */}
-
             <div>
-
               <label
                 htmlFor="description"
                 className="mb-2 block font-semibold"
@@ -828,15 +887,11 @@ export default function NewProductPage() {
                 id="description"
                 rows={5}
                 placeholder="Enter product description"
-                className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
               />
-
             </div>
 
-            {/* REVIEWS */}
-
             <div>
-
               <label
                 htmlFor="reviews"
                 className="mb-2 block font-semibold"
@@ -849,18 +904,14 @@ export default function NewProductPage() {
                 type="number"
                 min="0"
                 defaultValue="0"
-                className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
               />
-
             </div>
 
-            {/* BUTTONS */}
-
-            <div className="flex gap-3 pt-4">
-
+            <div className="flex flex-col gap-3 border-t pt-6 sm:flex-row">
               <Link
                 href="/admin/products"
-                className="rounded-md bg-gray-200 px-6 py-3 font-semibold hover:bg-gray-300"
+                className="rounded-lg bg-gray-200 px-6 py-3 text-center font-semibold transition hover:bg-gray-300"
               >
                 Cancel
               </Link>
@@ -872,7 +923,7 @@ export default function NewProductPage() {
                   loading ||
                   uploading !== null
                 }
-                className="rounded-md bg-orange-500 px-6 py-3 font-bold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:bg-gray-400"
+                className="rounded-lg bg-orange-500 px-6 py-3 font-bold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:bg-gray-400"
               >
                 {uploading
                   ? "Uploading Image..."
@@ -880,27 +931,16 @@ export default function NewProductPage() {
                     ? "Adding Product..."
                     : "Add Product"}
               </button>
-
             </div>
-
           </div>
-
         </div>
-
       </section>
 
-      {/* FOOTER */}
-
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
-
         <p className="text-sm text-gray-400">
-          Â© 2026 AM Whole Sale UK
+          © 2026 AM Whole Sale Pakistan. All rights reserved.
         </p>
-
       </footer>
-
     </main>
   );
 }
-
-

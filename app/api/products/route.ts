@@ -10,9 +10,406 @@ async function checkAdmin() {
   return adminSession?.value === "authenticated";
 }
 
-// =========================
+// =====================================================
+// CATEGORY SYSTEM
+// =====================================================
+
+const CATEGORY_RULES = [
+  {
+    category: "Mobile Phone & Accessories",
+    keywords: [
+      "mobile",
+      "phone",
+      "iphone",
+      "smartphone",
+      "android",
+      "samsung",
+      "tecno",
+      "infinix",
+      "oppo",
+      "vivo",
+      "xiaomi",
+      "redmi",
+      "realme",
+      "oneplus",
+      "mobile cover",
+      "phone cover",
+      "phone case",
+      "mobile case",
+      "charger",
+      "charging cable",
+      "usb cable",
+      "power bank",
+      "earphone",
+      "earphones",
+      "handsfree",
+      "airpods",
+      "screen protector",
+      "tempered glass",
+      "mobile stand",
+      "phone holder",
+    ],
+  },
+
+  {
+    category: "Electronics",
+    keywords: [
+      "electronic",
+      "electronics",
+      "laptop",
+      "computer",
+      "pc",
+      "keyboard",
+      "mouse",
+      "monitor",
+      "printer",
+      "scanner",
+      "camera",
+      "cctv",
+      "router",
+      "wifi",
+      "switch",
+      "hard drive",
+      "ssd",
+      "memory card",
+      "usb",
+      "flash drive",
+      "adapter",
+      "projector",
+      "led",
+      "tv",
+      "television",
+    ],
+  },
+
+  {
+    category: "Audio",
+    keywords: [
+      "speaker",
+      "bluetooth speaker",
+      "sound box",
+      "soundbar",
+      "headphone",
+      "headphones",
+      "headset",
+      "microphone",
+      "mic",
+      "woofer",
+      "subwoofer",
+      "audio",
+      "stereo",
+      "music player",
+    ],
+  },
+
+  {
+    category: "Toys",
+    keywords: [
+      "toy",
+      "toys",
+      "toy car",
+      "car toy",
+      "aeroplane",
+      "airplane",
+      "doll",
+      "teddy",
+      "teddy bear",
+      "remote control car",
+      "rc car",
+      "puzzle",
+      "kids",
+      "children",
+      "baby toy",
+      "game",
+      "gaming toy",
+      "lego",
+    ],
+  },
+
+  {
+    category: "Home & Garden",
+    keywords: [
+      "home",
+      "garden",
+      "kitchen",
+      "kitchenware",
+      "cooking",
+      "utensil",
+      "furniture",
+      "chair",
+      "table",
+      "storage",
+      "organizer",
+      "cleaning",
+      "cleaner",
+      "lamp",
+      "light",
+      "decoration",
+      "decor",
+      "plant",
+      "flower",
+      "gardening",
+      "garden tool",
+    ],
+  },
+
+  {
+    category: "Sports",
+    keywords: [
+      "sport",
+      "sports",
+      "football",
+      "soccer",
+      "cricket",
+      "bat",
+      "ball",
+      "tennis",
+      "badminton",
+      "basketball",
+      "gym",
+      "fitness",
+      "exercise",
+      "yoga",
+      "cycling",
+      "swimming",
+      "sportswear",
+    ],
+  },
+
+  {
+    category: "Beauty",
+    keywords: [
+      "beauty",
+      "makeup",
+      "cosmetic",
+      "cosmetics",
+      "lipstick",
+      "foundation",
+      "mascara",
+      "eyeliner",
+      "perfume",
+      "fragrance",
+      "skin care",
+      "skincare",
+      "hair",
+      "hair dryer",
+      "hair straightener",
+      "shampoo",
+      "cream",
+      "lotion",
+    ],
+  },
+];
+
+// =====================================================
+// NORMALIZE TEXT
+// =====================================================
+
+function normalizeText(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ");
+}
+
+// =====================================================
+// NORMALIZE MANUAL CATEGORY
+// =====================================================
+
+function normalizeManualCategory(category: string) {
+  const normalized = normalizeText(category);
+
+  if (!normalized) {
+    return "Other";
+  }
+
+  // Mobile Phone & Accessories
+  const mobileAliases = [
+    "mobile phone and accessories",
+    "mobile phone and accerories",
+    "mobile phone and accerory",
+    "mobile phone and accerories",
+    "mobile and accessories",
+    "mobile and accerious",
+    "mobile and accerories",
+    "mobile and accerios",
+    "mobile accerious",
+    "mobile accessories",
+    "mobile accesories",
+    "mobile accessory",
+    "phone accessories",
+    "phone accessory",
+  ];
+
+  if (mobileAliases.includes(normalized)) {
+    return "Mobile Phone & Accessories";
+  }
+
+  // Electronics
+  const electronicsAliases = [
+    "electronics",
+    "electronic",
+    "electronic items",
+    "electronics items",
+  ];
+
+  if (electronicsAliases.includes(normalized)) {
+    return "Electronics";
+  }
+
+  // Audio
+  const audioAliases = [
+    "audio",
+    "sound",
+    "sound system",
+    "audio products",
+  ];
+
+  if (audioAliases.includes(normalized)) {
+    return "Audio";
+  }
+
+  // Toys
+  const toyAliases = [
+    "toy",
+    "toys",
+    "kids toys",
+    "children toys",
+  ];
+
+  if (toyAliases.includes(normalized)) {
+    return "Toys";
+  }
+
+  // Home & Garden
+  const homeAliases = [
+    "home",
+    "home garden",
+    "home and garden",
+    "home & garden",
+    "home accessories",
+    "kitchen",
+  ];
+
+  if (homeAliases.includes(normalized)) {
+    return "Home & Garden";
+  }
+
+  // Sports
+  const sportsAliases = [
+    "sport",
+    "sports",
+    "sports items",
+    "sports equipment",
+  ];
+
+  if (sportsAliases.includes(normalized)) {
+    return "Sports";
+  }
+
+  // Beauty
+  const beautyAliases = [
+    "beauty",
+    "beauty products",
+    "cosmetics",
+    "cosmetic",
+    "makeup",
+  ];
+
+  if (beautyAliases.includes(normalized)) {
+    return "Beauty";
+  }
+
+  // Other
+  const otherAliases = [
+    "other",
+    "others",
+    "misc",
+    "miscellaneous",
+  ];
+
+  if (otherAliases.includes(normalized)) {
+    return "Other";
+  }
+
+  // If admin entered a completely new category manually,
+  // keep that category instead of forcing it into Other.
+  return category.trim();
+}
+
+// =====================================================
+// AUTO CATEGORY DETECTION
+// =====================================================
+
+function detectCategory(
+  name: string,
+  description: string
+) {
+  const text = normalizeText(
+    `${name} ${description}`
+  );
+
+  let bestCategory = "Other";
+  let bestScore = 0;
+
+  for (const rule of CATEGORY_RULES) {
+    let score = 0;
+
+    for (const keyword of rule.keywords) {
+      const normalizedKeyword = normalizeText(keyword);
+
+      if (!normalizedKeyword) {
+        continue;
+      }
+
+      if (text.includes(normalizedKeyword)) {
+        // Multi-word keywords get more importance
+        if (normalizedKeyword.includes(" ")) {
+          score += 3;
+        } else {
+          score += 1;
+        }
+      }
+    }
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestCategory = rule.category;
+    }
+  }
+
+  return bestCategory;
+}
+
+// =====================================================
+// FINAL CATEGORY DECISION
+// =====================================================
+
+function getFinalCategory(
+  requestedCategory: string,
+  name: string,
+  description: string
+) {
+  const category = requestedCategory.trim();
+
+  // Admin selected Auto Detect
+  if (
+    category.toLowerCase() === "auto" ||
+    category.toLowerCase() === "auto detect" ||
+    category.toLowerCase() === "automatic"
+  ) {
+    return detectCategory(name, description);
+  }
+
+  // Manual category
+  return normalizeManualCategory(category);
+}
+
+// =====================================================
 // GET PRODUCTS
-// =========================
+// =====================================================
 
 export async function GET() {
   try {
@@ -48,15 +445,15 @@ export async function GET() {
   }
 }
 
-// =========================
+// =====================================================
 // CREATE PRODUCT
-// =========================
+// =====================================================
 
 export async function POST(request: Request) {
   try {
-    // =========================
+    // ===================================================
     // ADMIN AUTHENTICATION
-    // =========================
+    // ===================================================
 
     const isAdmin = await checkAdmin();
 
@@ -69,15 +466,21 @@ export async function POST(request: Request) {
       );
     }
 
-    // =========================
+    // ===================================================
     // REQUEST BODY
-    // =========================
+    // ===================================================
 
     const body = await request.json();
 
     const name = String(body.name || "").trim();
-    const category = String(body.category || "").trim();
-    const description = String(body.description || "").trim();
+
+    const requestedCategory = String(
+      body.category || ""
+    ).trim();
+
+    const description = String(
+      body.description || ""
+    ).trim();
 
     const image = String(body.image || "").trim();
     const image2 = String(body.image2 || "").trim();
@@ -114,9 +517,26 @@ export async function POST(request: Request) {
         ? null
         : Number(body.discount);
 
-    // =========================
+    // ===================================================
+    // CATEGORY
+    // ===================================================
+
+    const category = getFinalCategory(
+      requestedCategory,
+      name,
+      description
+    );
+
+    console.log(
+      "Category:",
+      requestedCategory,
+      "=>",
+      category
+    );
+
+    // ===================================================
     // VALIDATION
-    // =========================
+    // ===================================================
 
     if (!name) {
       return NextResponse.json(
@@ -127,7 +547,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!category) {
+    if (!requestedCategory) {
       return NextResponse.json(
         {
           error: "Category is required.",
@@ -166,6 +586,20 @@ export async function POST(request: Request) {
       );
     }
 
+    if (
+      oldPrice !== null &&
+      oldPrice > 0 &&
+      price > oldPrice
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Price cannot be higher than the old price.",
+        },
+        { status: 400 }
+      );
+    }
+
     if (!Number.isInteger(stock) || stock < 0) {
       return NextResponse.json(
         {
@@ -192,7 +626,8 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json(
         {
-          error: "Discount must be between 1% and 100%.",
+          error:
+            "Discount must be between 1% and 100%.",
         },
         { status: 400 }
       );
@@ -208,22 +643,25 @@ export async function POST(request: Request) {
       );
     }
 
-    // =========================
+    // ===================================================
     // CREATE PRODUCT
-    // =========================
+    // ===================================================
 
     const product = await prisma.product.create({
       data: {
         name,
+
         category,
+
         description,
 
-        // Product images
+        // Images
         image: image || null,
         image2: image2 || null,
         image3: image3 || null,
         image4: image4 || null,
-        descriptionImage: descriptionImage || null,
+        descriptionImage:
+          descriptionImage || null,
 
         // Pricing
         price: price.toFixed(2),
@@ -241,16 +679,16 @@ export async function POST(request: Request) {
         // Reviews
         reviews,
 
-        // Product status
+        // Status
         featured,
         flashDeal,
         newArrival,
       },
     });
 
-    // =========================
+    // ===================================================
     // SUCCESS
-    // =========================
+    // ===================================================
 
     return NextResponse.json(
       {
@@ -261,7 +699,10 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Create product error:", error);
+    console.error(
+      "Create product error:",
+      error
+    );
 
     return NextResponse.json(
       {

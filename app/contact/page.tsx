@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 
@@ -15,7 +15,7 @@ export default function ContactPage() {
       return;
     }
 
-    const whatsappMessage = `Hello AM Whole Sale UK,
+    const whatsappMessage = `Hello AM Whole Sale Pakistan,
 
 Name: ${name}
 Email: ${email}
@@ -45,7 +45,7 @@ ${message}`;
             className="text-xl font-extrabold md:text-2xl"
           >
             AM Whole Sale{" "}
-            <span className="text-orange-500">UK</span>
+            <span className="text-orange-500">Pakistan</span>
           </a>
 
           <a
@@ -62,7 +62,7 @@ ${message}`;
         {/* Page Title */}
         <div className="text-center">
           <p className="text-sm font-bold uppercase tracking-widest text-orange-500">
-            AM Whole Sale UK
+            AM Whole Sale Pakistan
           </p>
 
           <h1 className="mt-2 text-3xl font-extrabold md:text-4xl">
@@ -86,7 +86,7 @@ ${message}`;
           >
             <div className="flex items-center gap-4">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-500 text-2xl text-white">
-                💬
+                {"\u{1F4AC}"}
               </div>
 
               <div>
@@ -101,7 +101,7 @@ ${message}`;
             </div>
 
             <div className="mt-5 text-sm font-semibold text-green-600">
-              WhatsApp: 03490788681 →
+              WhatsApp: 03490788681 {"\u{2192}"}
             </div>
           </a>
 
@@ -112,7 +112,7 @@ ${message}`;
           >
             <div className="flex items-center gap-4">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-2xl text-white">
-                ✉
+                {"\u{2709}"}
               </div>
 
               <div>
@@ -127,7 +127,7 @@ ${message}`;
             </div>
 
             <div className="mt-5 break-all text-sm font-semibold text-orange-500">
-              shamzakhan2003@gmail.com →
+              shamzakhan2003@gmail.com {"\u{2192}"}
             </div>
           </a>
         </div>
@@ -147,7 +147,7 @@ ${message}`;
 
           {sent && (
             <div className="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700">
-              ✓ Your message is ready to send on WhatsApp.
+              {"\u{2713}"} Your message is ready to send on WhatsApp.
             </div>
           )}
 
@@ -213,7 +213,7 @@ ${message}`;
         {/* Customer Support */}
         <div className="mx-auto mt-8 max-w-3xl rounded-xl bg-gray-900 p-7 text-center text-white">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-2xl">
-            🤖
+            {"\u{1F916}"}
           </div>
 
           <h2 className="mt-4 text-xl font-bold">
@@ -236,7 +236,7 @@ ${message}`;
 
       {/* Footer */}
       <footer className="mt-10 bg-gray-900 py-6 text-center text-sm text-gray-400">
-        © 2026 AM Whole Sale UK. All rights reserved.
+        {"\u{00A9}"} 2026 AM Whole Sale Pakistan. All rights reserved.
       </footer>
     </main>
   );

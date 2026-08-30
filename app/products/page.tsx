@@ -76,7 +76,7 @@ export default async function ProductsPage({
   } else if (deals) {
     pageTitle = "🔥 Flash Deals";
   } else if (newArrivals) {
-    pageTitle = "🆕 New Arrivals";
+    pageTitle = "✨ New Arrivals";
   } else if (search) {
     pageTitle = `Search Results for "${search}"`;
   }
@@ -89,7 +89,7 @@ export default async function ProductsPage({
       <section className="border-b bg-white">
         <div className="mx-auto max-w-7xl px-4 py-8">
           <p className="text-sm font-semibold uppercase tracking-wider text-orange-500">
-            AM Whole Sale UK
+            AM Whole Sale Pakistan
           </p>
 
           <h1 className="mt-2 text-3xl font-bold">
@@ -160,6 +160,11 @@ export default async function ProductsPage({
                   ? Number(product.oldPrice)
                   : null;
 
+              const rating =
+                product.rating !== null
+                  ? Number(product.rating)
+                  : 0;
+
               return (
                 <Link
                   key={product.id}
@@ -202,19 +207,24 @@ export default async function ProductsPage({
                     {/* PRICE */}
                     <div className="mt-3">
                       <span className="text-xl font-bold text-red-600">
-                        £{price.toFixed(2)}
+                        Rs. {price.toFixed(2)}
                       </span>
 
                       {oldPrice !== null ? (
                         <span className="ml-2 text-sm text-gray-400 line-through">
-                          £{oldPrice.toFixed(2)}
+                          Rs. {oldPrice.toFixed(2)}
                         </span>
                       ) : null}
                     </div>
 
                     {/* REVIEWS */}
                     <div className="mt-2 text-sm text-yellow-500">
-                      ★★★★★
+                      {rating > 0
+                        ? `${"★".repeat(Math.round(rating))}${"☆".repeat(
+                            5 - Math.round(rating)
+                          )}`
+                        : "★★★★★"}
+
                       <span className="ml-1 text-gray-400">
                         ({product.reviews})
                       </span>
@@ -236,7 +246,7 @@ export default async function ProductsPage({
       <footer className="mt-8 bg-gray-900 text-white">
         <div className="mx-auto max-w-7xl px-4 py-10 text-center">
           <p className="text-sm text-gray-400">
-            © 2026 AM Whole Sale UK. All rights reserved.
+            © 2026 AM Whole Sale Pakistan. All rights reserved.
           </p>
         </div>
       </footer>

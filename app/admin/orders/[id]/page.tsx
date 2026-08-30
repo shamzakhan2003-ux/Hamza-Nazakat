@@ -106,7 +106,7 @@ export default async function OrderDetailsPage({
 
           <div>
             <h1 className="text-2xl font-bold">
-              AM Whole Sale UK
+              AM Whole Sale Pakistan
             </h1>
 
             <p className="text-sm text-gray-400">
@@ -285,7 +285,7 @@ export default async function OrderDetailsPage({
 
                 <div>
                   <p className="text-sm text-gray-500">
-                    Postcode
+                    Postal Code
                   </p>
 
                   <p className="mt-1 font-semibold">
@@ -347,7 +347,7 @@ export default async function OrderDetailsPage({
                           </span>
 
                           <span>
-                            Price: £
+                            Price: Rs. 
                             {Number(
                               item.price
                             ).toFixed(2)}
@@ -365,7 +365,7 @@ export default async function OrderDetailsPage({
                       <div className="text-left sm:text-right">
 
                         <p className="text-lg font-bold">
-                          £
+                          Rs. 
                           {itemTotal.toFixed(
                             2
                           )}
@@ -398,7 +398,7 @@ export default async function OrderDetailsPage({
                     </span>
 
                     <span className="font-semibold">
-                      £
+                      Rs. 
                       {subtotal.toFixed(2)}
                     </span>
 
@@ -411,7 +411,7 @@ export default async function OrderDetailsPage({
                     </span>
 
                     <span className="text-orange-500">
-                      £
+                      Rs. 
                       {Number(
                         order.total
                       ).toFixed(2)}
@@ -528,7 +528,7 @@ export default async function OrderDetailsPage({
                   </span>
 
                   <span className="text-xl font-extrabold text-orange-500">
-                    £
+                    Rs. 
                     {Number(
                       order.total
                     ).toFixed(2)}
@@ -601,7 +601,7 @@ export default async function OrderDetailsPage({
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
 
         <p className="text-sm text-gray-400">
-          © 2026 AM Whole Sale UK. All rights reserved.
+          © 2026 AM Whole Sale Pakistan. All rights reserved.
         </p>
 
       </footer>
