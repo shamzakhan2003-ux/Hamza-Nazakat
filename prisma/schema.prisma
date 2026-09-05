@@ -16,16 +16,16 @@ model Product {
   discount         Int?
   image            String?
   category         String
-  stock             Int      @default(0)
-  rating            Decimal? @db.Decimal(2, 1)
-  reviews           Int      @default(0)
-  featured          Boolean  @default(false)
+  stock            Int      @default(0)
+  rating           Decimal? @db.Decimal(2, 1)
+  reviews          Int      @default(0)
+  featured         Boolean  @default(false)
   flashDeal        Boolean  @default(false)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  image2            String?
-  image3            String?
-  image4            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  image2           String?
+  image3           String?
+  image4           String?
   descriptionImage String?
   newArrival       Boolean  @default(false)
 }
@@ -36,22 +36,16 @@ model Customer {
   email             String            @unique
   phone             String            @unique
   passwordHash      String
-
-  // EMAIL VERIFICATION
-  emailVerified     Boolean           @default(false)
-  emailOtpHash      String?
-  emailOtpExpiresAt DateTime?
-  emailOtpAttempts  Int               @default(0)
-
-  // MOBILE VERIFICATION
   mobileVerified    Boolean           @default(false)
   otpHash           String?
   otpExpiresAt      DateTime?
   otpAttempts       Int               @default(0)
-
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
-
+  emailOtpAttempts  Int               @default(0)
+  emailOtpExpiresAt DateTime?
+  emailOtpHash      String?
+  emailVerified     Boolean           @default(false)
   sessions          CustomerSession[]
   orders            Order[]
 }

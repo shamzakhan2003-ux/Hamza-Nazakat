@@ -1,10 +1,10 @@
-export default function PrivacyPage() {
+﻿export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <section className="bg-gray-900 px-4 py-14 text-white">
         <div className="mx-auto max-w-5xl text-center">
           <p className="mb-3 font-semibold text-orange-400">
-            AM Whole Sale Pakistan
+            Click&Pick
           </p>
 
           <h1 className="text-4xl font-extrabold">
@@ -138,7 +138,7 @@ export default function PrivacyPage() {
 
             <p className="mt-3 leading-7 text-gray-600">
               If you have questions about this Privacy Policy or how your
-              information is handled, please contact AM Whole Sale Pakistan
+              information is handled, please contact Click&Pick
               through our Contact Us page.
             </p>
           </section>

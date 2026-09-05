@@ -18,7 +18,7 @@ export default function ShippingPage() {
         <section className="mb-5 rounded-xl bg-white p-6 shadow-sm">
           <div className="flex items-start gap-4">
             <div className="text-4xl">
-              🚚
+              ðŸšš
             </div>
 
             <div>
@@ -28,7 +28,7 @@ export default function ShippingPage() {
 
               <p className="mt-3 leading-7 text-gray-600">
                 We aim to deliver all orders within{" "}
-                <strong>3�5 working days</strong> all over Pakistan.
+                <strong>3â€“5 working days</strong> across the UK.
               </p>
 
               <p className="mt-2 leading-7 text-gray-600">
@@ -43,7 +43,7 @@ export default function ShippingPage() {
         <section className="mb-5 rounded-xl bg-white p-6 shadow-sm">
           <div className="flex items-start gap-4">
             <div className="text-4xl">
-              🚚
+              ðŸšš
             </div>
 
             <div>
@@ -69,7 +69,7 @@ export default function ShippingPage() {
         <section className="mb-5 rounded-xl bg-white p-6 shadow-sm">
           <div className="flex items-start gap-4">
             <div className="text-4xl">
-              🚚
+              ðŸšš
             </div>
 
             <div>
@@ -95,16 +95,16 @@ export default function ShippingPage() {
         <section className="mb-5 rounded-xl bg-white p-6 shadow-sm">
           <div className="flex items-start gap-4">
             <div className="text-4xl">
-              ????
+              ðŸ‡¬ðŸ‡§
             </div>
 
             <div>
               <h2 className="text-2xl font-bold">
-                Delivery Across Pakistan
+                Delivery Across the UK
               </h2>
 
               <p className="mt-3 leading-7 text-gray-600">
-                We provide delivery services across Pakistan. Our courier
+                We provide delivery services across the UK. Our courier
                 partners deliver orders to major cities as well as many
                 other areas across the country.
               </p>
@@ -120,22 +120,22 @@ export default function ShippingPage() {
 
           <div className="mt-4 space-y-3 text-gray-600">
             <p>
-              <strong>�</strong> Please make sure your delivery address and
+              <strong>âœ“</strong> Please make sure your delivery address and
               contact number are correct when placing your order.
             </p>
 
             <p>
-              <strong>�</strong> Delivery time is normally 3�5 working days,
+              <strong>âœ“</strong> Delivery time is normally 3â€“5 working days,
               but unexpected courier delays may occasionally occur.
             </p>
 
             <p>
-              <strong>�</strong> Tracking details will be provided after
+              <strong>âœ“</strong> Tracking details will be provided after
               dispatch.
             </p>
 
             <p>
-              <strong>�</strong> Please keep your phone available so the
+              <strong>âœ“</strong> Please keep your phone available so the
               courier can contact you when required.
             </p>
           </div>
@@ -145,4 +145,3 @@ export default function ShippingPage() {
     </main>
   );
 }
-

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { prisma } from "@/app/lib/prisma";
@@ -156,12 +156,12 @@ export async function POST(request: Request) {
         },
 
         body: JSON.stringify({
-          from: "AM Whole Sale Pakistan <onboarding@resend.dev>",
+          from: "Click&Pick <onboarding@resend.dev>",
 
           to: [email],
 
           subject:
-            "Verify your email - AM Whole Sale Pakistan",
+            "Verify your email - Click&Pick",
 
           html: `
             <div
@@ -174,14 +174,14 @@ export async function POST(request: Request) {
             >
 
               <h2 style="color: #f97316;">
-                AM Whole Sale Pakistan
+                Click&Pick
               </h2>
 
               <p>Hello ${fullName},</p>
 
               <p>
                 Thank you for creating an account with
-                AM Whole Sale Pakistan.
+                Click&Pick.
               </p>
 
               <p>
@@ -224,7 +224,7 @@ export async function POST(request: Request) {
 
               <p>
                 Regards,<br />
-                AM Whole Sale Pakistan
+                Click&Pick
               </p>
 
             </div>

@@ -243,7 +243,7 @@ export default function ProductDetails({
           <div className="flex flex-col justify-center">
 
             <p className="text-sm font-semibold uppercase tracking-wider text-orange-500">
-              AM Whole Sale Pakistan
+              Click&Pick
             </p>
 
             <h1 className="mt-3 text-3xl font-bold md:text-4xl">
@@ -253,7 +253,7 @@ export default function ProductDetails({
             {/* RATING */}
 
             <div className="mt-4 text-yellow-500">
-              ★★★★★
+              Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦
 
               <span className="ml-2 text-sm text-gray-500">
                 ({product.reviews} reviews)
@@ -265,12 +265,12 @@ export default function ProductDetails({
             <div className="mt-6">
 
               <span className="text-3xl font-bold text-red-600">
-                �Rs. {product.price}
+                Â£ {product.price}
               </span>
 
               {product.oldPrice ? (
                 <span className="ml-3 text-lg text-gray-400 line-through">
-                  �Rs. {product.oldPrice}
+                  Â£ {product.oldPrice}
                 </span>
               ) : null}
 
@@ -286,7 +286,7 @@ export default function ProductDetails({
 
               <p className="mt-2 leading-7 text-gray-600">
                 {product.description ||
-                  "High-quality product available from AM Whole Sale Pakistan. Order now and enjoy great value and reliable Pakistan delivery."}
+                  "High-quality product available from Click&Pick. Order now and enjoy great value and reliable UK delivery."}
               </p>
 
               {/* DESCRIPTION IMAGE */}
@@ -315,7 +315,7 @@ export default function ProductDetails({
                 </div>
               ) : (
                 <p className="font-semibold text-green-600">
-                  ✓ In Stock ({product.stock} available)
+                  Ã¢Å“â€œ In Stock ({product.stock} available)
                 </p>
               )}
 
@@ -342,7 +342,7 @@ export default function ProductDetails({
                   }
                   className="px-5 py-2 text-xl font-bold hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  −
+                  Ã¢Ë†â€™
                 </button>
 
                 <span className="min-w-[55px] border-x px-4 py-2 text-center font-semibold">
@@ -387,7 +387,7 @@ export default function ProductDetails({
               {outOfStock
                 ? "Out of Stock"
                 : added
-                  ? "✓ Added to Cart"
+                  ? "Ã¢Å“â€œ Added to Cart"
                   : "Add to Cart"}
             </button>
 
@@ -423,7 +423,7 @@ export default function ProductDetails({
 
               <div>
                 <div className="text-2xl">
-                  🚚
+                  Ã°Å¸Å¡Å¡
                 </div>
 
                 <p className="mt-1 text-xs text-gray-500">
@@ -433,7 +433,7 @@ export default function ProductDetails({
 
               <div>
                 <div className="text-2xl">
-                  🔒
+                  Ã°Å¸â€â€™
                 </div>
 
                 <p className="mt-1 text-xs text-gray-500">
@@ -443,7 +443,7 @@ export default function ProductDetails({
 
               <div>
                 <div className="text-2xl">
-                  ↩️
+                  Ã¢â€ Â©Ã¯Â¸Â
                 </div>
 
                 <p className="mt-1 text-xs text-gray-500">

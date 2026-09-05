@@ -163,10 +163,10 @@ export default function ProductsPage() {
     const numericPrice = Number(price);
 
     if (!Number.isFinite(numericPrice)) {
-      return "Rs. 0.00";
+      return "£0.00";
     }
 
-    return `Rs. ${numericPrice.toFixed(2)}`;
+    return `£${numericPrice.toFixed(2)}`;
   }
 
   return (
@@ -181,12 +181,12 @@ export default function ProductsPage() {
             <div className="flex items-center gap-3">
 
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-500 text-xl font-black shadow-lg">
-                AM
+                C&P
               </div>
 
               <div>
                 <h1 className="text-xl font-extrabold tracking-tight sm:text-2xl">
-                  AM Whole Sale Pakistan
+                  Click&Pick
                 </h1>
 
                 <p className="mt-0.5 text-xs font-medium text-slate-400 sm:text-sm">
@@ -1006,7 +1006,7 @@ export default function ProductsPage() {
       <footer className="mt-8 border-t border-slate-800 bg-slate-950 py-7 text-center">
 
         <p className="text-xs font-medium text-slate-500">
-          © 2026 AM Whole Sale Pakistan. All rights reserved.
+          © 2026 Click&Pick. All rights reserved.
         </p>
 
       </footer>

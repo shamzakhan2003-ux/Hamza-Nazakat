@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "../../../lib/prisma";
@@ -106,7 +106,7 @@ export default async function OrderDetailsPage({
 
           <div>
             <h1 className="text-2xl font-bold">
-              AM Whole Sale Pakistan
+              Click&Pick
             </h1>
 
             <p className="text-sm text-gray-400">
@@ -347,8 +347,7 @@ export default async function OrderDetailsPage({
                           </span>
 
                           <span>
-                            Price: Rs. 
-                            {Number(
+                            Price: £{Number(
                               item.price
                             ).toFixed(2)}
                           </span>
@@ -365,8 +364,7 @@ export default async function OrderDetailsPage({
                       <div className="text-left sm:text-right">
 
                         <p className="text-lg font-bold">
-                          Rs. 
-                          {itemTotal.toFixed(
+                          £{itemTotal.toFixed(
                             2
                           )}
                         </p>
@@ -398,8 +396,7 @@ export default async function OrderDetailsPage({
                     </span>
 
                     <span className="font-semibold">
-                      Rs. 
-                      {subtotal.toFixed(2)}
+                      £{subtotal.toFixed(2)}
                     </span>
 
                   </div>
@@ -411,8 +408,7 @@ export default async function OrderDetailsPage({
                     </span>
 
                     <span className="text-orange-500">
-                      Rs. 
-                      {Number(
+                      £{Number(
                         order.total
                       ).toFixed(2)}
                     </span>
@@ -528,8 +524,7 @@ export default async function OrderDetailsPage({
                   </span>
 
                   <span className="text-xl font-extrabold text-orange-500">
-                    Rs. 
-                    {Number(
+                    £{Number(
                       order.total
                     ).toFixed(2)}
                   </span>
@@ -601,7 +596,7 @@ export default async function OrderDetailsPage({
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
 
         <p className="text-sm text-gray-400">
-          © 2026 AM Whole Sale Pakistan. All rights reserved.
+          Â© 2026 Click&Pick. All rights reserved.
         </p>
 
       </footer>

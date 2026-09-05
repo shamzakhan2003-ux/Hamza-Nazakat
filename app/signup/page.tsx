@@ -186,7 +186,7 @@ function SignupContent() {
           onClick={() => router.push("/")}
           className="mb-8 block text-2xl font-bold text-orange-500"
         >
-          AM Whole Sale Pakistan
+          Click&Pick
         </button>
 
         <div className="rounded-xl bg-white p-6 shadow-sm">
@@ -248,7 +248,7 @@ function SignupContent() {
                     name="phone"
                     value={form.phone}
                     onChange={handleChange}
-                    placeholder="03XXXXXXXXX"
+                    placeholder="+44 7XXXXXXXXX"
                     className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
                   />
 

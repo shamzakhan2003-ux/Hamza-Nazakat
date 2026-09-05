@@ -358,7 +358,7 @@ export default function NewProductPage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5">
           <div>
             <h1 className="text-2xl font-bold">
-              AM Whole Sale Pakistan
+              Click&Pick
             </h1>
 
             <p className="text-sm text-gray-400">
@@ -507,7 +507,7 @@ export default function NewProductPage() {
                   htmlFor="price"
                   className="mb-2 block font-semibold"
                 >
-                  Sale Price (Rs.)
+                  Sale Price (£)
                 </label>
 
                 <input
@@ -536,7 +536,7 @@ export default function NewProductPage() {
                   htmlFor="oldPrice"
                   className="mb-2 block font-semibold"
                 >
-                  Old Price (Rs.)
+                  Old Price (£)
                   <span className="ml-2 text-sm font-normal text-gray-400">
                     Optional
                   </span>
@@ -660,11 +660,11 @@ export default function NewProductPage() {
 
                           <div className="mt-3 flex items-end gap-3">
                             <span className="text-sm font-semibold text-gray-400 line-through">
-                              Rs. {oldPriceValue || "0"}
+                              £{oldPriceValue || "0"}
                             </span>
 
                             <span className="text-2xl font-black text-red-600">
-                              Rs. {priceValue || "0"}
+                              £{priceValue || "0"}
                             </span>
                           </div>
                         </div>
@@ -762,7 +762,7 @@ export default function NewProductPage() {
                         multiple: false,
 
                         folder:
-                          "am-wholesale-pakistan/products",
+                          "click-pick/products",
 
                         sources: [
                           "local",
@@ -938,7 +938,7 @@ export default function NewProductPage() {
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          © 2026 AM Whole Sale Pakistan. All rights reserved.
+          © 2026 Click&Pick. All rights reserved.
         </p>
       </footer>
     </main>

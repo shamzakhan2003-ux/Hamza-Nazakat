@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -59,10 +59,10 @@ function formatPrice(value: number) {
   const amount = Number(value);
 
   if (!Number.isFinite(amount)) {
-    return "Rs. 0.00";
+    return "£0.00";
   }
 
-  return `Rs. ${amount.toFixed(2)}`;
+  return `£${amount.toFixed(2)}`;
 }
 
 export default function OrderTable({
@@ -299,7 +299,7 @@ export default function OrderTable({
                   className="px-6 py-16 text-center"
                 >
                   <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-2xl">
-                    🔍
+                    🔍
                   </div>
 
                   <p className="mt-4 text-lg font-extrabold text-slate-800">

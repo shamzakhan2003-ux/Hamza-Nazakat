@@ -86,7 +86,7 @@ export async function POST(request: Request) {
     // =========================
 
     const result = await cloudinary.uploader.upload(dataUri, {
-      folder: "am-wholesale-pakistan/products",
+      folder: "click-pick/products",
       resource_type: "image",
     });
 

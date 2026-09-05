@@ -1,4 +1,4 @@
-import Header from "../../components/Header";
+﻿import Header from "../../components/Header";
 import ProductDetails from "../../components/ProductDetails";
 import { prisma } from "../../lib/prisma";
 import { notFound } from "next/navigation";
@@ -57,7 +57,7 @@ export default async function ProductPage({
       <footer className="bg-gray-900 text-white">
         <div className="mx-auto max-w-7xl px-4 py-10 text-center">
           <p className="text-sm text-gray-400">
-            © 2026 AM Whole Sale Pakistan. All rights reserved.
+            © 2026 Click&Pick. All rights reserved.
           </p>
         </div>
       </footer>

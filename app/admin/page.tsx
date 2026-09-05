@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "../lib/prisma";
@@ -67,7 +67,7 @@ export default async function AdminPage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <div>
             <h1 className="text-xl font-extrabold tracking-tight sm:text-2xl">
-              AM Whole Sale Pakistan
+              Click&Pick
             </h1>
 
             <p className="mt-0.5 text-xs font-medium text-slate-400 sm:text-sm">
@@ -244,7 +244,7 @@ export default async function AdminPage() {
               </p>
 
               <p className="mt-2 text-3xl font-extrabold tracking-tight text-green-600 sm:text-4xl">
-                Rs. {totalSales.toFixed(2)}
+                £{totalSales.toFixed(2)}
               </p>
 
               <p className="mt-1 text-sm text-slate-500">
@@ -279,7 +279,7 @@ export default async function AdminPage() {
       {/* FOOTER */}
       <footer className="mt-10 border-t border-slate-800 bg-slate-950 py-7 text-center">
         <p className="text-sm font-medium text-slate-400">
-          © 2026 AM Whole Sale Pakistan. All rights reserved.
+          © 2026 Click&Pick. All rights reserved.
         </p>
       </footer>
     </main>

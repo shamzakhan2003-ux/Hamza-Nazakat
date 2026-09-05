@@ -78,7 +78,7 @@ function LoginForm() {
           onClick={() => router.push("/")}
           className="mb-8 block text-2xl font-extrabold text-orange-500"
         >
-          AM Whole Sale Pakistan
+          Click&Pick
         </button>
 
         <div className="rounded-xl bg-white p-6 shadow-sm">

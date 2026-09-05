@@ -20,13 +20,6 @@ export default async function Home() {
 
   const categoryList = categories.map((item) => item.category);
 
-  const products = await prisma.product.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 8,
-  });
-
   const flashDeals = await prisma.product.findMany({
     where: {
       flashDeal: true,
@@ -56,7 +49,7 @@ export default async function Home() {
         <div className="overflow-hidden rounded-lg bg-orange-500">
           <div className="flex flex-col justify-center px-8 py-14 text-white md:px-14">
             <p className="mb-3 text-sm font-semibold uppercase tracking-widest">
-              AM Whole Sale Pakistan
+              Click&Pick
             </p>
 
             <h1 className="text-4xl font-extrabold leading-tight md:text-5xl">
@@ -66,8 +59,8 @@ export default async function Home() {
             </h1>
 
             <p className="mt-5 max-w-md text-lg text-orange-50">
-              Discover amazing products at competitive prices.
-              Shop electronics, toys, home essentials and more.
+              Discover amazing products at competitive prices. Shop
+              electronics, toys, home essentials and more.
             </p>
 
             <Link
@@ -85,9 +78,7 @@ export default async function Home() {
         <div className="rounded-lg bg-white p-6">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold">
-                Shop by Category
-              </h2>
+              <h2 className="text-2xl font-bold">Shop by Category</h2>
 
               <p className="mt-1 text-sm text-gray-500">
                 Find the products you need.
@@ -127,9 +118,7 @@ export default async function Home() {
                     : "🛍️"}
                 </div>
 
-                <h3 className="text-sm font-semibold">
-                  {category}
-                </h3>
+                <h3 className="text-sm font-semibold">{category}</h3>
               </Link>
             ))}
           </div>
@@ -141,9 +130,7 @@ export default async function Home() {
         <div className="rounded-lg bg-white">
           <div className="flex items-center justify-between border-b px-6 py-5">
             <div>
-              <h2 className="text-2xl font-bold">
-                🔥 Flash Deals
-              </h2>
+              <h2 className="text-2xl font-bold">🔥 Flash Deals</h2>
 
               <p className="mt-1 text-sm text-gray-500">
                 Limited-time offers
@@ -178,9 +165,7 @@ export default async function Home() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <span className="text-gray-400">
-                        Product Image
-                      </span>
+                      <span className="text-gray-400">Product Image</span>
                     )}
 
                     {product.discount &&
@@ -198,12 +183,12 @@ export default async function Home() {
 
                     <div className="mt-3">
                       <span className="text-xl font-bold text-red-600">
-                        Rs. {product.price.toString()}
+                        £{product.price.toString()}
                       </span>
 
                       {product.oldPrice ? (
                         <span className="ml-2 text-sm text-gray-400 line-through">
-                          Rs. {product.oldPrice.toString()}
+                          £{product.oldPrice.toString()}
                         </span>
                       ) : null}
                     </div>
@@ -231,9 +216,7 @@ export default async function Home() {
         <div className="rounded-lg bg-white">
           <div className="flex items-center justify-between border-b px-6 py-5">
             <div>
-              <h2 className="text-2xl font-bold">
-                🆕 New Arrivals
-              </h2>
+              <h2 className="text-2xl font-bold">🆕 New Arrivals</h2>
 
               <p className="mt-1 text-sm text-gray-500">
                 Our latest products
@@ -268,9 +251,7 @@ export default async function Home() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <span className="text-gray-400">
-                        Product Image
-                      </span>
+                      <span className="text-gray-400">Product Image</span>
                     )}
 
                     {product.discount &&
@@ -288,12 +269,12 @@ export default async function Home() {
 
                     <div className="mt-3">
                       <span className="text-xl font-bold text-red-600">
-                        Rs. {product.price.toString()}
+                        £{product.price.toString()}
                       </span>
 
                       {product.oldPrice ? (
                         <span className="ml-2 text-sm text-gray-400 line-through">
-                          Rs. {product.oldPrice.toString()}
+                          £{product.oldPrice.toString()}
                         </span>
                       ) : null}
                     </div>
@@ -322,21 +303,17 @@ export default async function Home() {
           <div className="rounded-lg bg-white p-6 text-center transition hover:-translate-y-1 hover:shadow-md">
             <div className="text-3xl">&#128666;</div>
 
-            <h3 className="mt-3 font-bold">
-              Fast Pakistan Delivery
-            </h3>
+            <h3 className="mt-3 font-bold">UK Delivery</h3>
 
             <p className="mt-1 text-sm text-gray-500">
-              Shop with confidence
+              Reliable delivery across the UK
             </p>
           </div>
 
           <div className="rounded-lg bg-white p-6 text-center transition hover:-translate-y-1 hover:shadow-md">
             <div className="text-3xl">&#128274;</div>
 
-            <h3 className="mt-3 font-bold">
-              Secure Shopping
-            </h3>
+            <h3 className="mt-3 font-bold">Secure Shopping</h3>
 
             <p className="mt-1 text-sm text-gray-500">
               Your information is protected
@@ -346,9 +323,7 @@ export default async function Home() {
           <div className="rounded-lg bg-white p-6 text-center transition hover:-translate-y-1 hover:shadow-md">
             <div className="text-3xl">&#128176;</div>
 
-            <h3 className="mt-3 font-bold">
-              Great Prices
-            </h3>
+            <h3 className="mt-3 font-bold">Great Prices</h3>
 
             <p className="mt-1 text-sm text-gray-500">
               Quality products at great prices
@@ -361,9 +336,7 @@ export default async function Home() {
           >
             <div className="text-3xl">&#128172;</div>
 
-            <h3 className="mt-3 font-bold">
-              Customer Support
-            </h3>
+            <h3 className="mt-3 font-bold">Customer Support</h3>
 
             <p className="mt-1 text-sm text-gray-500">
               We are here to help
@@ -382,7 +355,7 @@ export default async function Home() {
                 href="/"
                 className="text-xl font-bold hover:text-orange-400"
               >
-                AM Whole Sale Pakistan
+                Click&Pick
               </Link>
 
               <p className="mt-3 text-sm text-gray-400">
@@ -399,9 +372,7 @@ export default async function Home() {
 
             {/* Customer Service */}
             <div>
-              <h3 className="font-bold">
-                Customer Service
-              </h3>
+              <h3 className="font-bold">Customer Service</h3>
 
               <Link
                 href="/contact"
@@ -427,9 +398,7 @@ export default async function Home() {
 
             {/* About */}
             <div>
-              <h3 className="font-bold">
-                About
-              </h3>
+              <h3 className="font-bold">About</h3>
 
               <Link
                 href="/about"
@@ -455,9 +424,7 @@ export default async function Home() {
 
             {/* Shop */}
             <div>
-              <h3 className="font-bold">
-                Shop
-              </h3>
+              <h3 className="font-bold">Shop</h3>
 
               <Link
                 href="/products"
@@ -497,7 +464,7 @@ export default async function Home() {
           </div>
 
           <div className="mt-10 border-t border-gray-700 pt-6 text-center text-sm text-gray-500">
-            © 2026 AM Whole Sale Pakistan. All rights reserved.
+            © 2026 Click&Pick. All rights reserved.
           </div>
         </div>
       </footer>

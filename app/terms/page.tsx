@@ -1,10 +1,10 @@
-export default function TermsPage() {
+﻿export default function TermsPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <section className="bg-gray-900 px-4 py-14 text-white">
         <div className="mx-auto max-w-5xl text-center">
           <p className="mb-3 font-semibold text-orange-400">
-            AM Whole Sale Pakistan
+            Click&Pick
           </p>
 
           <h1 className="text-4xl font-extrabold">
@@ -26,7 +26,7 @@ export default function TermsPage() {
             </h2>
 
             <p className="mt-3 leading-7 text-gray-600">
-              By using the AM Whole Sale Pakistan website, you agree to use
+              By using the Click&Pick website, you agree to use
               the website lawfully and responsibly and to comply with these
               Terms & Conditions.
             </p>
@@ -51,7 +51,7 @@ export default function TermsPage() {
             </h2>
 
             <p className="mt-3 leading-7 text-gray-600">
-              Product prices are displayed in Pakistani Rupees (PKR/Rs.).
+              Product prices are displayed in British Pounds (GBP/£).
               Prices and promotional offers may change without prior notice.
               The applicable price for an order will be the price shown at
               the time the order is placed, subject to correction of obvious
@@ -155,8 +155,7 @@ export default function TermsPage() {
 
             <p className="mt-3 leading-7 text-gray-600">
               If you have questions about these Terms & Conditions, orders,
-              products, delivery, returns, or refunds, please contact AM
-              Whole Sale Pakistan through our Contact Us page.
+              products, delivery, returns, or refunds, please contact Click&Pick through our Contact Us page.
             </p>
           </section>
         </div>

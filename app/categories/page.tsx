@@ -1,4 +1,4 @@
-import Header from "../components/Header";
+﻿import Header from "../components/Header";
 import { prisma } from "../lib/prisma";
 import Link from "next/link";
 
@@ -23,20 +23,20 @@ export default async function CategoriesPage() {
   function getCategoryIcon(category: string) {
     const name = category.toLowerCase();
 
-    if (name.includes("toy")) return "🧸";
-    if (name.includes("mobile")) return "📱";
-    if (name.includes("phone")) return "📱";
-    if (name.includes("electronic")) return "💻";
-    if (name.includes("audio")) return "🔊";
-    if (name.includes("speaker")) return "🔊";
-    if (name.includes("home")) return "🏠";
-    if (name.includes("beauty")) return "💄";
-    if (name.includes("fashion")) return "👕";
-    if (name.includes("sport")) return "⚽";
-    if (name.includes("computer")) return "💻";
-    if (name.includes("accessor")) return "🛍️";
+    if (name.includes("toy")) return "ðŸ§¸";
+    if (name.includes("mobile")) return "ðŸ“±";
+    if (name.includes("phone")) return "ðŸ“±";
+    if (name.includes("electronic")) return "ðŸ’»";
+    if (name.includes("audio")) return "ðŸ”Š";
+    if (name.includes("speaker")) return "ðŸ”Š";
+    if (name.includes("home")) return "ðŸ ";
+    if (name.includes("beauty")) return "ðŸ’„";
+    if (name.includes("fashion")) return "ðŸ‘•";
+    if (name.includes("sport")) return "âš½";
+    if (name.includes("computer")) return "ðŸ’»";
+    if (name.includes("accessor")) return "ðŸ›ï¸";
 
-    return "🛍️";
+    return "ðŸ›ï¸";
   }
 
   return (
@@ -47,7 +47,7 @@ export default async function CategoriesPage() {
       <section className="border-b bg-white">
         <div className="mx-auto max-w-7xl px-4 py-10">
           <p className="text-sm font-semibold uppercase tracking-wider text-orange-500">
-            AM Whole Sale Pakistan
+            Click&Pick
           </p>
 
           <h1 className="mt-2 text-3xl font-bold md:text-4xl">
@@ -64,7 +64,7 @@ export default async function CategoriesPage() {
       <section className="mx-auto max-w-7xl px-4 py-10">
         {categoryList.length === 0 ? (
           <div className="rounded-lg bg-white py-20 text-center">
-            <div className="text-5xl">🛍️</div>
+            <div className="text-5xl">ðŸ›ï¸</div>
 
             <h2 className="mt-4 text-2xl font-bold">
               No Categories Found
@@ -108,7 +108,7 @@ export default async function CategoriesPage() {
                   </h3>
 
                   <p className="mt-2 text-xs text-gray-400">
-                    View Products →
+                    View Products â†’
                   </p>
                 </Link>
               ))}
@@ -121,7 +121,7 @@ export default async function CategoriesPage() {
       <footer className="mt-10 bg-gray-900 text-white">
         <div className="mx-auto max-w-7xl px-4 py-10 text-center">
           <p className="text-sm text-gray-400">
-            © 2026 AM Whole Sale Pakistan. All rights reserved.
+            © 2026 Click&Pick. All rights reserved.
           </p>
         </div>
       </footer>

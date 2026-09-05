@@ -10,15 +10,12 @@ type DeliveryTrackingProps = {
 };
 
 const couriers = [
-  "TCS",
-  "Leopards Courier",
-  "M&P Courier",
-  "Pakistan Post",
-  "BlueEX",
-  "Trax",
-  "Rider",
-  "Call Courier",
-  "PostEx",
+  "Royal Mail",
+  "Evri",
+  "DPD",
+  "Yodel",
+  "Parcelforce",
+  "Amazon Logistics",
   "Other",
 ];
 
@@ -35,32 +32,22 @@ function getCourierTrackingUrl(
   }
 
   switch (courier) {
-    case "TCS":
-      return `https://www.tcsexpress.com/track/${number}`;
+    case "Royal Mail":
+      return "https://www.royalmail.com/track-your-item";
 
-    case "Leopards Courier":
-      return `https://www.leopardscourier.com/track/${number}`;
+    case "Evri":
+      return "https://www.evri.com/track-a-parcel";
 
-    case "M&P Courier":
-      return `https://www.mulphilog.com/track/${number}`;
+    case "DPD":
+      return "https://q2-tracking.dpd.co.uk/";
 
-    case "Pakistan Post":
-      return `https://ep.gov.pk/`;
+    case "Yodel":
+      return "https://www.yodel.co.uk/home";
 
-    case "BlueEX":
-      return `https://www.blue-ex.com/track`;
+    case "Parcelforce":
+      return "https://www.royalmail.com/track-your-item";
 
-    case "Trax":
-      return `https://trax.pk/`;
 
-    case "Rider":
-      return `https://rider.pk/`;
-
-    case "Call Courier":
-      return `https://callcourier.com.pk/`;
-
-    case "PostEx":
-      return `https://postex.pk/`;
 
     default:
       return "";

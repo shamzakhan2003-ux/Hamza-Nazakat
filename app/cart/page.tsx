@@ -156,7 +156,7 @@ export default function CartPage() {
             onClick={() => router.push("/")}
             className="text-2xl font-bold text-orange-500"
           >
-            AM Whole Sale Pakistan
+            Click&Pick
           </button>
 
           {/* Continue Shopping */}
@@ -211,7 +211,7 @@ export default function CartPage() {
           <div className="rounded-lg bg-white px-6 py-16 text-center shadow-sm">
 
             <div className="text-6xl">
-              🛒
+              ??
             </div>
 
             <h2 className="mt-5 text-2xl font-bold">
@@ -277,8 +277,7 @@ export default function CartPage() {
                     </h2>
 
                     <p className="mt-2 font-semibold text-orange-500">
-                      �Rs. 
-                      {Number(item.price).toFixed(2)}
+                      £{Number(item.price).toFixed(2)}
                     </p>
 
                     {/* Quantity */}
@@ -291,7 +290,7 @@ export default function CartPage() {
                         }
                         className="rounded-l-md border px-4 py-2 text-lg font-bold hover:bg-gray-100"
                       >
-                        −
+                        -
                       </button>
 
                       <span className="border-y px-5 py-2 font-semibold">
@@ -316,8 +315,7 @@ export default function CartPage() {
                   <div className="flex items-center justify-between gap-5 sm:block sm:text-right">
 
                     <p className="text-lg font-bold">
-                      �Rs. 
-                      {(
+                      £{(
                         Number(item.price) *
                         item.quantity
                       ).toFixed(2)}
@@ -371,7 +369,7 @@ export default function CartPage() {
                   </span>
 
                   <span>
-                    �Rs. {total.toFixed(2)}
+                    £{total.toFixed(2)}
                   </span>
 
                 </div>
@@ -399,7 +397,7 @@ export default function CartPage() {
                     </span>
 
                     <span className="text-orange-500">
-                      �Rs. {total.toFixed(2)}
+                      £{total.toFixed(2)}
                     </span>
 
                   </div>
@@ -440,7 +438,7 @@ export default function CartPage() {
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
 
         <p className="text-sm text-gray-400">
-          © 2026 AM Whole Sale Pakistan. All rights reserved.
+          © 2026 Click&Pick. All rights reserved.
         </p>
 
       </footer>

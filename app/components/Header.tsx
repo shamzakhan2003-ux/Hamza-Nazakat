@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -100,10 +100,7 @@ export default function Header() {
     return () => {
       window.removeEventListener("cartUpdated", handleCartUpdated);
       window.removeEventListener("storage", handleStorage);
-      window.removeEventListener(
-        "customerUpdated",
-        handleCustomerUpdated
-      );
+      window.removeEventListener("customerUpdated", handleCustomerUpdated);
     };
   }, []);
 
@@ -166,8 +163,7 @@ export default function Header() {
             href="/"
             className="min-w-fit text-xl font-extrabold tracking-tight md:text-2xl"
           >
-            AM Whole Sale{" "}
-            <span className="text-orange-500">Pakistan</span>
+            Click&Pick
           </Link>
 
           {/* SEARCH */}

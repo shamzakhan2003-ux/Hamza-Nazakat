@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+﻿import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
 
@@ -83,13 +83,13 @@ export async function POST(request: Request) {
 CUSTOMER MESSAGE:
 ${message}
 
-CURRENT AM WHOLE SALE PAKISTAN PRODUCT CATALOGUE:
+CURRENT CLICK&Pick PRODUCT CATALOGUE:
 ${JSON.stringify(productData, null, 2)}
       `,
 
       config: {
         systemInstruction: `
-You are the official AI Customer Support Assistant for AM Whole Sale Pakistan.
+You are the official AI Customer Support Assistant for CLICK&Pick.
 
 You are a friendly shopping assistant.
 
@@ -198,9 +198,9 @@ Give a short summary based ONLY on the actual catalogue.
 
 Answer using the most relevant product from the catalogue.
 
-21. Prices are in PKR.
+21. Prices are in GBP.
 
-22. Use the �Rs.  symbol correctly.
+22. Use the £ symbol correctly.
 
 23. Use English.
 

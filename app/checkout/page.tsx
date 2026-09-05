@@ -245,7 +245,7 @@ export default function CheckoutPage() {
     return (
       <main className="min-h-screen bg-gray-100 text-gray-900">
         <div className="mx-auto max-w-3xl px-4 py-16 text-center">
-          <div className="text-6xl">🛒</div>
+          <div className="text-6xl">??</div>
 
           <h1 className="mt-5 text-3xl font-bold">
             Your cart is empty
@@ -278,7 +278,7 @@ export default function CheckoutPage() {
             onClick={() => router.push("/")}
             className="text-2xl font-bold text-orange-500"
           >
-            AM Whole Sale Pakistan
+            Click&Pick
           </button>
         </div>
       </header>
@@ -341,7 +341,7 @@ export default function CheckoutPage() {
                   value={form.phone}
                   onChange={handleChange}
                   className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
-                  placeholder="Phone number"
+                  placeholder="UK phone number"
                 />
               </div>
 
@@ -377,7 +377,7 @@ export default function CheckoutPage() {
 
               <div>
                 <label className="mb-2 block font-semibold">
-                  postcode
+                  Postcode
                 </label>
 
                 <input
@@ -385,8 +385,8 @@ export default function CheckoutPage() {
                   name="postcode"
                   value={form.postcode}
                   onChange={handleChange}
-                  className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
-                  placeholder="postcode"
+                  className="w-full rounded-md border px-4 py-3 uppercase outline-none focus:border-orange-500"
+                  placeholder="e.g. SW1A 1AA"
                 />
               </div>
             </div>
@@ -423,8 +423,7 @@ export default function CheckoutPage() {
                     </p>
 
                     <p className="text-sm text-gray-500">
-                      �Rs. 
-                      {Number(item.price).toFixed(
+                      £{Number(item.price).toFixed(
                         2
                       )}{" "}
                       each
@@ -432,8 +431,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <p className="font-semibold">
-                    �Rs. 
-                    {(
+                    £{(
                       Number(item.price) *
                       item.quantity
                     ).toFixed(2)}
@@ -445,7 +443,7 @@ export default function CheckoutPage() {
                 <span>Total</span>
 
                 <span className="text-orange-500">
-                  �Rs. {total.toFixed(2)}
+                  £{total.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -455,7 +453,7 @@ export default function CheckoutPage() {
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          © 2026 AM Whole Sale Pakistan. All rights reserved.
+          © 2026 Click&Pick. All rights reserved.
         </p>
       </footer>
     </main>

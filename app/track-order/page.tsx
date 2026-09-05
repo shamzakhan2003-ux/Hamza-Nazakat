@@ -84,7 +84,7 @@ export default function TrackOrderPage() {
       <header className="bg-gray-900 px-4 py-6 text-white">
         <div className="mx-auto max-w-5xl">
           <h1 className="text-2xl font-bold">
-            AM Whole Sale Pakistan
+            Click&Pick
           </h1>
 
           <p className="mt-1 text-sm text-gray-400">
@@ -189,7 +189,7 @@ export default function TrackOrderPage() {
                             : "bg-gray-200 text-gray-500"
                         }`}
                       >
-                        {completed ? "✓" : index + 1}
+                        {completed ? "âœ“" : index + 1}
                       </div>
 
                       <div>
@@ -305,7 +305,7 @@ export default function TrackOrderPage() {
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          © 2026 AM Whole Sale Pakistan. All rights reserved.
+          Ã‚Â© 2026 Click&Pick. All rights reserved.
         </p>
       </footer>
     </main>

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 
@@ -15,7 +15,7 @@ export default function ContactPage() {
       return;
     }
 
-    const whatsappMessage = `Hello AM Whole Sale Pakistan,
+    const whatsappMessage = `Hello Click&Pick,
 
 Name: ${name}
 Email: ${email}
@@ -44,8 +44,8 @@ ${message}`;
             href="/"
             className="text-xl font-extrabold md:text-2xl"
           >
-            AM Whole Sale{" "}
-            <span className="text-orange-500">Pakistan</span>
+            Click&Pick{" "}
+            <span className="text-orange-500"></span>
           </a>
 
           <a
@@ -62,7 +62,7 @@ ${message}`;
         {/* Page Title */}
         <div className="text-center">
           <p className="text-sm font-bold uppercase tracking-widest text-orange-500">
-            AM Whole Sale Pakistan
+            Click&Pick
           </p>
 
           <h1 className="mt-2 text-3xl font-extrabold md:text-4xl">
@@ -236,7 +236,7 @@ ${message}`;
 
       {/* Footer */}
       <footer className="mt-10 bg-gray-900 py-6 text-center text-sm text-gray-400">
-        {"\u{00A9}"} 2026 AM Whole Sale Pakistan. All rights reserved.
+        {"\u{00A9}"} 2026 Click&Pick. All rights reserved.
       </footer>
     </main>
   );

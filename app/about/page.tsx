@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 export default function AboutPage() {
   return (
@@ -6,7 +6,7 @@ export default function AboutPage() {
       <section className="bg-gray-900 px-4 py-16 text-white">
         <div className="mx-auto max-w-5xl text-center">
           <p className="mb-3 font-semibold text-orange-400">
-            AM Whole Sale Pakistan
+            Click&Pick
           </p>
 
           <h1 className="text-4xl font-extrabold md:text-5xl">
@@ -15,7 +15,7 @@ export default function AboutPage() {
 
           <p className="mx-auto mt-5 max-w-2xl text-lg text-gray-300">
             Quality products, competitive prices, and a simple shopping
-            experience for customers across Pakistan.
+            experience for customers across the UK.
           </p>
         </div>
       </section>
@@ -28,10 +28,10 @@ export default function AboutPage() {
             </h2>
 
             <p className="leading-7 text-gray-600">
-              AM Whole Sale Pakistan is an online shopping store focused on
+              Click&Pick is an online shopping store focused on
               providing a variety of useful products at competitive prices.
               Our goal is to make online shopping simple, convenient, and
-              reliable for customers in Pakistan.
+              reliable for customers in the UK.
             </p>
           </div>
 
