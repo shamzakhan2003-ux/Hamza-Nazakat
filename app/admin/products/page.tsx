@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -163,10 +163,10 @@ export default function ProductsPage() {
     const numericPrice = Number(price);
 
     if (!Number.isFinite(numericPrice)) {
-      return "�0.00";
+      return "£0.00";
     }
 
-    return `�${numericPrice.toFixed(2)}`;
+    return `£${numericPrice.toFixed(2)}`;
   }
 
   return (
@@ -258,7 +258,7 @@ export default function ProductsPage() {
             ) : (
               <>
                 <span className="mr-2 text-base">
-                  ?
+                  🔄
                 </span>
                 Refresh Products
               </>
@@ -313,7 +313,7 @@ export default function ProductsPage() {
                 <div className="relative">
 
                   <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                    ??
+                    🔍
                   </span>
 
                   <input
@@ -562,7 +562,7 @@ export default function ProductsPage() {
                     >
 
                       <div className="text-4xl">
-                        ??
+                        📦
                       </div>
 
                       <p className="mt-4 text-lg font-extrabold text-slate-800">
@@ -819,7 +819,7 @@ export default function ProductsPage() {
               <div className="rounded-xl bg-white py-16 text-center shadow-sm">
 
                 <div className="text-4xl">
-                  ??
+                  📦
                 </div>
 
                 <p className="mt-4 text-lg font-extrabold text-slate-800">
@@ -1006,7 +1006,7 @@ export default function ProductsPage() {
       <footer className="mt-8 border-t border-slate-800 bg-slate-950 py-7 text-center">
 
         <p className="text-xs font-medium text-slate-500">
-          � 2026 Click&Pick. All rights reserved.
+          © 2026 Click&Pick. All rights reserved.
         </p>
 
       </footer>

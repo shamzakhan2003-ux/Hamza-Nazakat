@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { CldUploadWidget } from "next-cloudinary";
@@ -441,7 +441,7 @@ export default function NewProductPage() {
                 >
                   {categoryMode === "select"
                     ? "+ Add New Category"
-                    : "? Select Existing Category"}
+                    : "↩ Select Existing Category"}
                 </button>
               </div>
 
@@ -507,7 +507,7 @@ export default function NewProductPage() {
                   htmlFor="price"
                   className="mb-2 block font-semibold"
                 >
-                  Sale Price (�)
+                  Sale Price (£)
                 </label>
 
                 <input
@@ -536,7 +536,7 @@ export default function NewProductPage() {
                   htmlFor="oldPrice"
                   className="mb-2 block font-semibold"
                 >
-                  Old Price (�)
+                  Old Price (£)
                   <span className="ml-2 text-sm font-normal text-gray-400">
                     Optional
                   </span>
@@ -614,7 +614,7 @@ export default function NewProductPage() {
                       htmlFor="flashDeal"
                       className="font-bold"
                     >
-                      ?? Flash Deal
+                      🔥 Flash Deal
                     </label>
                   </div>
 
@@ -660,11 +660,11 @@ export default function NewProductPage() {
 
                           <div className="mt-3 flex items-end gap-3">
                             <span className="text-sm font-semibold text-gray-400 line-through">
-                              �{oldPriceValue || "0"}
+                              £{oldPriceValue || "0"}
                             </span>
 
                             <span className="text-2xl font-black text-red-600">
-                              �{priceValue || "0"}
+                              £{priceValue || "0"}
                             </span>
                           </div>
                         </div>
@@ -689,7 +689,7 @@ export default function NewProductPage() {
                       htmlFor="newArrival"
                       className="font-semibold"
                     >
-                      ?? New Arrival
+                      🆕 New Arrival
                     </label>
                   </div>
 
@@ -711,7 +711,7 @@ export default function NewProductPage() {
                       htmlFor="featured"
                       className="font-semibold"
                     >
-                      ? Featured Product
+                      ⭐ Featured Product
                     </label>
                   </div>
 
@@ -938,7 +938,7 @@ export default function NewProductPage() {
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          � 2026 Click&Pick. All rights reserved.
+          © 2026 Click&Pick. All rights reserved.
         </p>
       </footer>
     </main>
