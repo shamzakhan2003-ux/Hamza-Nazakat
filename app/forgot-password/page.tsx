@@ -1,13 +1,10 @@
 "use client";
 
-import { FormEvent, Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
-function ForgotPasswordForm() {
+export default function ForgotPasswordPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const redirectTo = searchParams.get("redirect") || "/";
 
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
@@ -27,18 +24,15 @@ function ForgotPasswordForm() {
     try {
       setLoading(true);
 
-      const response = await fetch(
-        "/api/customer/forgot-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email.trim(),
-          }),
-        }
-      );
+      const response = await fetch("/api/customer/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+        }),
+      });
 
       const data = await response.json();
 
@@ -60,9 +54,7 @@ function ForgotPasswordForm() {
     }
   }
 
-  async function resetPassword(
-    event: FormEvent<HTMLFormElement>
-  ) {
+  async function resetPassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!/^\d{6}$/.test(otp)) {
@@ -83,20 +75,17 @@ function ForgotPasswordForm() {
     try {
       setLoading(true);
 
-      const response = await fetch(
-        "/api/customer/reset-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email.trim(),
-            otp,
-            newPassword,
-          }),
-        }
-      );
+      const response = await fetch("/api/customer/reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          otp,
+          newPassword,
+        }),
+      });
 
       const data = await response.json();
 
@@ -170,13 +159,7 @@ function ForgotPasswordForm() {
 
               <button
                 type="button"
-                onClick={() =>
-                  router.push(
-                    `/login?redirect=${encodeURIComponent(
-                      redirectTo
-                    )}`
-                  )
-                }
+                onClick={() => router.push("/login")}
                 className="mt-5 w-full text-center font-semibold text-orange-500 hover:underline"
               >
                 Back to Sign In
@@ -305,13 +288,7 @@ function ForgotPasswordForm() {
 
               <button
                 type="button"
-                onClick={() =>
-                  router.push(
-                    `/login?redirect=${encodeURIComponent(
-                      redirectTo
-                    )}`
-                  )
-                }
+                onClick={() => router.push("/login")}
                 className="mt-6 w-full rounded-md bg-orange-500 py-3 font-bold text-white hover:bg-orange-600"
               >
                 Sign In
@@ -321,21 +298,5 @@ function ForgotPasswordForm() {
         </div>
       </div>
     </main>
-  );
-}
-
-export default function ForgotPasswordPage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="min-h-screen bg-gray-100 px-4 py-12">
-          <div className="mx-auto max-w-md text-center">
-            Loading...
-          </div>
-        </main>
-      }
-    >
-      <ForgotPasswordForm />
-    </Suspense>
   );
 }

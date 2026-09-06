@@ -42,15 +42,24 @@ export async function POST(request: Request) {
       },
     });
 
-    /*
-     * Do not reveal whether an email exists.
-     */
-    if (!customer || !customer.isActive) {
-      return NextResponse.json({
-        success: true,
-        message:
-          "If an account exists with this email address, a password reset OTP has been sent.",
-      });
+    if (!customer) {
+      return NextResponse.json(
+        {
+          error:
+            "No account found with this email address. Please create an account first.",
+        },
+        { status: 404 }
+      );
+    }
+
+    if (!customer.isActive) {
+      return NextResponse.json(
+        {
+          error:
+            "Your account is disabled. Please contact support.",
+        },
+        { status: 403 }
+      );
     }
 
     const otp = generateOtp();
@@ -81,7 +90,7 @@ export async function POST(request: Request) {
       subject: "Password Reset OTP - Click&Pick",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px;">
-          
+
           <h2 style="color: #f97316;">Click&Pick</h2>
 
           <p>Hello ${customer.fullName},</p>
@@ -155,7 +164,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message:
-        "If an account exists with this email address, a password reset OTP has been sent.",
+        "Password reset OTP has been sent to your email address.",
     });
   } catch (error) {
     console.error("Forgot password error:", error);

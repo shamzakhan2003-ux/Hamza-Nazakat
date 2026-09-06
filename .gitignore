@@ -41,3 +41,14 @@ yarn-error.log*
 next-env.d.ts
 
 /app/generated/prisma
+# Prisma generated files
+/generated/
+
+# Backup files
+*.backup
+*.encoding-backup
+
+# Temporary reports/check files
+*-report.txt
+*-check.txt
+page-code.txt
