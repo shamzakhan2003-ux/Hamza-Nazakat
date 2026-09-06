@@ -1,9 +1,9 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -27,15 +27,18 @@ export default function ForgotPasswordPage() {
     try {
       setLoading(true);
 
-      const response = await fetch("/api/customer/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email.trim(),
-        }),
-      });
+      const response = await fetch(
+        "/api/customer/forgot-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email.trim(),
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -57,7 +60,9 @@ export default function ForgotPasswordPage() {
     }
   }
 
-  async function resetPassword(event: FormEvent<HTMLFormElement>) {
+  async function resetPassword(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
 
     if (!/^\d{6}$/.test(otp)) {
@@ -78,17 +83,20 @@ export default function ForgotPasswordPage() {
     try {
       setLoading(true);
 
-      const response = await fetch("/api/customer/reset-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email.trim(),
-          otp,
-          newPassword,
-        }),
-      });
+      const response = await fetch(
+        "/api/customer/reset-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email.trim(),
+            otp,
+            newPassword,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -109,7 +117,6 @@ export default function ForgotPasswordPage() {
   return (
     <main className="min-h-screen bg-gray-100 px-4 py-12 text-gray-900">
       <div className="mx-auto max-w-md">
-
         <button
           type="button"
           onClick={() => router.push("/")}
@@ -119,7 +126,6 @@ export default function ForgotPasswordPage() {
         </button>
 
         <div className="rounded-xl bg-white p-6 shadow-sm">
-
           {step === 1 && (
             <>
               <h1 className="text-3xl font-bold">
@@ -127,7 +133,8 @@ export default function ForgotPasswordPage() {
               </h1>
 
               <p className="mt-2 text-gray-500">
-                Enter your email address and we will send you a password reset OTP.
+                Enter your email address and we will send you a
+                password reset OTP.
               </p>
 
               <form
@@ -165,7 +172,9 @@ export default function ForgotPasswordPage() {
                 type="button"
                 onClick={() =>
                   router.push(
-                    `/login?redirect=${encodeURIComponent(redirectTo)}`
+                    `/login?redirect=${encodeURIComponent(
+                      redirectTo
+                    )}`
                   )
                 }
                 className="mt-5 w-full text-center font-semibold text-orange-500 hover:underline"
@@ -182,7 +191,8 @@ export default function ForgotPasswordPage() {
               </h1>
 
               <p className="mt-2 text-gray-500">
-                Enter the 6-digit OTP sent to your email and choose a new password.
+                Enter the 6-digit OTP sent to your email and
+                choose a new password.
               </p>
 
               <form
@@ -281,7 +291,6 @@ export default function ForgotPasswordPage() {
 
           {step === 3 && (
             <div className="text-center">
-
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl">
                 ✓
               </div>
@@ -298,19 +307,35 @@ export default function ForgotPasswordPage() {
                 type="button"
                 onClick={() =>
                   router.push(
-                    `/login?redirect=${encodeURIComponent(redirectTo)}`
+                    `/login?redirect=${encodeURIComponent(
+                      redirectTo
+                    )}`
                   )
                 }
                 className="mt-6 w-full rounded-md bg-orange-500 py-3 font-bold text-white hover:bg-orange-600"
               >
                 Sign In
               </button>
-
             </div>
           )}
-
         </div>
       </div>
     </main>
+  );
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-gray-100 px-4 py-12">
+          <div className="mx-auto max-w-md text-center">
+            Loading...
+          </div>
+        </main>
+      }
+    >
+      <ForgotPasswordForm />
+    </Suspense>
   );
 }
