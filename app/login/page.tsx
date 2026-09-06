@@ -11,7 +11,7 @@ function LoginForm() {
     searchParams.get("redirect") || "/";
 
   const [loading, setLoading] = useState(false);
-  const [identifier, setIdentifier] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   async function handleLogin(
@@ -19,8 +19,8 @@ function LoginForm() {
   ) {
     event.preventDefault();
 
-    if (!identifier.trim() || !password) {
-      alert("Email/mobile number and password are required.");
+    if (!email.trim() || !password) {
+      alert("Email and password are required.");
       return;
     }
 
@@ -33,7 +33,7 @@ function LoginForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          identifier: identifier.trim(),
+          email: email.trim(),
           password,
         }),
       });
@@ -42,20 +42,6 @@ function LoginForm() {
 
       if (!response.ok) {
         alert(data.error || "Login failed.");
-        return;
-      }
-
-      if (data.requiresMobileVerification) {
-        alert(
-          "Your mobile number is not verified. Please verify your mobile number first."
-        );
-
-        router.push(
-          `/signup?verify=1&phone=${encodeURIComponent(
-            data.phone || identifier
-          )}&redirect=${encodeURIComponent(redirectTo)}`
-        );
-
         return;
       }
 
@@ -88,7 +74,7 @@ function LoginForm() {
           </h1>
 
           <p className="mt-2 text-gray-500">
-            Sign in using your email address or mobile number.
+            Sign in using your email address.
           </p>
 
           <form
@@ -98,17 +84,18 @@ function LoginForm() {
 
             <div>
               <label className="mb-2 block font-semibold">
-                Email or Mobile Number
+                Email
               </label>
 
               <input
                 required
-                value={identifier}
+                type="email"
+                value={email}
                 onChange={(event) =>
-                  setIdentifier(event.target.value)
+                  setEmail(event.target.value)
                 }
-                placeholder="Email or mobile number"
-                autoComplete="username"
+                placeholder="your@email.com"
+                autoComplete="email"
                 className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
               />
             </div>
@@ -167,25 +154,15 @@ function LoginForm() {
               type="button"
               onClick={() =>
                 router.push(
-                  `/signup?redirect=${encodeURIComponent(redirectTo)}`
+                  `/signup?redirect=${encodeURIComponent(
+                    redirectTo
+                  )}`
                 )
               }
               className="mt-2 font-semibold text-orange-500 hover:underline"
             >
               Create Account
             </button>
-
-          </div>
-
-          <div className="mt-5 rounded-md bg-gray-50 p-4 text-sm text-gray-600">
-
-            <p className="font-semibold text-gray-800">
-              Important
-            </p>
-
-            <p className="mt-1">
-              Your mobile number must be verified before you can place an order.
-            </p>
 
           </div>
 

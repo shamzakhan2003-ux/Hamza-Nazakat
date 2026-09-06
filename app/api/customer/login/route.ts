@@ -4,43 +4,63 @@ import { prisma } from "@/app/lib/prisma";
 import {
   createCustomerSession,
   normalizeEmail,
-  normalizePhone,
 } from "@/app/lib/customerAuth";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const identifier = String(body.identifier || "").trim();
+    const email = normalizeEmail(String(body.email || ""));
     const password = String(body.password || "");
 
-    if (!identifier || !password) {
+    if (!email || !password) {
       return NextResponse.json(
         {
-          error: "Email/mobile number and password are required.",
+          error: "Email and password are required.",
         },
         { status: 400 }
       );
     }
 
-    const email = normalizeEmail(identifier);
-    const phone = normalizePhone(identifier);
+    if (!email.includes("@")) {
+      return NextResponse.json(
+        {
+          error: "Please enter a valid email address.",
+        },
+        { status: 400 }
+      );
+    }
 
-    const customer = await prisma.customer.findFirst({
+    const customer = await prisma.customer.findUnique({
       where: {
-        OR: [
-          { email },
-          { phone },
-        ],
+        email,
       },
     });
 
     if (!customer) {
       return NextResponse.json(
         {
-          error: "Invalid email/mobile number or password.",
+          error: "Invalid email or password.",
         },
         { status: 401 }
+      );
+    }
+
+    if (!customer.isActive) {
+      return NextResponse.json(
+        {
+          error: "Your account has been disabled. Please contact support.",
+        },
+        { status: 403 }
+      );
+    }
+
+    if (!customer.emailVerified) {
+      return NextResponse.json(
+        {
+          error: "Please verify your email before logging in.",
+        },
+        { status: 403 }
       );
     }
 
@@ -52,21 +72,9 @@ export async function POST(request: Request) {
     if (!passwordValid) {
       return NextResponse.json(
         {
-          error: "Invalid email/mobile number or password.",
+          error: "Invalid email or password.",
         },
         { status: 401 }
-      );
-    }
-
-    if (!customer.mobileVerified) {
-      return NextResponse.json(
-        {
-          error:
-            "Your mobile number is not verified. Please verify it before continuing.",
-          requiresMobileVerification: true,
-          phone: customer.phone,
-        },
-        { status: 403 }
       );
     }
 

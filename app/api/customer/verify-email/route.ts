@@ -31,80 +31,88 @@ export async function POST(request: Request) {
       );
     }
 
-    const customer = await prisma.customer.findUnique({
-      where: {
-        email,
-      },
-    });
+    /*
+     * Find the temporary signup.
+     * No Customer account exists at this stage.
+     */
+    const pendingSignup =
+      await prisma.pendingCustomerSignup.findUnique({
+        where: {
+          email,
+        },
+      });
 
-    if (!customer) {
+    if (!pendingSignup) {
+      /*
+       * This can happen if the email was already verified
+       * or the pending signup no longer exists.
+       */
+      const existingCustomer =
+        await prisma.customer.findUnique({
+          where: {
+            email,
+          },
+        });
+
+      if (existingCustomer?.emailVerified) {
+        return NextResponse.json(
+          {
+            error: "Email address is already verified.",
+          },
+          { status: 400 }
+        );
+      }
+
       return NextResponse.json(
         {
-          error: "Customer account not found.",
+          error:
+            "Verification code not found. Please sign up again.",
         },
         { status: 404 }
       );
     }
 
-    if (customer.emailVerified) {
+    /*
+     * Check OTP expiry.
+     */
+    if (pendingSignup.emailOtpExpiresAt < new Date()) {
       return NextResponse.json(
         {
-          error: "Email address is already verified.",
+          error:
+            "Verification code has expired. Please sign up again.",
         },
         { status: 400 }
       );
     }
 
-    if (
-      !customer.emailOtpHash ||
-      !customer.emailOtpExpiresAt
-    ) {
+    /*
+     * Maximum 5 incorrect attempts.
+     */
+    if (pendingSignup.emailOtpAttempts >= 5) {
       return NextResponse.json(
         {
           error:
-            "Verification code is not available. Please request a new code.",
-        },
-        { status: 400 }
-      );
-    }
-
-    if (customer.emailOtpExpiresAt < new Date()) {
-      return NextResponse.json(
-        {
-          error:
-            "Verification code has expired. Please request a new code.",
-        },
-        { status: 400 }
-      );
-    }
-
-    if (customer.emailOtpAttempts >= 5) {
-      return NextResponse.json(
-        {
-          error:
-            "Too many incorrect attempts. Please request a new code.",
+            "Too many incorrect attempts. Please sign up again.",
         },
         { status: 429 }
       );
     }
 
     /*
-     * Hash the code entered by the customer.
+     * Hash the OTP entered by the customer.
      */
-
     const emailOtpHash = crypto
       .createHash("sha256")
       .update(otp)
       .digest("hex");
 
     /*
-     * Compare with the hash stored in database.
+     * Compare with stored OTP hash.
      */
-
-    if (emailOtpHash !== customer.emailOtpHash) {
-      await prisma.customer.update({
+    if (emailOtpHash !== pendingSignup.emailOtpHash) {
+      await prisma.pendingCustomerSignup.update({
         where: {
-          id: customer.id,
+          id: pendingSignup.id,
         },
         data: {
           emailOtpAttempts: {
@@ -122,41 +130,103 @@ export async function POST(request: Request) {
     }
 
     /*
-     * Email successfully verified.
+     * OTP is correct.
+     *
+     * Now create the real Customer account and
+     * delete the temporary signup in one transaction.
      */
+    const customer = await prisma.$transaction(
+      async (tx) => {
+        /*
+         * Double-check email and mobile number before
+         * creating the real customer account.
+         */
+        const existingCustomer =
+          await tx.customer.findFirst({
+            where: {
+              OR: [
+                { email: pendingSignup.email },
+                { phone: pendingSignup.phone },
+              ],
+            },
+          });
 
-    const updatedCustomer = await prisma.customer.update({
-      where: {
-        id: customer.id,
-      },
-      data: {
-        emailVerified: true,
-        emailOtpHash: null,
-        emailOtpExpiresAt: null,
-        emailOtpAttempts: 0,
-      },
-    });
+        if (existingCustomer) {
+          throw new Error(
+            "CUSTOMER_ALREADY_EXISTS"
+          );
+        }
+
+        const newCustomer =
+          await tx.customer.create({
+            data: {
+              fullName: pendingSignup.fullName,
+              email: pendingSignup.email,
+              phone: pendingSignup.phone,
+              passwordHash: pendingSignup.passwordHash,
+
+              // Email is verified because OTP was successfully verified.
+              emailVerified: true,
+              emailOtpHash: null,
+              emailOtpExpiresAt: null,
+              emailOtpAttempts: 0,
+
+              // Mobile verification is NOT required.
+              mobileVerified: false,
+              otpHash: null,
+              otpExpiresAt: null,
+              otpAttempts: 0,
+
+              isActive: true,
+            },
+          });
+
+        /*
+         * Remove the temporary signup only after
+         * the real Customer has been created.
+         */
+        await tx.pendingCustomerSignup.delete({
+          where: {
+            id: pendingSignup.id,
+          },
+        });
+
+        return newCustomer;
+      }
+    );
 
     /*
      * Create login session after successful verification.
      */
-
-    await createCustomerSession(updatedCustomer.id);
+    await createCustomerSession(customer.id);
 
     return NextResponse.json({
       success: true,
       message: "Email verified successfully.",
 
       customer: {
-        id: updatedCustomer.id,
-        fullName: updatedCustomer.fullName,
-        email: updatedCustomer.email,
-        phone: updatedCustomer.phone,
+        id: customer.id,
+        fullName: customer.fullName,
+        email: customer.email,
+        phone: customer.phone,
         emailVerified: true,
-        mobileVerified: updatedCustomer.mobileVerified,
+        mobileVerified: customer.mobileVerified,
       },
     });
   } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "CUSTOMER_ALREADY_EXISTS"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "An account with this email or mobile number already exists.",
+        },
+        { status: 409 }
+      );
+    }
+
     console.error(
       "Email verification error:",
       error

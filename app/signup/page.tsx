@@ -21,14 +21,12 @@ function SignupContent() {
   const verifyEmail =
     searchParams.get("email") || "";
 
-  const [step, setStep] = useState<
-    "signup" | "otp"
-  >(verifyMode ? "otp" : "signup");
+  const [step, setStep] = useState<"signup" | "otp">(
+    verifyMode ? "otp" : "signup"
+  );
 
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState("");
-  const [developmentOtp, setDevelopmentOtp] =
-    useState("");
 
   const [form, setForm] = useState({
     fullName: "",
@@ -50,10 +48,10 @@ function SignupContent() {
   function handleChange(
     event: React.ChangeEvent<HTMLInputElement>
   ) {
-    setForm({
-      ...form,
+    setForm((current) => ({
+      ...current,
       [event.target.name]: event.target.value,
-    });
+    }));
   }
 
   async function handleSignup(
@@ -67,9 +65,7 @@ function SignupContent() {
     }
 
     if (form.password.length < 8) {
-      alert(
-        "Password must be at least 8 characters."
-      );
+      alert("Password must be at least 8 characters.");
       return;
     }
 
@@ -99,10 +95,6 @@ function SignupContent() {
         return;
       }
 
-      setDevelopmentOtp(
-        data.developmentOtp || ""
-      );
-
       setStep("otp");
     } catch (error) {
       console.error("Signup error:", error);
@@ -120,10 +112,8 @@ function SignupContent() {
   ) {
     event.preventDefault();
 
-    if (!otp || otp.length !== 6) {
-      alert(
-        "Please enter the 6-digit OTP."
-      );
+    if (!/^\d{6}$/.test(otp)) {
+      alert("Please enter the 6-digit OTP.");
       return;
     }
 
@@ -182,6 +172,7 @@ function SignupContent() {
   return (
     <main className="min-h-screen bg-gray-100 px-4 py-12 text-gray-900">
       <div className="mx-auto max-w-md">
+
         <button
           type="button"
           onClick={() => router.push("/")}
@@ -191,6 +182,7 @@ function SignupContent() {
         </button>
 
         <div className="rounded-xl bg-white p-6 shadow-sm">
+
           {step === "signup" ? (
             <>
               <h1 className="text-3xl font-bold">
@@ -205,6 +197,7 @@ function SignupContent() {
                 onSubmit={handleSignup}
                 className="mt-6 space-y-5"
               >
+
                 <div>
                   <label className="mb-2 block font-semibold">
                     Full Name
@@ -236,7 +229,7 @@ function SignupContent() {
                   />
 
                   <p className="mt-1 text-xs text-gray-500">
-                    Your email address must be verified by OTP.
+                    A verification OTP will be sent to your email.
                   </p>
                 </div>
 
@@ -256,7 +249,7 @@ function SignupContent() {
                   />
 
                   <p className="mt-1 text-xs text-gray-500">
-                    Mobile verification is not required.
+                    Your mobile number is required for contact and delivery.
                   </p>
                 </div>
 
@@ -303,10 +296,12 @@ function SignupContent() {
                     ? "Creating Account..."
                     : "Create Account"}
                 </button>
+
               </form>
 
               <p className="mt-6 text-center text-sm text-gray-500">
                 Already have an account?{" "}
+
                 <button
                   type="button"
                   onClick={() =>
@@ -336,26 +331,11 @@ function SignupContent() {
                 {form.email}
               </p>
 
-              {developmentOtp && (
-                <div className="mt-5 rounded-md border border-yellow-300 bg-yellow-50 p-4">
-                  <p className="text-sm font-semibold text-yellow-800">
-                    Development OTP
-                  </p>
-
-                  <p className="mt-1 text-2xl font-bold tracking-widest">
-                    {developmentOtp}
-                  </p>
-
-                  <p className="mt-1 text-xs text-yellow-700">
-                    Temporary testing only.
-                  </p>
-                </div>
-              )}
-
               <form
                 onSubmit={handleVerifyEmail}
                 className="mt-6 space-y-5"
               >
+
                 <div>
                   <label className="mb-2 block font-semibold">
                     Email OTP
@@ -388,9 +368,16 @@ function SignupContent() {
                     ? "Verifying..."
                     : "Verify Email"}
                 </button>
+
               </form>
+
+              <p className="mt-5 text-center text-sm text-gray-500">
+                OTP was sent to your email address.
+              </p>
+
             </>
           )}
+
         </div>
       </div>
     </main>

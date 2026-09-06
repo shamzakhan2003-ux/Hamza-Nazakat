@@ -17,6 +17,9 @@ export async function POST(request: Request) {
     const phone = normalizePhone(String(body.phone || ""));
     const password = String(body.password || "");
 
+    // Mobile number is required.
+    // Mobile verification is NOT required.
+    // Email verification is mandatory.
     if (!fullName || !email || !phone || !password) {
       return NextResponse.json(
         { error: "All fields are required." },
@@ -27,6 +30,13 @@ export async function POST(request: Request) {
     if (fullName.length < 2) {
       return NextResponse.json(
         { error: "Please enter your full name." },
+        { status: 400 }
+      );
+    }
+
+    if (!email.includes("@")) {
+      return NextResponse.json(
+        { error: "Please enter a valid email address." },
         { status: 400 }
       );
     }
@@ -45,6 +55,7 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check if a fully created customer already exists.
     const existingCustomer = await prisma.customer.findFirst({
       where: {
         OR: [{ email }, { phone }],
@@ -72,8 +83,16 @@ export async function POST(request: Request) {
       }
     }
 
+    // Remove any previous incomplete signup using this email or phone.
+    await prisma.pendingCustomerSignup.deleteMany({
+      where: {
+        OR: [{ email }, { phone }],
+      },
+    });
+
     const passwordHash = await bcrypt.hash(password, 12);
 
+    // Email OTP only.
     const emailOtp = generateOtp();
 
     const emailOtpHash = crypto
@@ -85,21 +104,17 @@ export async function POST(request: Request) {
       Date.now() + 10 * 60 * 1000
     );
 
-    const customer = await prisma.customer.create({
+    // Store signup temporarily.
+    // Actual Customer account will be created only after OTP verification.
+    await prisma.pendingCustomerSignup.create({
       data: {
         fullName,
         email,
         phone,
         passwordHash,
-        emailVerified: false,
         emailOtpHash,
         emailOtpExpiresAt,
         emailOtpAttempts: 0,
-        mobileVerified: false,
-        otpHash: null,
-        otpExpiresAt: null,
-        otpAttempts: 0,
-        isActive: true,
       },
     });
 
@@ -108,9 +123,9 @@ export async function POST(request: Request) {
     if (!resendApiKey) {
       console.error("RESEND_API_KEY is missing.");
 
-      await prisma.customer.delete({
+      await prisma.pendingCustomerSignup.delete({
         where: {
-          id: customer.id,
+          email,
         },
       });
 
@@ -123,6 +138,10 @@ export async function POST(request: Request) {
       );
     }
 
+    const fromEmail =
+      process.env.RESEND_FROM_EMAIL ||
+      "Click&Pick <noreply@clickpick.uk>";
+
     const resendResponse = await fetch(
       "https://api.resend.com/emails",
       {
@@ -132,7 +151,7 @@ export async function POST(request: Request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Click&Pick <onboarding@resend.dev>",
+          from: fromEmail,
           to: [email],
           subject: "Verify your email - Click&Pick",
           html: `
@@ -209,9 +228,9 @@ export async function POST(request: Request) {
         resendError
       );
 
-      await prisma.customer.delete({
+      await prisma.pendingCustomerSignup.delete({
         where: {
-          id: customer.id,
+          email,
         },
       });
 
@@ -227,11 +246,10 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message:
-        "Account created. A verification code has been sent to your email.",
-      customerId: customer.id,
+        "A verification code has been sent to your email.",
       requiresEmailVerification: true,
       requiresMobileVerification: false,
-      email: customer.email,
+      email,
     });
   } catch (error) {
     console.error("Customer signup error:", error);
