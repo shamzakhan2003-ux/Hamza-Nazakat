@@ -31,24 +31,27 @@ model Product {
 }
 
 model Customer {
-  id                Int               @id @default(autoincrement())
-  fullName          String
-  email             String            @unique
-  phone             String            @unique
-  passwordHash      String
-  mobileVerified    Boolean           @default(false)
-  otpHash           String?
-  otpExpiresAt      DateTime?
-  otpAttempts       Int               @default(0)
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  emailOtpAttempts  Int               @default(0)
-  emailOtpExpiresAt DateTime?
-  emailOtpHash      String?
-  emailVerified     Boolean           @default(false)
-  isActive          Boolean           @default(true)
-  sessions          CustomerSession[]
-  orders            Order[]
+  id                        Int               @id @default(autoincrement())
+  fullName                  String
+  email                     String            @unique
+  phone                     String            @unique
+  passwordHash              String
+  mobileVerified            Boolean           @default(false)
+  otpHash                   String?
+  otpExpiresAt              DateTime?
+  otpAttempts               Int               @default(0)
+  createdAt                 DateTime          @default(now())
+  updatedAt                 DateTime          @updatedAt
+  emailOtpAttempts          Int               @default(0)
+  emailOtpExpiresAt         DateTime?
+  emailOtpHash              String?
+  emailVerified             Boolean           @default(false)
+  isActive                  Boolean           @default(true)
+  passwordResetOtpHash      String?
+  passwordResetOtpExpiresAt DateTime?
+  passwordResetOtpAttempts  Int               @default(0)
+  sessions                  CustomerSession[]
+  orders                    Order[]
 }
 
 model CustomerSession {
@@ -95,12 +98,12 @@ model OrderItem {
 }
 
 model OrderTracking {
-  id        Int      @id @default(autoincrement())
-  orderId   Int
-  status    String
-  message   String?
-  createdAt DateTime @default(now())
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  status     String
+  message    String?
+  createdAt  DateTime @default(now())
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([orderId])
 }
@@ -114,6 +117,7 @@ model SiteSetting {
   promotionalOldPrice Decimal?
   promotionalPrice    Decimal?
 }
+
 model AdminAccount {
   id           Int      @id @default(autoincrement())
   username     String   @unique
@@ -121,6 +125,7 @@ model AdminAccount {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
 model AdminOtp {
   id         Int       @id @default(autoincrement())
   email      String

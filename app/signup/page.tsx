@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   FormEvent,
@@ -18,8 +18,8 @@ function SignupContent() {
   const verifyMode =
     searchParams.get("verify") === "1";
 
-  const verifyPhone =
-    searchParams.get("phone") || "";
+  const verifyEmail =
+    searchParams.get("email") || "";
 
   const [step, setStep] = useState<
     "signup" | "otp"
@@ -32,20 +32,20 @@ function SignupContent() {
 
   const [form, setForm] = useState({
     fullName: "",
-    email: "",
-    phone: verifyPhone,
+    email: verifyEmail,
+    phone: "",
     password: "",
     confirmPassword: "",
   });
 
   useEffect(() => {
-    if (verifyMode && verifyPhone) {
+    if (verifyMode && verifyEmail) {
       setForm((current) => ({
         ...current,
-        phone: verifyPhone,
+        email: verifyEmail,
       }));
     }
-  }, [verifyMode, verifyPhone]);
+  }, [verifyMode, verifyEmail]);
 
   function handleChange(
     event: React.ChangeEvent<HTMLInputElement>
@@ -105,10 +105,7 @@ function SignupContent() {
 
       setStep("otp");
     } catch (error) {
-      console.error(
-        "Signup error:",
-        error
-      );
+      console.error("Signup error:", error);
 
       alert(
         "Something went wrong. Please try again."
@@ -118,7 +115,7 @@ function SignupContent() {
     }
   }
 
-  async function handleVerifyOtp(
+  async function handleVerifyEmail(
     event: FormEvent<HTMLFormElement>
   ) {
     event.preventDefault();
@@ -134,14 +131,14 @@ function SignupContent() {
       setLoading(true);
 
       const response = await fetch(
-        "/api/customer/verify-otp",
+        "/api/customer/verify-email",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            phone: form.phone,
+            email: form.email,
             otp,
           }),
         }
@@ -152,20 +149,25 @@ function SignupContent() {
       if (!response.ok) {
         alert(
           data.error ||
-            "OTP verification failed."
+            "Email verification failed."
         );
         return;
       }
 
       alert(
-        "Account verified successfully!"
+        "Email verified successfully! You can now login."
       );
 
-      router.push(redirectTo);
+      router.push(
+        `/login?redirect=${encodeURIComponent(
+          redirectTo
+        )}`
+      );
+
       router.refresh();
     } catch (error) {
       console.error(
-        "OTP verification error:",
+        "Email verification error:",
         error
       );
 
@@ -180,7 +182,6 @@ function SignupContent() {
   return (
     <main className="min-h-screen bg-gray-100 px-4 py-12 text-gray-900">
       <div className="mx-auto max-w-md">
-
         <button
           type="button"
           onClick={() => router.push("/")}
@@ -190,7 +191,6 @@ function SignupContent() {
         </button>
 
         <div className="rounded-xl bg-white p-6 shadow-sm">
-
           {step === "signup" ? (
             <>
               <h1 className="text-3xl font-bold">
@@ -205,7 +205,6 @@ function SignupContent() {
                 onSubmit={handleSignup}
                 className="mt-6 space-y-5"
               >
-
                 <div>
                   <label className="mb-2 block font-semibold">
                     Full Name
@@ -235,6 +234,10 @@ function SignupContent() {
                     placeholder="your@email.com"
                     className="w-full rounded-md border px-4 py-3 outline-none focus:border-orange-500"
                   />
+
+                  <p className="mt-1 text-xs text-gray-500">
+                    Your email address must be verified by OTP.
+                  </p>
                 </div>
 
                 <div>
@@ -253,7 +256,7 @@ function SignupContent() {
                   />
 
                   <p className="mt-1 text-xs text-gray-500">
-                    Your mobile number must be verified by OTP.
+                    Mobile verification is not required.
                   </p>
                 </div>
 
@@ -300,12 +303,10 @@ function SignupContent() {
                     ? "Creating Account..."
                     : "Create Account"}
                 </button>
-
               </form>
 
               <p className="mt-6 text-center text-sm text-gray-500">
                 Already have an account?{" "}
-
                 <button
                   type="button"
                   onClick={() =>
@@ -324,7 +325,7 @@ function SignupContent() {
           ) : (
             <>
               <h1 className="text-3xl font-bold">
-                Verify Mobile Number
+                Verify Email Address
               </h1>
 
               <p className="mt-2 text-gray-500">
@@ -332,12 +333,11 @@ function SignupContent() {
               </p>
 
               <p className="mt-1 font-bold">
-                {form.phone}
+                {form.email}
               </p>
 
               {developmentOtp && (
                 <div className="mt-5 rounded-md border border-yellow-300 bg-yellow-50 p-4">
-
                   <p className="text-sm font-semibold text-yellow-800">
                     Development OTP
                   </p>
@@ -347,20 +347,18 @@ function SignupContent() {
                   </p>
 
                   <p className="mt-1 text-xs text-yellow-700">
-                    Temporary testing only. Real SMS will be connected later.
+                    Temporary testing only.
                   </p>
-
                 </div>
               )}
 
               <form
-                onSubmit={handleVerifyOtp}
+                onSubmit={handleVerifyEmail}
                 className="mt-6 space-y-5"
               >
-
                 <div>
                   <label className="mb-2 block font-semibold">
-                    OTP
+                    Email OTP
                   </label>
 
                   <input
@@ -388,13 +386,11 @@ function SignupContent() {
                 >
                   {loading
                     ? "Verifying..."
-                    : "Verify Mobile"}
+                    : "Verify Email"}
                 </button>
-
               </form>
             </>
           )}
-
         </div>
       </div>
     </main>

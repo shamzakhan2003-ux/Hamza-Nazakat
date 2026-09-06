@@ -25,7 +25,6 @@ export default function CheckoutPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [loading, setLoading] = useState(true);
-  const [checkingCustomer, setCheckingCustomer] = useState(true);
   const [placingOrder, setPlacingOrder] = useState(false);
 
   const [form, setForm] = useState({
@@ -40,7 +39,6 @@ export default function CheckoutPage() {
   useEffect(() => {
     const loadCheckout = async () => {
       try {
-        // Load cart first. Never remove it here.
         const savedCart = localStorage.getItem("cart");
 
         if (savedCart) {
@@ -51,80 +49,41 @@ export default function CheckoutPage() {
           }
         }
 
-        // Check logged-in customer
         const response = await fetch("/api/customer/me", {
           method: "GET",
           cache: "no-store",
         });
 
-        if (!response.ok) {
-          router.replace(
-            "/login?redirect=/checkout"
-          );
-          return;
+        if (response.ok) {
+          const data = await response.json();
+
+          if (data.loggedIn && data.customer) {
+            const loggedInCustomer: Customer = data.customer;
+
+            setCustomer(loggedInCustomer);
+
+            setForm({
+              customerName: loggedInCustomer.fullName || "",
+              email: loggedInCustomer.email || "",
+              phone: loggedInCustomer.phone || "",
+              address: "",
+              city: "",
+              postcode: "",
+            });
+          }
         }
-
-        const data = await response.json();
-
-        if (!data.loggedIn || !data.customer) {
-          router.replace(
-            "/login?redirect=/checkout"
-          );
-          return;
-        }
-
-        const loggedInCustomer: Customer =
-          data.customer;
-
-        // Mobile verification is compulsory
-        if (!loggedInCustomer.mobileVerified) {
-          alert(
-            "Please verify your mobile number before checkout."
-          );
-
-          router.replace(
-            `/signup?verify=1&phone=${encodeURIComponent(
-              loggedInCustomer.phone
-            )}&redirect=/checkout`
-          );
-
-          return;
-        }
-
-        setCustomer(loggedInCustomer);
-
-        setForm({
-          customerName:
-            loggedInCustomer.fullName || "",
-          email: loggedInCustomer.email || "",
-          phone: loggedInCustomer.phone || "",
-          address: "",
-          city: "",
-          postcode: "",
-        });
       } catch (error) {
-        console.error(
-          "Checkout loading error:",
-          error
-        );
-
-        router.replace(
-          "/login?redirect=/checkout"
-        );
+        console.error("Checkout loading error:", error);
       } finally {
         setLoading(false);
-        setCheckingCustomer(false);
       }
     };
 
     loadCheckout();
-  }, [router]);
+  }, []);
 
   const total = cart.reduce((sum, item) => {
-    return (
-      sum +
-      Number(item.price) * Number(item.quantity)
-    );
+    return sum + Number(item.price) * Number(item.quantity);
   }, 0);
 
   const handleChange = (
@@ -141,69 +100,47 @@ export default function CheckoutPage() {
   ) => {
     event.preventDefault();
 
-    if (!customer) {
-      alert(
-        "Please sign in before placing an order."
-      );
-
-      router.push(
-        "/login?redirect=/checkout"
-      );
-
+    if (cart.length === 0) {
+      alert("Your cart is empty.");
       return;
     }
 
-    if (!customer.mobileVerified) {
+    if (customer && !customer.mobileVerified) {
       alert(
         "Please verify your mobile number before placing an order."
       );
-
-      return;
-    }
-
-    if (cart.length === 0) {
-      alert("Your cart is empty.");
       return;
     }
 
     try {
       setPlacingOrder(true);
 
-      const response = await fetch(
-        "/api/orders",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            customerName: form.customerName,
-            email: form.email,
-            phone: form.phone,
-            address: form.address,
-            city: form.city,
-            postcode: form.postcode,
-            items: cart,
-          }),
-        }
-      );
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customerName: form.customerName,
+          email: form.email,
+          phone: form.phone,
+          address: form.address,
+          city: form.city,
+          postcode: form.postcode,
+          items: cart,
+        }),
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-        alert(
-          data.error ||
-            "Failed to place order."
-        );
+        alert(data.error || "Failed to place order.");
         return;
       }
 
-      // Cart is removed ONLY after successful order creation.
       localStorage.removeItem("cart");
 
-      window.dispatchEvent(
-        new Event("cartUpdated")
-      );
+      window.dispatchEvent(new Event("cartUpdated"));
 
       alert(
         `Order placed successfully!\n\nOrder Number: ${data.order.orderNumber}`
@@ -212,40 +149,31 @@ export default function CheckoutPage() {
       router.push("/");
       router.refresh();
     } catch (error) {
-      console.error(
-        "Order error:",
-        error
-      );
+      console.error("Order error:", error);
 
-      alert(
-        "Something went wrong. Please try again."
-      );
+      alert("Something went wrong. Please try again.");
     } finally {
       setPlacingOrder(false);
     }
   };
 
-  if (loading || checkingCustomer) {
+  if (loading) {
     return (
       <main className="min-h-screen bg-gray-100 p-8">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-lg font-semibold">
-            Checking your account...
+            Loading checkout...
           </p>
         </div>
       </main>
     );
   }
 
-  if (!customer) {
-    return null;
-  }
-
   if (cart.length === 0) {
     return (
       <main className="min-h-screen bg-gray-100 text-gray-900">
         <div className="mx-auto max-w-3xl px-4 py-16 text-center">
-          <div className="text-6xl">??</div>
+          <div className="text-6xl">📦</div>
 
           <h1 className="mt-5 text-3xl font-bold">
             Your cart is empty
@@ -257,9 +185,7 @@ export default function CheckoutPage() {
 
           <button
             type="button"
-            onClick={() =>
-              router.push("/products")
-            }
+            onClick={() => router.push("/products")}
             className="mt-6 rounded-md bg-orange-500 px-8 py-3 font-bold text-white hover:bg-orange-600"
           >
             Continue Shopping
@@ -296,6 +222,12 @@ export default function CheckoutPage() {
             <h2 className="text-xl font-bold">
               Delivery Information
             </h2>
+
+            {!customer && (
+              <p className="mt-3 rounded-md bg-gray-50 p-3 text-sm text-gray-600">
+                You are checking out as a guest. No account is required.
+              </p>
+            )}
 
             <div className="mt-6 grid gap-5 md:grid-cols-2">
               <div>
@@ -423,17 +355,14 @@ export default function CheckoutPage() {
                     </p>
 
                     <p className="text-sm text-gray-500">
-                      �{Number(item.price).toFixed(
-                        2
-                      )}{" "}
-                      each
+                      £{Number(item.price).toFixed(2)} each
                     </p>
                   </div>
 
                   <p className="font-semibold">
-                    �{(
-                      Number(item.price) *
-                      item.quantity
+                    £
+                    {(
+                      Number(item.price) * item.quantity
                     ).toFixed(2)}
                   </p>
                 </div>
@@ -443,7 +372,7 @@ export default function CheckoutPage() {
                 <span>Total</span>
 
                 <span className="text-orange-500">
-                  �{total.toFixed(2)}
+                  £{total.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -453,7 +382,7 @@ export default function CheckoutPage() {
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          � 2026 Click&Pick. All rights reserved.
+          © 2026 Click&Pick. All rights reserved.
         </p>
       </footer>
     </main>

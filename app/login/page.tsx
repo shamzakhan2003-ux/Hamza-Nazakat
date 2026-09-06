@@ -114,9 +114,25 @@ function LoginForm() {
             </div>
 
             <div>
-              <label className="mb-2 block font-semibold">
-                Password
-              </label>
+              <div className="mb-2 flex items-center justify-between">
+                <label className="font-semibold">
+                  Password
+                </label>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    router.push(
+                      `/forgot-password?redirect=${encodeURIComponent(
+                        redirectTo
+                      )}`
+                    )
+                  }
+                  className="text-sm font-semibold text-orange-500 hover:underline"
+                >
+                  Forgot Password?
+                </button>
+              </div>
 
               <input
                 required

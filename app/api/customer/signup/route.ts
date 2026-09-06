@@ -74,8 +74,6 @@ export async function POST(request: Request) {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // EMAIL VERIFICATION OTP
-
     const emailOtp = generateOtp();
 
     const emailOtpHash = crypto
@@ -87,41 +85,23 @@ export async function POST(request: Request) {
       Date.now() + 10 * 60 * 1000
     );
 
-    // MOBILE VERIFICATION OTP
-
-    const mobileOtp = generateOtp();
-
-    const mobileOtpHash = crypto
-      .createHash("sha256")
-      .update(mobileOtp)
-      .digest("hex");
-
-    const mobileOtpExpiresAt = new Date(
-      Date.now() + 10 * 60 * 1000
-    );
-
-    // CREATE CUSTOMER
-
     const customer = await prisma.customer.create({
       data: {
         fullName,
         email,
         phone,
         passwordHash,
-
         emailVerified: false,
         emailOtpHash,
         emailOtpExpiresAt,
         emailOtpAttempts: 0,
-
         mobileVerified: false,
-        otpHash: mobileOtpHash,
-        otpExpiresAt: mobileOtpExpiresAt,
+        otpHash: null,
+        otpExpiresAt: null,
         otpAttempts: 0,
+        isActive: true,
       },
     });
-
-    // CHECK RESEND API KEY
 
     const resendApiKey = process.env.RESEND_API_KEY;
 
@@ -143,26 +123,18 @@ export async function POST(request: Request) {
       );
     }
 
-    // SEND EMAIL VERIFICATION CODE
-
     const resendResponse = await fetch(
       "https://api.resend.com/emails",
       {
         method: "POST",
-
         headers: {
           Authorization: `Bearer ${resendApiKey}`,
           "Content-Type": "application/json",
         },
-
         body: JSON.stringify({
           from: "Click&Pick <onboarding@resend.dev>",
-
           to: [email],
-
-          subject:
-            "Verify your email - Click&Pick",
-
+          subject: "Verify your email - Click&Pick",
           html: `
             <div
               style="
@@ -172,7 +144,6 @@ export async function POST(request: Request) {
                 padding: 30px;
               "
             >
-
               <h2 style="color: #f97316;">
                 Click&Pick
               </h2>
@@ -198,7 +169,6 @@ export async function POST(request: Request) {
                   text-align: center;
                 "
               >
-
                 <span
                   style="
                     font-size: 32px;
@@ -209,7 +179,6 @@ export async function POST(request: Request) {
                 >
                   ${emailOtp}
                 </span>
-
               </div>
 
               <p>
@@ -226,14 +195,11 @@ export async function POST(request: Request) {
                 Regards,<br />
                 Click&Pick
               </p>
-
             </div>
           `,
         }),
       }
     );
-
-    // CHECK RESEND RESPONSE
 
     if (!resendResponse.ok) {
       const resendError = await resendResponse.text();
@@ -258,28 +224,17 @@ export async function POST(request: Request) {
       );
     }
 
-    // SUCCESS
-    // OTP IS NEVER SENT TO THE BROWSER
-
     return NextResponse.json({
       success: true,
-
       message:
         "Account created. A verification code has been sent to your email.",
-
       customerId: customer.id,
-
       requiresEmailVerification: true,
-
-      requiresMobileVerification: true,
-
+      requiresMobileVerification: false,
       email: customer.email,
     });
   } catch (error) {
-    console.error(
-      "Customer signup error:",
-      error
-    );
+    console.error("Customer signup error:", error);
 
     return NextResponse.json(
       {
