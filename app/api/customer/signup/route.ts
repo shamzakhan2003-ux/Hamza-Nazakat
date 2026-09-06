@@ -17,9 +17,13 @@ export async function POST(request: Request) {
     const phone = normalizePhone(String(body.phone || ""));
     const password = String(body.password || "");
 
-    // Mobile number is required.
-    // Mobile verification is NOT required.
-    // Email verification is mandatory.
+    // Signup requirements:
+    // - Full name required
+    // - Email required
+    // - Mobile number required
+    // - Password required
+    // - Email verification required
+    // - Mobile verification NOT required
     if (!fullName || !email || !phone || !password) {
       return NextResponse.json(
         { error: "All fields are required." },
@@ -55,7 +59,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if a fully created customer already exists.
+    // Check only fully created customer accounts.
+    // Unverified signup data must remain in PendingCustomerSignup.
     const existingCustomer = await prisma.customer.findFirst({
       where: {
         OR: [{ email }, { phone }],
@@ -92,7 +97,7 @@ export async function POST(request: Request) {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Email OTP only.
+    // Generate email OTP only.
     const emailOtp = generateOtp();
 
     const emailOtpHash = crypto
@@ -105,7 +110,9 @@ export async function POST(request: Request) {
     );
 
     // Store signup temporarily.
-    // Actual Customer account will be created only after OTP verification.
+    // IMPORTANT:
+    // Customer account is NOT created here.
+    // Customer is created only after successful OTP verification.
     await prisma.pendingCustomerSignup.create({
       data: {
         fullName,
@@ -224,20 +231,24 @@ export async function POST(request: Request) {
       const resendError = await resendResponse.text();
 
       console.error(
-        "Resend email error:",
+        "Resend signup email error:",
         resendError
       );
 
+      // Remove pending signup because the verification email
+      // was not successfully sent.
       await prisma.pendingCustomerSignup.delete({
         where: {
           email,
         },
       });
 
+      // TEMPORARY diagnostic message.
+      // This will show the actual Resend error so we can
+      // identify and fix the exact problem.
       return NextResponse.json(
         {
-          error:
-            "Unable to send verification email. Please try again.",
+          error: `Resend error: ${resendError}`,
         },
         { status: 500 }
       );
