@@ -189,7 +189,7 @@ export default function TrackOrderPage() {
                             : "bg-gray-200 text-gray-500"
                         }`}
                       >
-                        {completed ? "âœ“" : index + 1}
+                        {completed ? "?" : index + 1}
                       </div>
 
                       <div>
@@ -305,7 +305,7 @@ export default function TrackOrderPage() {
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          Ã‚Â© 2026 Click&Pick. All rights reserved.
+          ? 2026 Click&Pick. All rights reserved.
         </p>
       </footer>
     </main>

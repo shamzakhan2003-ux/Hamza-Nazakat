@@ -18,7 +18,7 @@ export default function ShippingPage() {
         <section className="mb-5 rounded-xl bg-white p-6 shadow-sm">
           <div className="flex items-start gap-4">
             <div className="text-4xl">
-              ðŸšš
+              🚚
             </div>
 
             <div>
@@ -28,7 +28,7 @@ export default function ShippingPage() {
 
               <p className="mt-3 leading-7 text-gray-600">
                 We aim to deliver all orders within{" "}
-                <strong>3â€“5 working days</strong> across the UK.
+                <strong>3–5 working days</strong> across the UK.
               </p>
 
               <p className="mt-2 leading-7 text-gray-600">
@@ -43,7 +43,7 @@ export default function ShippingPage() {
         <section className="mb-5 rounded-xl bg-white p-6 shadow-sm">
           <div className="flex items-start gap-4">
             <div className="text-4xl">
-              ðŸšš
+              🚚
             </div>
 
             <div>
@@ -69,7 +69,7 @@ export default function ShippingPage() {
         <section className="mb-5 rounded-xl bg-white p-6 shadow-sm">
           <div className="flex items-start gap-4">
             <div className="text-4xl">
-              ðŸšš
+              🚚
             </div>
 
             <div>
@@ -95,7 +95,7 @@ export default function ShippingPage() {
         <section className="mb-5 rounded-xl bg-white p-6 shadow-sm">
           <div className="flex items-start gap-4">
             <div className="text-4xl">
-              ðŸ‡¬ðŸ‡§
+              🇬🇧
             </div>
 
             <div>
@@ -120,22 +120,22 @@ export default function ShippingPage() {
 
           <div className="mt-4 space-y-3 text-gray-600">
             <p>
-              <strong>âœ“</strong> Please make sure your delivery address and
+              <strong>✓</strong> Please make sure your delivery address and
               contact number are correct when placing your order.
             </p>
 
             <p>
-              <strong>âœ“</strong> Delivery time is normally 3â€“5 working days,
+              <strong>✓</strong> Delivery time is normally 3–5 working days,
               but unexpected courier delays may occasionally occur.
             </p>
 
             <p>
-              <strong>âœ“</strong> Tracking details will be provided after
+              <strong>✓</strong> Tracking details will be provided after
               dispatch.
             </p>
 
             <p>
-              <strong>âœ“</strong> Please keep your phone available so the
+              <strong>✓</strong> Please keep your phone available so the
               courier can contact you when required.
             </p>
           </div>

@@ -253,7 +253,7 @@ export default function ProductDetails({
             {/* RATING */}
 
             <div className="mt-4 text-yellow-500">
-              Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦Ã¢Ëœâ€¦
+              ★★★★★
 
               <span className="ml-2 text-sm text-gray-500">
                 ({product.reviews} reviews)
@@ -265,12 +265,12 @@ export default function ProductDetails({
             <div className="mt-6">
 
               <span className="text-3xl font-bold text-red-600">
-                Â£ {product.price}
+                ? {product.price}
               </span>
 
               {product.oldPrice ? (
                 <span className="ml-3 text-lg text-gray-400 line-through">
-                  Â£ {product.oldPrice}
+                  ? {product.oldPrice}
                 </span>
               ) : null}
 
@@ -315,7 +315,7 @@ export default function ProductDetails({
                 </div>
               ) : (
                 <p className="font-semibold text-green-600">
-                  Ã¢Å“â€œ In Stock ({product.stock} available)
+                  ✓ In Stock ({product.stock} available)
                 </p>
               )}
 
@@ -342,7 +342,7 @@ export default function ProductDetails({
                   }
                   className="px-5 py-2 text-xl font-bold hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  Ã¢Ë†â€™
+                  −
                 </button>
 
                 <span className="min-w-[55px] border-x px-4 py-2 text-center font-semibold">
@@ -387,7 +387,7 @@ export default function ProductDetails({
               {outOfStock
                 ? "Out of Stock"
                 : added
-                  ? "Ã¢Å“â€œ Added to Cart"
+                  ? "✓ Added to Cart"
                   : "Add to Cart"}
             </button>
 
@@ -423,7 +423,7 @@ export default function ProductDetails({
 
               <div>
                 <div className="text-2xl">
-                  Ã°Å¸Å¡Å¡
+                  ↩️
                 </div>
 
                 <p className="mt-1 text-xs text-gray-500">
@@ -433,7 +433,7 @@ export default function ProductDetails({
 
               <div>
                 <div className="text-2xl">
-                  Ã°Å¸â€â€™
+                  ↩️
                 </div>
 
                 <p className="mt-1 text-xs text-gray-500">
@@ -443,7 +443,7 @@ export default function ProductDetails({
 
               <div>
                 <div className="text-2xl">
-                  Ã¢â€ Â©Ã¯Â¸Â
+                  ↩️
                 </div>
 
                 <p className="mt-1 text-xs text-gray-500">

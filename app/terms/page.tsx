@@ -1,4 +1,4 @@
-﻿export default function TermsPage() {
+export default function TermsPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <section className="bg-gray-900 px-4 py-14 text-white">
@@ -51,7 +51,7 @@
             </h2>
 
             <p className="mt-3 leading-7 text-gray-600">
-              Product prices are displayed in British Pounds (GBP/£).
+              Product prices are displayed in British Pounds (GBP/�).
               Prices and promotional offers may change without prior notice.
               The applicable price for an order will be the price shown at
               the time the order is placed, subject to correction of obvious

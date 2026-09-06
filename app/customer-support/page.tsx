@@ -12,7 +12,7 @@ export default function CustomerSupportPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      text: "Hello! Ã°Å¸â€˜â€¹ Welcome to Click&Pick Customer Support. How can I help you today?",
+      text: "Hello! 🤖 Welcome to Click&Pick Customer Support. How can I help you today?",
     },
   ]);
   const [loading, setLoading] = useState(false);
@@ -126,7 +126,7 @@ export default function CustomerSupportPage() {
             <div className="flex items-center gap-4">
 
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-2xl">
-                Ã°Å¸Â¤â€“
+                🤖
               </div>
 
               <div>
@@ -135,7 +135,7 @@ export default function CustomerSupportPage() {
                 </h1>
 
                 <p className="mt-1 text-sm text-gray-300">
-                  AI Assistant Ã¢â‚¬Â¢ Available 24/7
+                  AI Assistant • Available 24/7
                 </p>
               </div>
 
@@ -229,7 +229,7 @@ export default function CustomerSupportPage() {
       {/* Footer */}
 
       <footer className="mt-8 bg-gray-900 py-6 text-center text-sm text-gray-400">
-        Â© 2026 Click&Pick. All rights reserved.
+        © 2026 Click&Pick. All rights reserved.
       </footer>
 
     </main>

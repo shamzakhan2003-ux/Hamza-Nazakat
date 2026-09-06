@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "../lib/prisma";
@@ -146,7 +146,7 @@ export default async function AdminPage() {
                 Pending
               </p>
 
-              <span className="text-lg">⏳</span>
+              <span className="text-lg">?</span>
             </div>
 
             <p className="mt-4 text-3xl font-extrabold text-yellow-800">
@@ -165,7 +165,7 @@ export default async function AdminPage() {
                 Confirmed
               </p>
 
-              <span className="text-lg">✓</span>
+              <span className="text-lg">?</span>
             </div>
 
             <p className="mt-4 text-3xl font-extrabold text-blue-800">
@@ -184,7 +184,7 @@ export default async function AdminPage() {
                 Shipped
               </p>
 
-              <span className="text-lg">📦</span>
+              <span className="text-lg">??</span>
             </div>
 
             <p className="mt-4 text-3xl font-extrabold text-purple-800">
@@ -203,7 +203,7 @@ export default async function AdminPage() {
                 Delivered
               </p>
 
-              <span className="text-lg">✓</span>
+              <span className="text-lg">?</span>
             </div>
 
             <p className="mt-4 text-3xl font-extrabold text-green-800">
@@ -222,7 +222,7 @@ export default async function AdminPage() {
                 Cancelled
               </p>
 
-              <span className="text-lg">×</span>
+              <span className="text-lg">�</span>
             </div>
 
             <p className="mt-4 text-3xl font-extrabold text-red-800">
@@ -244,7 +244,7 @@ export default async function AdminPage() {
               </p>
 
               <p className="mt-2 text-3xl font-extrabold tracking-tight text-green-600 sm:text-4xl">
-                £{totalSales.toFixed(2)}
+                �{totalSales.toFixed(2)}
               </p>
 
               <p className="mt-1 text-sm text-slate-500">
@@ -254,7 +254,7 @@ export default async function AdminPage() {
 
             <div className="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 px-5 py-4">
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-lg font-bold text-green-700">
-                ✓
+                ?
               </span>
 
               <div>
@@ -279,7 +279,7 @@ export default async function AdminPage() {
       {/* FOOTER */}
       <footer className="mt-10 border-t border-slate-800 bg-slate-950 py-7 text-center">
         <p className="text-sm font-medium text-slate-400">
-          © 2026 Click&Pick. All rights reserved.
+          � 2026 Click&Pick. All rights reserved.
         </p>
       </footer>
     </main>

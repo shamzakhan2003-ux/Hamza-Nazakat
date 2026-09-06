@@ -1,4 +1,4 @@
-﻿import Header from "./components/Header";
+import Header from "./components/Header";
 import { prisma } from "./lib/prisma";
 import Link from "next/link";
 
@@ -102,20 +102,20 @@ export default async function Home() {
               >
                 <div className="mb-3 text-4xl">
                   {category.toLowerCase().includes("toy")
-                    ? "🧸"
+                    ? "??"
                     : category.toLowerCase().includes("electronic")
-                    ? "💻"
+                    ? "??"
                     : category.toLowerCase().includes("audio")
-                    ? "🔊"
+                    ? "??"
                     : category.toLowerCase().includes("home")
-                    ? "🏠"
+                    ? "??"
                     : category.toLowerCase().includes("beauty")
-                    ? "💄"
+                    ? "??"
                     : category.toLowerCase().includes("fashion")
-                    ? "👕"
+                    ? "??"
                     : category.toLowerCase().includes("sport")
-                    ? "⚽"
-                    : "🛍️"}
+                    ? "?"
+                    : "???"}
                 </div>
 
                 <h3 className="text-sm font-semibold">{category}</h3>
@@ -130,7 +130,7 @@ export default async function Home() {
         <div className="rounded-lg bg-white">
           <div className="flex items-center justify-between border-b px-6 py-5">
             <div>
-              <h2 className="text-2xl font-bold">🔥 Flash Deals</h2>
+              <h2 className="text-2xl font-bold">?? Flash Deals</h2>
 
               <p className="mt-1 text-sm text-gray-500">
                 Limited-time offers
@@ -183,18 +183,18 @@ export default async function Home() {
 
                     <div className="mt-3">
                       <span className="text-xl font-bold text-red-600">
-                        £{product.price.toString()}
+                        �{product.price.toString()}
                       </span>
 
                       {product.oldPrice ? (
                         <span className="ml-2 text-sm text-gray-400 line-through">
-                          £{product.oldPrice.toString()}
+                          �{product.oldPrice.toString()}
                         </span>
                       ) : null}
                     </div>
 
                     <div className="mt-2 text-sm text-yellow-500">
-                      ★★★★★
+                      ?????
                       <span className="ml-1 text-gray-400">
                         ({product.reviews})
                       </span>
@@ -216,7 +216,7 @@ export default async function Home() {
         <div className="rounded-lg bg-white">
           <div className="flex items-center justify-between border-b px-6 py-5">
             <div>
-              <h2 className="text-2xl font-bold">🆕 New Arrivals</h2>
+              <h2 className="text-2xl font-bold">?? New Arrivals</h2>
 
               <p className="mt-1 text-sm text-gray-500">
                 Our latest products
@@ -269,18 +269,18 @@ export default async function Home() {
 
                     <div className="mt-3">
                       <span className="text-xl font-bold text-red-600">
-                        £{product.price.toString()}
+                        �{product.price.toString()}
                       </span>
 
                       {product.oldPrice ? (
                         <span className="ml-2 text-sm text-gray-400 line-through">
-                          £{product.oldPrice.toString()}
+                          �{product.oldPrice.toString()}
                         </span>
                       ) : null}
                     </div>
 
                     <div className="mt-2 text-sm text-yellow-500">
-                      ★★★★★
+                      ?????
                       <span className="ml-1 text-gray-400">
                         ({product.reviews})
                       </span>
@@ -464,7 +464,7 @@ export default async function Home() {
           </div>
 
           <div className="mt-10 border-t border-gray-700 pt-6 text-center text-sm text-gray-500">
-            © 2026 Click&Pick. All rights reserved.
+            � 2026 Click&Pick. All rights reserved.
           </div>
         </div>
       </footer>

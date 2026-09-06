@@ -1,4 +1,4 @@
-﻿export default function PrivacyPage() {
+export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <section className="bg-gray-900 px-4 py-14 text-white">

@@ -423,7 +423,7 @@ export default function CheckoutPage() {
                     </p>
 
                     <p className="text-sm text-gray-500">
-                      £{Number(item.price).toFixed(
+                      �{Number(item.price).toFixed(
                         2
                       )}{" "}
                       each
@@ -431,7 +431,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <p className="font-semibold">
-                    £{(
+                    �{(
                       Number(item.price) *
                       item.quantity
                     ).toFixed(2)}
@@ -443,7 +443,7 @@ export default function CheckoutPage() {
                 <span>Total</span>
 
                 <span className="text-orange-500">
-                  £{total.toFixed(2)}
+                  �{total.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -453,7 +453,7 @@ export default function CheckoutPage() {
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          © 2026 Click&Pick. All rights reserved.
+          � 2026 Click&Pick. All rights reserved.
         </p>
       </footer>
     </main>

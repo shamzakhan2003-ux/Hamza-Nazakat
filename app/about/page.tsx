@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 export default function AboutPage() {
   return (
@@ -55,7 +55,7 @@ export default function AboutPage() {
 
           <div className="grid gap-6 md:grid-cols-3">
             <div>
-              <div className="mb-3 text-3xl">✓</div>
+              <div className="mb-3 text-3xl">?</div>
               <h3 className="font-bold">Quality Products</h3>
               <p className="mt-2 text-sm leading-6 text-gray-600">
                 We aim to offer products that provide good value and meet
@@ -64,7 +64,7 @@ export default function AboutPage() {
             </div>
 
             <div>
-              <div className="mb-3 text-3xl">✓</div>
+              <div className="mb-3 text-3xl">?</div>
               <h3 className="font-bold">Competitive Prices</h3>
               <p className="mt-2 text-sm leading-6 text-gray-600">
                 We work to keep our prices competitive so customers can shop
@@ -73,7 +73,7 @@ export default function AboutPage() {
             </div>
 
             <div>
-              <div className="mb-3 text-3xl">✓</div>
+              <div className="mb-3 text-3xl">?</div>
               <h3 className="font-bold">Customer Support</h3>
               <p className="mt-2 text-sm leading-6 text-gray-600">
                 Our customers can contact us for help with products, orders,

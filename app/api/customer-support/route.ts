@@ -1,4 +1,4 @@
-﻿import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
 
@@ -200,7 +200,7 @@ Answer using the most relevant product from the catalogue.
 
 21. Prices are in GBP.
 
-22. Use the £ symbol correctly.
+22. Use the � symbol correctly.
 
 23. Use English.
 

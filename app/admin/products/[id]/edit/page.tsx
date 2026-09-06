@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { CldUploadWidget } from "next-cloudinary";
@@ -390,7 +390,7 @@ export default function EditProductPage({
                   htmlFor="price"
                   className="mb-2 block font-semibold"
                 >
-                  Price (£)
+                  Price (�)
                 </label>
 
                 <input
@@ -411,7 +411,7 @@ export default function EditProductPage({
                 htmlFor="oldPrice"
                 className="mb-2 block font-semibold"
               >
-                Old Price (£)
+                Old Price (�)
                 <span className="ml-2 text-sm font-normal text-gray-400">
                   Optional
                 </span>
@@ -477,7 +477,7 @@ export default function EditProductPage({
                       htmlFor="flashDeal"
                       className="font-semibold"
                     >
-                      🔥 Flash Deal
+                      ?? Flash Deal
                     </label>
                   </div>
 
@@ -537,7 +537,7 @@ export default function EditProductPage({
                       htmlFor="newArrival"
                       className="font-semibold"
                     >
-                      ✨ New Arrival
+                      ? New Arrival
                     </label>
                   </div>
 
@@ -563,7 +563,7 @@ export default function EditProductPage({
                       htmlFor="featured"
                       className="font-semibold"
                     >
-                      ⭐ Featured Product
+                      ? Featured Product
                     </label>
                   </div>
 
@@ -780,7 +780,7 @@ export default function EditProductPage({
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          © 2026 Click&Pick
+          � 2026 Click&Pick
         </p>
       </footer>
     </main>
