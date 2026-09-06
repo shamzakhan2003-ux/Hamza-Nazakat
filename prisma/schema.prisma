@@ -46,6 +46,7 @@ model Customer {
   emailOtpExpiresAt DateTime?
   emailOtpHash      String?
   emailVerified     Boolean           @default(false)
+  isActive          Boolean           @default(true)
   sessions          CustomerSession[]
   orders            Order[]
 }

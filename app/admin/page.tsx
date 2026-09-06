@@ -114,12 +114,21 @@ export default async function AdminPage() {
               </p>
             </div>
 
-            <Link
-              href="/admin/products"
-              className="inline-flex w-fit items-center rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-orange-600"
-            >
-              Manage Products
-            </Link>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link
+                href="/admin/customers"
+                className="inline-flex w-fit items-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700"
+              >
+                Customer Management
+              </Link>
+
+              <Link
+                href="/admin/products"
+                className="inline-flex w-fit items-center rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-orange-600"
+              >
+                Manage Products
+              </Link>
+            </div>
           </div>
         </div>
 
