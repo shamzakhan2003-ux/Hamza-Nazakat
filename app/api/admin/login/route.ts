@@ -1,26 +1,40 @@
 import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import { prisma } from "@/app/lib/prisma";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const username = String(body.username || "");
+    const username = String(body.username || "").trim();
     const password = String(body.password || "");
 
-    const adminUsername = process.env.ADMIN_USERNAME;
-    const adminPassword = process.env.ADMIN_PASSWORD;
-
-    if (!adminUsername || !adminPassword) {
+    if (!username || !password) {
       return NextResponse.json(
-        { error: "Admin login is not configured." },
-        { status: 500 }
+        { error: "Username and password are required." },
+        { status: 400 }
       );
     }
 
-    if (
-      username !== adminUsername ||
-      password !== adminPassword
-    ) {
+    const adminAccount = await prisma.adminAccount.findUnique({
+      where: {
+        username,
+      },
+    });
+
+    if (!adminAccount) {
+      return NextResponse.json(
+        { error: "Invalid username or password." },
+        { status: 401 }
+      );
+    }
+
+    const passwordMatches = await bcrypt.compare(
+      password,
+      adminAccount.passwordHash
+    );
+
+    if (!passwordMatches) {
       return NextResponse.json(
         { error: "Invalid username or password." },
         { status: 401 }
