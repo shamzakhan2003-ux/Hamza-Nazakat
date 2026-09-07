@@ -7,6 +7,7 @@ type DeliveryTrackingProps = {
   currentCourier: string | null;
   currentTrackingNumber: string | null;
   currentTrackingUrl: string | null;
+  currentPostcode: string;
 };
 
 const couriers = [
@@ -21,33 +22,41 @@ const couriers = [
 
 function getCourierTrackingUrl(
   courier: string,
-  trackingNumber: string
+  trackingNumber: string,
+  postcode: string
 ) {
-  const number = encodeURIComponent(
-    trackingNumber.trim()
-  );
+  const number = trackingNumber.trim();
+  const postalCode = postcode.trim();
 
   if (!number) {
     return "";
   }
 
+  const encodedNumber = encodeURIComponent(number);
+  const encodedPostcode = encodeURIComponent(postalCode);
+
   switch (courier) {
     case "Royal Mail":
-      return "https://www.royalmail.com/track-your-item";
+      return `https://www.royalmail.com/portal/rm/track?trackNumber=${encodedNumber}`;
 
     case "Evri":
       return "https://www.evri.com/track-a-parcel";
 
     case "DPD":
-      return "https://q2-tracking.dpd.co.uk/";
+      if (!postalCode) {
+        return "https://track.dpd.co.uk/search";
+      }
+
+      return `https://track.dpd.co.uk/search?reference=${encodedNumber}&postcode=${encodedPostcode}`;
 
     case "Yodel":
-      return "https://www.yodel.co.uk/home";
+      return "https://www.yodel.co.uk/track/";
 
     case "Parcelforce":
-      return "https://www.royalmail.com/track-your-item";
+      return `https://www.parcelforce.com/track-trace?trackNumber=${encodedNumber}`;
 
-
+    case "Amazon Logistics":
+      return "https://track.amazon.co.uk/";
 
     default:
       return "";
@@ -59,52 +68,51 @@ export default function DeliveryTracking({
   currentCourier,
   currentTrackingNumber,
   currentTrackingUrl,
+  currentPostcode,
 }: DeliveryTrackingProps) {
   const [courier, setCourier] = useState(
     currentCourier || ""
   );
 
-  const [trackingNumber, setTrackingNumber] =
-    useState(currentTrackingNumber || "");
+  const [trackingNumber, setTrackingNumber] = useState(
+    currentTrackingNumber || ""
+  );
 
-  const [trackingUrl, setTrackingUrl] =
-    useState(currentTrackingUrl || "");
+  const [trackingUrl, setTrackingUrl] = useState(
+    currentTrackingUrl || ""
+  );
 
   const [loading, setLoading] = useState(false);
 
-  function handleCourierChange(
-    value: string
-  ) {
+  function handleCourierChange(value: string) {
     setCourier(value);
 
     if (trackingNumber) {
-      const generatedUrl =
-        getCourierTrackingUrl(
-          value,
-          trackingNumber
-        );
+      const generatedUrl = getCourierTrackingUrl(
+        value,
+        trackingNumber,
+        currentPostcode
+      );
 
-      if (generatedUrl) {
-        setTrackingUrl(generatedUrl);
-      }
+      setTrackingUrl(generatedUrl);
+    } else {
+      setTrackingUrl("");
     }
   }
 
-  function handleTrackingNumberChange(
-    value: string
-  ) {
+  function handleTrackingNumberChange(value: string) {
     setTrackingNumber(value);
 
     if (courier) {
-      const generatedUrl =
-        getCourierTrackingUrl(
-          courier,
-          value
-        );
+      const generatedUrl = getCourierTrackingUrl(
+        courier,
+        value,
+        currentPostcode
+      );
 
-      if (generatedUrl) {
-        setTrackingUrl(generatedUrl);
-      }
+      setTrackingUrl(generatedUrl);
+    } else {
+      setTrackingUrl("");
     }
   }
 
@@ -131,10 +139,8 @@ export default function DeliveryTracking({
           },
           body: JSON.stringify({
             courier,
-            trackingNumber:
-              trackingNumber.trim(),
-            trackingUrl:
-              trackingUrl.trim() || null,
+            trackingNumber: trackingNumber.trim(),
+            trackingUrl: trackingUrl.trim() || null,
           }),
         }
       );
@@ -166,27 +172,24 @@ export default function DeliveryTracking({
     }
   }
 
-  const generatedUrl =
-    getCourierTrackingUrl(
-      courier,
-      trackingNumber
-    );
+  const generatedUrl = getCourierTrackingUrl(
+    courier,
+    trackingNumber,
+    currentPostcode
+  );
 
   return (
     <div className="rounded-xl bg-white p-6 shadow-sm">
-
       <h3 className="text-xl font-bold">
         Delivery Tracking
       </h3>
 
       <p className="mt-1 text-sm text-gray-500">
-        Add courier and tracking information
-        for this order.
+        Add courier and tracking information for this
+        order.
       </p>
 
-      {/* COURIER */}
       <div className="mt-6">
-
         <label
           htmlFor="courier"
           className="mb-2 block text-sm font-semibold"
@@ -198,9 +201,7 @@ export default function DeliveryTracking({
           id="courier"
           value={courier}
           onChange={(event) =>
-            handleCourierChange(
-              event.target.value
-            )
+            handleCourierChange(event.target.value)
           }
           disabled={loading}
           className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 disabled:bg-gray-100"
@@ -210,20 +211,14 @@ export default function DeliveryTracking({
           </option>
 
           {couriers.map((name) => (
-            <option
-              key={name}
-              value={name}
-            >
+            <option key={name} value={name}>
               {name}
             </option>
           ))}
         </select>
-
       </div>
 
-      {/* TRACKING NUMBER */}
       <div className="mt-5">
-
         <label
           htmlFor="tracking-number"
           className="mb-2 block text-sm font-semibold"
@@ -244,12 +239,9 @@ export default function DeliveryTracking({
           placeholder="e.g. 123456789"
           className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 disabled:bg-gray-100"
         />
-
       </div>
 
-      {/* TRACKING URL */}
       <div className="mt-5">
-
         <label
           htmlFor="tracking-url"
           className="mb-2 block text-sm font-semibold"
@@ -262,29 +254,22 @@ export default function DeliveryTracking({
           type="url"
           value={trackingUrl}
           onChange={(event) =>
-            setTrackingUrl(
-              event.target.value
-            )
+            setTrackingUrl(event.target.value)
           }
           disabled={loading}
           placeholder="Automatically generated"
           className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 disabled:bg-gray-100"
         />
 
-        {generatedUrl &&
-          !trackingUrl && (
-            <p className="mt-2 text-xs text-gray-500">
-              Tracking link will be generated
-              automatically.
-            </p>
-          )}
-
+        {generatedUrl && (
+          <p className="mt-2 text-xs text-gray-500">
+            Tracking link generated automatically.
+          </p>
+        )}
       </div>
 
-      {/* CURRENT DETAILS */}
       {(courier || trackingNumber) && (
         <div className="mt-5 rounded-lg bg-gray-50 p-4">
-
           <p className="text-sm font-semibold text-gray-700">
             Current Delivery Details
           </p>
@@ -314,14 +299,12 @@ export default function DeliveryTracking({
               rel="noopener noreferrer"
               className="mt-3 inline-block text-sm font-semibold text-orange-600 hover:text-orange-700 hover:underline"
             >
-              Track on Courier Website ?
+              Track on Courier Website →
             </a>
           )}
-
         </div>
       )}
 
-      {/* SAVE BUTTON */}
       <button
         type="button"
         onClick={saveTracking}
@@ -332,7 +315,6 @@ export default function DeliveryTracking({
           ? "Saving..."
           : "Save Tracking Details"}
       </button>
-
     </div>
   );
 }

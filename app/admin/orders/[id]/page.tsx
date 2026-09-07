@@ -443,15 +443,10 @@ export default async function OrderDetailsPage({
 
             <DeliveryTracking
               orderId={order.id}
-              currentCourier={
-                order.courier
-              }
-              currentTrackingNumber={
-                order.trackingNumber
-              }
-              currentTrackingUrl={
-                order.trackingUrl
-              }
+              currentCourier={order.courier}
+              currentTrackingNumber={order.trackingNumber}
+              currentTrackingUrl={order.trackingUrl}
+              currentPostcode={order.postcode}
             />
 
             {/* =========================
