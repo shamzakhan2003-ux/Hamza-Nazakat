@@ -347,7 +347,8 @@ export default async function OrderDetailsPage({
                           </span>
 
                           <span>
-                            Price: ?{Number(
+                            Price: £
+                            {Number(
                               item.price
                             ).toFixed(2)}
                           </span>
@@ -364,9 +365,7 @@ export default async function OrderDetailsPage({
                       <div className="text-left sm:text-right">
 
                         <p className="text-lg font-bold">
-                          ?{itemTotal.toFixed(
-                            2
-                          )}
+                          £{itemTotal.toFixed(2)}
                         </p>
 
                         <p className="text-xs text-gray-500">
@@ -396,7 +395,7 @@ export default async function OrderDetailsPage({
                     </span>
 
                     <span className="font-semibold">
-                      ?{subtotal.toFixed(2)}
+                      £{subtotal.toFixed(2)}
                     </span>
 
                   </div>
@@ -408,7 +407,7 @@ export default async function OrderDetailsPage({
                     </span>
 
                     <span className="text-orange-500">
-                      ?{Number(
+                      £{Number(
                         order.total
                       ).toFixed(2)}
                     </span>
@@ -524,7 +523,7 @@ export default async function OrderDetailsPage({
                   </span>
 
                   <span className="text-xl font-extrabold text-orange-500">
-                    ?{Number(
+                    £{Number(
                       order.total
                     ).toFixed(2)}
                   </span>
@@ -596,7 +595,7 @@ export default async function OrderDetailsPage({
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
 
         <p className="text-sm text-gray-400">
-          ? 2026 Click&Pick. All rights reserved.
+          £ 2026 Click&Pick. All rights reserved.
         </p>
 
       </footer>

@@ -8,13 +8,11 @@ type Product = {
   price: string;
   oldPrice: string | null;
   discount: number | null;
-
   image: string | null;
   image2: string | null;
   image3: string | null;
   image4: string | null;
   descriptionImage: string | null;
-
   description: string | null;
   stock: number;
   reviews: number;
@@ -48,15 +46,10 @@ export default function ProductDetails({
     product.image2,
     product.image3,
     product.image4,
-  ].filter(
-    (image): image is string =>
-      Boolean(image)
-  );
+  ].filter((image): image is string => Boolean(image));
 
   const decreaseQuantity = () => {
-    setQuantity((current) =>
-      Math.max(1, current - 1)
-    );
+    setQuantity((current) => Math.max(1, current - 1));
   };
 
   const increaseQuantity = () => {
@@ -69,17 +62,14 @@ export default function ProductDetails({
 
   const addToCart = () => {
     if (outOfStock) {
-      setCartError(
-        "This product is currently out of stock."
-      );
+      setCartError("This product is currently out of stock.");
       return;
     }
 
     try {
       setCartError("");
 
-      const savedCart =
-        localStorage.getItem("cart");
+      const savedCart = localStorage.getItem("cart");
 
       const cart: CartItem[] = savedCart
         ? JSON.parse(savedCart)
@@ -90,30 +80,21 @@ export default function ProductDetails({
       );
 
       if (existingProduct) {
-        const newQuantity = Math.min(
+        existingProduct.quantity = Math.min(
           product.stock,
           existingProduct.quantity + quantity
         );
-
-        existingProduct.quantity =
-          newQuantity;
       } else {
         cart.push({
           id: product.id,
           name: product.name,
           price: product.price,
           image: product.image,
-          quantity: Math.min(
-            quantity,
-            product.stock
-          ),
+          quantity: Math.min(quantity, product.stock),
         });
       }
 
-      localStorage.setItem(
-        "cart",
-        JSON.stringify(cart)
-      );
+      localStorage.setItem("cart", JSON.stringify(cart));
 
       setAdded(true);
 
@@ -121,14 +102,9 @@ export default function ProductDetails({
         setAdded(false);
       }, 2000);
     } catch (error) {
-      console.error(
-        "Cart error:",
-        error
-      );
+      console.error("Cart error:", error);
 
-      setCartError(
-        "Unable to add product to cart."
-      );
+      setCartError("Unable to add product to cart.");
     }
   };
 
@@ -157,16 +133,12 @@ export default function ProductDetails({
       <section className="mx-auto max-w-7xl px-4 pb-10">
         <div className="grid gap-8 rounded-lg bg-white p-6 md:grid-cols-2 md:p-10">
 
-          {/* ========================= */}
           {/* LEFT IMAGE SECTION */}
-          {/* ========================= */}
 
           <div>
-
             {/* MAIN IMAGE */}
 
             <div className="relative flex min-h-[450px] items-center justify-center rounded-lg bg-gray-100">
-
               {selectedImage ? (
                 <img
                   src={selectedImage}
@@ -196,52 +168,37 @@ export default function ProductDetails({
                   </span>
                 </div>
               )}
-
             </div>
 
-            {/* ========================= */}
             {/* IMAGE THUMBNAILS */}
-            {/* ========================= */}
 
             {productImages.length > 1 && (
               <div className="mt-4 grid grid-cols-4 gap-3">
-
-                {productImages.map(
-                  (image, index) => (
-                    <button
-                      key={`${image}-${index}`}
-                      type="button"
-                      onClick={() =>
-                        setSelectedImage(image)
-                      }
-                      className={`flex h-24 items-center justify-center overflow-hidden rounded-md border-2 bg-gray-50 p-1 transition ${
-                        selectedImage === image
-                          ? "border-orange-500"
-                          : "border-gray-200 hover:border-orange-300"
-                      }`}
-                    >
-                      <img
-                        src={image}
-                        alt={`${product.name} image ${
-                          index + 1
-                        }`}
-                        className="h-full w-full object-contain"
-                      />
-                    </button>
-                  )
-                )}
-
+                {productImages.map((image, index) => (
+                  <button
+                    key={`${image}-${index}`}
+                    type="button"
+                    onClick={() => setSelectedImage(image)}
+                    className={`flex h-24 items-center justify-center overflow-hidden rounded-md border-2 bg-gray-50 p-1 transition ${
+                      selectedImage === image
+                        ? "border-orange-500"
+                        : "border-gray-200 hover:border-orange-300"
+                    }`}
+                  >
+                    <img
+                      src={image}
+                      alt={`${product.name} image ${index + 1}`}
+                      className="h-full w-full object-contain"
+                    />
+                  </button>
+                ))}
               </div>
             )}
-
           </div>
 
-          {/* ========================= */}
           {/* RIGHT PRODUCT INFO */}
-          {/* ========================= */}
 
           <div className="flex flex-col justify-center">
-
             <p className="text-sm font-semibold uppercase tracking-wider text-orange-500">
               Click&Pick
             </p>
@@ -252,8 +209,10 @@ export default function ProductDetails({
 
             {/* RATING */}
 
-            <div className="mt-4 text-yellow-500">
-              ★★★★★
+            <div className="mt-4">
+              <span className="text-yellow-500">
+                ★★★★★
+              </span>
 
               <span className="ml-2 text-sm text-gray-500">
                 ({product.reviews} reviews)
@@ -262,24 +221,21 @@ export default function ProductDetails({
 
             {/* PRICE */}
 
-            <div className="mt-6">
-
+            <div className="mt-6 flex items-center gap-3">
               <span className="text-3xl font-bold text-red-600">
-                ? {product.price}
+                £{product.price}
               </span>
 
               {product.oldPrice ? (
-                <span className="ml-3 text-lg text-gray-400 line-through">
-                  ? {product.oldPrice}
+                <span className="text-lg text-gray-400 line-through">
+                  £{product.oldPrice}
                 </span>
               ) : null}
-
             </div>
 
             {/* DESCRIPTION */}
 
             <div className="mt-6">
-
               <h2 className="text-lg font-bold">
                 Product Description
               </h2>
@@ -294,52 +250,41 @@ export default function ProductDetails({
               {product.descriptionImage && (
                 <div className="mt-6 overflow-hidden rounded-lg border bg-gray-50">
                   <img
-                    src={
-                      product.descriptionImage
-                    }
+                    src={product.descriptionImage}
                     alt={`${product.name} description`}
                     className="w-full object-contain"
                   />
                 </div>
               )}
-
             </div>
 
             {/* STOCK */}
 
             <div className="mt-6">
-
               {outOfStock ? (
                 <div className="rounded-md bg-red-100 px-4 py-3 font-bold text-red-700">
                   Out of Stock
                 </div>
               ) : (
                 <p className="font-semibold text-green-600">
-                  ✓ In Stock ({product.stock} available)
+                  <span className="mr-1">✓</span>
+                  In Stock ({product.stock} available)
                 </p>
               )}
-
             </div>
 
             {/* QUANTITY */}
 
             <div className="mt-6 flex items-center gap-4">
-
               <span className="font-semibold">
                 Quantity
               </span>
 
               <div className="flex items-center overflow-hidden rounded-md border bg-white">
-
                 <button
                   type="button"
-                  onClick={
-                    decreaseQuantity
-                  }
-                  disabled={
-                    outOfStock ||
-                    quantity <= 1
-                  }
+                  onClick={decreaseQuantity}
+                  disabled={outOfStock || quantity <= 1}
                   className="px-5 py-2 text-xl font-bold hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   −
@@ -351,21 +296,16 @@ export default function ProductDetails({
 
                 <button
                   type="button"
-                  onClick={
-                    increaseQuantity
-                  }
+                  onClick={increaseQuantity}
                   disabled={
                     outOfStock ||
-                    quantity >=
-                      product.stock
+                    quantity >= product.stock
                   }
                   className="px-5 py-2 text-xl font-bold hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   +
                 </button>
-
               </div>
-
             </div>
 
             {/* CART ERROR */}
@@ -396,8 +336,7 @@ export default function ProductDetails({
             <button
               type="button"
               onClick={() => {
-                window.location.href =
-                  "/cart";
+                window.location.href = "/cart";
               }}
               className="mt-3 rounded-md border-2 border-gray-300 py-4 text-lg font-bold text-gray-700 transition hover:bg-gray-50"
             >
@@ -412,49 +351,90 @@ export default function ProductDetails({
               disabled={outOfStock}
               className="mt-3 rounded-md border-2 border-orange-500 py-4 text-lg font-bold text-orange-500 transition hover:bg-orange-50 disabled:cursor-not-allowed disabled:border-gray-400 disabled:text-gray-400"
             >
-              {outOfStock
-                ? "Out of Stock"
-                : "Buy Now"}
+              {outOfStock ? "Out of Stock" : "Buy Now"}
             </button>
 
             {/* FEATURES */}
 
             <div className="mt-8 grid grid-cols-3 gap-3 border-t pt-6 text-center">
 
+              {/* FAST DELIVERY */}
+
               <div>
-                <div className="text-2xl">
-                  ↩️
+                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 text-orange-500">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="h-5 w-5"
+                  >
+                    <path d="M3 7h11v10H3z" />
+                    <path d="M14 10h4l3 3v4h-7z" />
+                    <circle cx="7" cy="19" r="1.5" />
+                    <circle cx="18" cy="19" r="1.5" />
+                  </svg>
                 </div>
 
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-2 text-xs font-medium text-gray-500">
                   Fast Delivery
                 </p>
               </div>
 
+              {/* SECURE PAYMENT */}
+
               <div>
-                <div className="text-2xl">
-                  ↩️
+                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 text-orange-500">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="h-5 w-5"
+                  >
+                    <rect
+                      x="5"
+                      y="10"
+                      width="14"
+                      height="10"
+                      rx="2"
+                    />
+                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                  </svg>
                 </div>
 
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-2 text-xs font-medium text-gray-500">
                   Secure Payment
                 </p>
               </div>
 
+              {/* EASY RETURNS */}
+
               <div>
-                <div className="text-2xl">
-                  ↩️
+                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 text-orange-500">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="h-5 w-5"
+                  >
+                    <path d="M9 7H5v4" />
+                    <path d="M5 11a7 7 0 1 0 2-5" />
+                    <path d="M5 11l3-3" />
+                  </svg>
                 </div>
 
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-2 text-xs font-medium text-gray-500">
                   Easy Returns
                 </p>
               </div>
 
             </div>
-
           </div>
-
         </div>
       </section>
     </>

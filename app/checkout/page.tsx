@@ -16,7 +16,7 @@ type Customer = {
   fullName: string;
   email: string;
   phone: string;
-  mobileVerified: boolean;
+  emailVerified: boolean;
 };
 
 export default function CheckoutPage() {
@@ -102,13 +102,6 @@ export default function CheckoutPage() {
 
     if (cart.length === 0) {
       alert("Your cart is empty.");
-      return;
-    }
-
-    if (customer && !customer.mobileVerified) {
-      alert(
-        "Please verify your mobile number before placing an order."
-      );
       return;
     }
 
@@ -232,7 +225,8 @@ export default function CheckoutPage() {
             <div className="mt-6 grid gap-5 md:grid-cols-2">
               <div>
                 <label className="mb-2 block font-semibold">
-                  Full Name
+                  Full Name{" "}
+                  <span className="text-red-500">*</span>
                 </label>
 
                 <input
@@ -247,7 +241,8 @@ export default function CheckoutPage() {
 
               <div>
                 <label className="mb-2 block font-semibold">
-                  Email
+                  Email{" "}
+                  <span className="text-red-500">*</span>
                 </label>
 
                 <input
@@ -263,7 +258,8 @@ export default function CheckoutPage() {
 
               <div>
                 <label className="mb-2 block font-semibold">
-                  Phone
+                  Mobile Number{" "}
+                  <span className="text-red-500">*</span>
                 </label>
 
                 <input
@@ -279,7 +275,8 @@ export default function CheckoutPage() {
 
               <div>
                 <label className="mb-2 block font-semibold">
-                  City
+                  City{" "}
+                  <span className="text-red-500">*</span>
                 </label>
 
                 <input
@@ -294,7 +291,8 @@ export default function CheckoutPage() {
 
               <div className="md:col-span-2">
                 <label className="mb-2 block font-semibold">
-                  Address
+                  Address{" "}
+                  <span className="text-red-500">*</span>
                 </label>
 
                 <input
@@ -309,7 +307,8 @@ export default function CheckoutPage() {
 
               <div>
                 <label className="mb-2 block font-semibold">
-                  Postcode
+                  Postal Code{" "}
+                  <span className="text-red-500">*</span>
                 </label>
 
                 <input
@@ -322,6 +321,10 @@ export default function CheckoutPage() {
                 />
               </div>
             </div>
+
+            <p className="mt-5 text-sm text-gray-500">
+              <span className="text-red-500">*</span> Required field
+            </p>
 
             <button
               type="submit"
@@ -362,7 +365,8 @@ export default function CheckoutPage() {
                   <p className="font-semibold">
                     £
                     {(
-                      Number(item.price) * item.quantity
+                      Number(item.price) *
+                      Number(item.quantity)
                     ).toFixed(2)}
                   </p>
                 </div>
