@@ -118,6 +118,187 @@ export async function PATCH(
         },
       });
 
+      // =========================
+      // SEND TRACKING EMAIL
+      // =========================
+
+      const resendApiKey =
+        process.env.RESEND_API_KEY;
+
+      if (resendApiKey && updatedOrder.email) {
+        try {
+          const resendResponse = await fetch(
+            "https://api.resend.com/emails",
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${resendApiKey}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                from:
+                  process.env.RESEND_FROM_EMAIL ||
+                  "Click&Pick <onboarding@resend.dev>",
+
+                to: [updatedOrder.email],
+
+                subject: `Tracking information for order ${updatedOrder.orderNumber} - Click&Pick`,
+
+                html: `
+                  <div
+                    style="
+                      font-family: Arial, sans-serif;
+                      max-width: 650px;
+                      margin: 0 auto;
+                      padding: 30px;
+                      color: #111827;
+                    "
+                  >
+
+                    <h2
+                      style="
+                        color: #f97316;
+                        margin-bottom: 20px;
+                      "
+                    >
+                      Click&Pick
+                    </h2>
+
+                    <h1
+                      style="
+                        font-size: 24px;
+                        margin-bottom: 20px;
+                      "
+                    >
+                      Your Order Tracking Information
+                    </h1>
+
+                    <p>
+                      Hello ${updatedOrder.customerName},
+                    </p>
+
+                    <p>
+                      Your order tracking information has been updated.
+                    </p>
+
+                    <div
+                      style="
+                        margin: 25px 0;
+                        padding: 20px;
+                        background: #f3f4f6;
+                        border-radius: 10px;
+                      "
+                    >
+
+                      <p style="margin: 8px 0;">
+                        <strong>Order Number:</strong>
+                        ${updatedOrder.orderNumber}
+                      </p>
+
+                      <p style="margin: 8px 0;">
+                        <strong>Order Status:</strong>
+                        ${updatedOrder.status}
+                      </p>
+
+                      ${
+                        updatedOrder.courier
+                          ? `
+                            <p style="margin: 8px 0;">
+                              <strong>Courier / Company:</strong>
+                              ${updatedOrder.courier}
+                            </p>
+                          `
+                          : ""
+                      }
+
+                      ${
+                        updatedOrder.trackingNumber
+                          ? `
+                            <p style="margin: 8px 0;">
+                              <strong>Tracking Number:</strong>
+                              ${updatedOrder.trackingNumber}
+                            </p>
+                          `
+                          : ""
+                      }
+
+                    </div>
+
+                    ${
+                      updatedOrder.trackingUrl
+                        ? `
+                          <div
+                            style="
+                              margin: 30px 0;
+                              text-align: center;
+                            "
+                          >
+                            <a
+                              href="${updatedOrder.trackingUrl}"
+                              style="
+                                display: inline-block;
+                                background: #f97316;
+                                color: white;
+                                text-decoration: none;
+                                padding: 14px 24px;
+                                border-radius: 6px;
+                                font-weight: bold;
+                                font-size: 16px;
+                              "
+                            >
+                              Track Your Order
+                            </a>
+                          </div>
+                        `
+                        : ""
+                    }
+
+                    <p
+                      style="
+                        margin-top: 30px;
+                        line-height: 1.6;
+                      "
+                    >
+                      You can use the tracking information above to check
+                      the current location and delivery progress of your order.
+                    </p>
+
+                    <p style="margin-top: 30px;">
+                      Thank you for shopping with Click&Pick.
+                    </p>
+
+                    <p style="margin-top: 30px;">
+                      Regards,<br />
+                      <strong>Click&Pick</strong>
+                    </p>
+
+                  </div>
+                `,
+              }),
+            }
+          );
+
+          if (!resendResponse.ok) {
+            const resendError =
+              await resendResponse.text();
+
+            console.error(
+              "Tracking email error:",
+              resendError
+            );
+          }
+        } catch (emailError) {
+          console.error(
+            "Tracking email failed:",
+            emailError
+          );
+        }
+      } else {
+        console.error(
+          "RESEND_API_KEY is missing or customer email is unavailable."
+        );
+      }
+
       return NextResponse.json({
         success: true,
         message:
@@ -242,6 +423,7 @@ export async function PATCH(
                     color: #111827;
                   "
                 >
+
                   <h2
                     style="
                       color: #f97316;
@@ -276,6 +458,7 @@ export async function PATCH(
                       border-radius: 10px;
                     "
                   >
+
                     <p style="margin: 8px 0;">
                       <strong>Order Number:</strong>
                       ${order.orderNumber}
@@ -290,6 +473,7 @@ export async function PATCH(
                       <strong>New Status:</strong>
                       ${status}
                     </p>
+
                   </div>
 
                   <div
@@ -370,6 +554,7 @@ export async function PATCH(
                     Regards,<br />
                     <strong>Click&Pick</strong>
                   </p>
+
                 </div>
               `,
             }),
