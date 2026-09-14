@@ -1,11 +1,66 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Shipping Information | Click&Pick UK",
+  description:
+    "Learn about Click&Pick UK shipping, delivery times, order dispatch, tracking information and UK-wide delivery coverage.",
+  alternates: {
+    canonical: "https://clickpick.uk/shipping",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_GB",
+    url: "https://clickpick.uk/shipping",
+    siteName: "Click&Pick",
+    title: "Shipping Information | Click&Pick UK",
+    description:
+      "Learn about Click&Pick UK delivery times, dispatch, order tracking and UK-wide shipping.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Shipping Information | Click&Pick UK",
+    description:
+      "Learn about Click&Pick UK delivery times, dispatch, tracking and UK-wide shipping.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+};
+
 export default function ShippingPage() {
+  const shippingSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Shipping Information | Click&Pick UK",
+    description:
+      "Learn about Click&Pick UK shipping, delivery times, order dispatch, tracking information and UK-wide delivery coverage.",
+    url: "https://clickpick.uk/shipping",
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Click&Pick",
+      url: "https://clickpick.uk/",
+    },
+    inLanguage: "en-GB",
+  };
+
   return (
-    <main className="min-h-screen bg-gray-100 text-gray-900">
+    <main
+      className="min-h-screen bg-gray-100 text-gray-900"
+      aria-labelledby="shipping-page-title"
+    >
       <div className="mx-auto max-w-4xl px-4 py-10">
 
         {/* Page Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-extrabold">
+          <h1 id="shipping-page-title" className="text-4xl font-extrabold">
             Shipping Information
           </h1>
 
@@ -15,14 +70,17 @@ export default function ShippingPage() {
         </div>
 
         {/* Delivery Time */}
-        <section className="mb-5 rounded-xl bg-white p-6 shadow-sm">
+        <section
+          className="mb-5 rounded-xl bg-white p-6 shadow-sm"
+          aria-labelledby="delivery-time-heading"
+        >
           <div className="flex items-start gap-4">
-            <div className="text-4xl">
+            <div className="text-4xl" aria-hidden="true">
               🚚
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold">
+              <h2 id="delivery-time-heading" className="text-2xl font-bold">
                 Delivery Time
               </h2>
 
@@ -40,14 +98,20 @@ export default function ShippingPage() {
         </section>
 
         {/* Handling & Dispatch */}
-        <section className="mb-5 rounded-xl bg-white p-6 shadow-sm">
+        <section
+          className="mb-5 rounded-xl bg-white p-6 shadow-sm"
+          aria-labelledby="handling-dispatch-heading"
+        >
           <div className="flex items-start gap-4">
-            <div className="text-4xl">
+            <div className="text-4xl" aria-hidden="true">
               🚚
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold">
+              <h2
+                id="handling-dispatch-heading"
+                className="text-2xl font-bold"
+              >
                 Handling & Dispatch
               </h2>
 
@@ -66,14 +130,20 @@ export default function ShippingPage() {
         </section>
 
         {/* Tracking Information */}
-        <section className="mb-5 rounded-xl bg-white p-6 shadow-sm">
+        <section
+          className="mb-5 rounded-xl bg-white p-6 shadow-sm"
+          aria-labelledby="tracking-information-heading"
+        >
           <div className="flex items-start gap-4">
-            <div className="text-4xl">
+            <div className="text-4xl" aria-hidden="true">
               🚚
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold">
+              <h2
+                id="tracking-information-heading"
+                className="text-2xl font-bold"
+              >
                 Tracking Information
               </h2>
 
@@ -92,14 +162,20 @@ export default function ShippingPage() {
         </section>
 
         {/* Delivery Coverage */}
-        <section className="mb-5 rounded-xl bg-white p-6 shadow-sm">
+        <section
+          className="mb-5 rounded-xl bg-white p-6 shadow-sm"
+          aria-labelledby="delivery-coverage-heading"
+        >
           <div className="flex items-start gap-4">
-            <div className="text-4xl">
+            <div className="text-4xl" aria-hidden="true">
               🇬🇧
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold">
+              <h2
+                id="delivery-coverage-heading"
+                className="text-2xl font-bold"
+              >
                 Delivery Across the UK
               </h2>
 
@@ -113,8 +189,14 @@ export default function ShippingPage() {
         </section>
 
         {/* Important Information */}
-        <section className="rounded-xl bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold">
+        <section
+          className="rounded-xl bg-white p-6 shadow-sm"
+          aria-labelledby="important-information-heading"
+        >
+          <h2
+            id="important-information-heading"
+            className="text-2xl font-bold"
+          >
             Important Information
           </h2>
 
@@ -142,6 +224,13 @@ export default function ShippingPage() {
         </section>
 
       </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(shippingSchema),
+        }}
+      />
     </main>
   );
 }

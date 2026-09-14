@@ -1,13 +1,70 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms & Conditions | Click&Pick UK",
+  description:
+    "Read the Click&Pick UK Terms & Conditions covering website use, products, prices, orders, accounts, delivery, returns, refunds, and customer responsibilities.",
+  alternates: {
+    canonical: "https://clickpick.uk/terms",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_GB",
+    url: "https://clickpick.uk/terms",
+    siteName: "Click&Pick",
+    title: "Terms & Conditions | Click&Pick UK",
+    description:
+      "Review the Click&Pick UK Terms & Conditions for website use, products, orders, delivery, returns, refunds, and accounts.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Terms & Conditions | Click&Pick UK",
+    description:
+      "Review the Click&Pick UK Terms & Conditions for website use, orders, delivery, returns, refunds, and accounts.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+};
+
 export default function TermsPage() {
+  const termsPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Terms & Conditions | Click&Pick UK",
+    url: "https://clickpick.uk/terms",
+    description:
+      "Terms and Conditions for using the Click&Pick UK ecommerce website and placing orders.",
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Click&Pick",
+      url: "https://clickpick.uk",
+    },
+  };
+
   return (
     <main className="min-h-screen bg-gray-50">
-      <section className="bg-gray-900 px-4 py-14 text-white">
+      <section
+        className="bg-gray-900 px-4 py-14 text-white"
+        aria-labelledby="terms-title"
+      >
         <div className="mx-auto max-w-5xl text-center">
           <p className="mb-3 font-semibold text-orange-400">
             Click&Pick
           </p>
 
-          <h1 className="text-4xl font-extrabold">
+          <h1
+            id="terms-title"
+            className="text-4xl font-extrabold"
+          >
             Terms & Conditions
           </h1>
 
@@ -18,7 +75,10 @@ export default function TermsPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl px-4 py-12">
+      <section
+        className="mx-auto max-w-5xl px-4 py-12"
+        aria-label="Click&Pick Terms and Conditions"
+      >
         <div className="space-y-6 rounded-xl bg-white p-6 shadow-sm md:p-8">
           <section>
             <h2 className="text-2xl font-bold text-gray-900">
@@ -51,7 +111,7 @@ export default function TermsPage() {
             </h2>
 
             <p className="mt-3 leading-7 text-gray-600">
-              Product prices are displayed in British Pounds (GBP/�).
+              Product prices are displayed in British Pounds (GBP/£).
               Prices and promotional offers may change without prior notice.
               The applicable price for an order will be the price shown at
               the time the order is placed, subject to correction of obvious
@@ -155,11 +215,19 @@ export default function TermsPage() {
 
             <p className="mt-3 leading-7 text-gray-600">
               If you have questions about these Terms & Conditions, orders,
-              products, delivery, returns, or refunds, please contact Click&Pick through our Contact Us page.
+              products, delivery, returns, or refunds, please contact
+              Click&Pick through our Contact Us page.
             </p>
           </section>
         </div>
       </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(termsPageSchema),
+        }}
+      />
     </main>
   );
 }

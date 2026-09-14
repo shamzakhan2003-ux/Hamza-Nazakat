@@ -1,13 +1,70 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | Click&Pick UK",
+  description:
+    "Read the Click&Pick UK Privacy Policy to learn how we collect, use, protect, and handle customer information, accounts, orders, payments, and website data.",
+  alternates: {
+    canonical: "https://clickpick.uk/privacy",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_GB",
+    url: "https://clickpick.uk/privacy",
+    siteName: "Click&Pick",
+    title: "Privacy Policy | Click&Pick UK",
+    description:
+      "Learn how Click&Pick UK collects, uses, protects, and handles customer information and website data.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy | Click&Pick UK",
+    description:
+      "Learn how Click&Pick UK handles customer information, accounts, orders, payments, and website data.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+};
+
 export default function PrivacyPage() {
+  const privacyPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Privacy Policy | Click&Pick UK",
+    url: "https://clickpick.uk/privacy",
+    description:
+      "Click&Pick UK Privacy Policy explaining how customer information and website data are collected, used, protected, and handled.",
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Click&Pick",
+      url: "https://clickpick.uk",
+    },
+  };
+
   return (
     <main className="min-h-screen bg-gray-50">
-      <section className="bg-gray-900 px-4 py-14 text-white">
+      <section
+        className="bg-gray-900 px-4 py-14 text-white"
+        aria-labelledby="privacy-policy-title"
+      >
         <div className="mx-auto max-w-5xl text-center">
           <p className="mb-3 font-semibold text-orange-400">
             Click&Pick
           </p>
 
-          <h1 className="text-4xl font-extrabold">
+          <h1
+            id="privacy-policy-title"
+            className="text-4xl font-extrabold"
+          >
             Privacy Policy
           </h1>
 
@@ -18,7 +75,10 @@ export default function PrivacyPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl px-4 py-12">
+      <section
+        className="mx-auto max-w-5xl px-4 py-12"
+        aria-label="Click&Pick Privacy Policy"
+      >
         <div className="space-y-6 rounded-xl bg-white p-6 shadow-sm md:p-8">
           <section>
             <h2 className="text-2xl font-bold text-gray-900">
@@ -144,6 +204,13 @@ export default function PrivacyPage() {
           </section>
         </div>
       </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(privacyPageSchema),
+        }}
+      />
     </main>
   );
 }

@@ -1,4 +1,5 @@
-﻿import Header from "../components/Header";
+﻿import type { Metadata } from "next";
+import Header from "../components/Header";
 import { prisma } from "../lib/prisma";
 import Link from "next/link";
 
@@ -10,6 +11,51 @@ type ProductsPageProps = {
     new?: string;
   }>;
 };
+
+export async function generateMetadata({
+  searchParams,
+}: ProductsPageProps): Promise<Metadata> {
+  const params = await searchParams;
+
+  const search = (params.search || "").trim();
+  const category = (params.category || "").trim();
+  const deals = params.deals === "true";
+  const newArrivals = params.new === "true";
+
+  let title = "All Products | Click&Pick UK";
+  let description =
+    "Browse products at Click&Pick UK. Shop electronics, home & kitchen, toys, beauty, fashion, sports and everyday essentials with UK delivery.";
+
+  if (category) {
+    title = `${category} | Click&Pick UK`;
+    description = `Shop ${category} products at Click&Pick UK. Browse our latest selection at competitive prices with UK delivery.`;
+  } else if (deals) {
+    title = "Flash Deals | Click&Pick UK";
+    description =
+      "Discover Flash Deals at Click&Pick UK. Shop selected products at competitive prices with UK delivery.";
+  } else if (newArrivals) {
+    title = "New Arrivals | Click&Pick UK";
+    description =
+      "Explore the latest products at Click&Pick UK. Discover new arrivals across our online store with UK delivery.";
+  } else if (search) {
+    title = `Search Results for "${search}" | Click&Pick UK`;
+    description = `Browse Click&Pick UK products matching "${search}".`;
+  }
+
+  return {
+    title,
+    description,
+    robots: search
+      ? {
+          index: false,
+          follow: true,
+        }
+      : {
+          index: true,
+          follow: true,
+        },
+  };
+}
 
 export default async function ProductsPage({
   searchParams,
@@ -89,23 +135,23 @@ export default async function ProductsPage({
       <section className="border-b bg-white">
         <div className="mx-auto max-w-7xl px-4 py-8">
           <p className="text-sm font-semibold uppercase tracking-wider text-orange-500">
-            Click&Pick
+            Click&Pick UK
           </p>
 
           <h1 className="mt-2 text-3xl font-bold">
             {pageTitle}
           </h1>
 
-          <p className="mt-2 text-gray-500">
+          <p className="mt-2 max-w-3xl text-gray-500">
             {search
-              ? `Products matching keyword "${search}".`
+              ? `Browse Click&Pick UK products matching the keyword "${search}".`
               : category
-              ? `Browse products in ${category}.`
+              ? `Shop ${category} products online at Click&Pick UK with UK delivery.`
               : deals
-              ? "Limited-time offers and special deals."
+              ? "Discover limited-time offers and selected products at competitive prices."
               : newArrivals
-              ? "Our latest products."
-              : "Browse our complete collection of products."}
+              ? "Explore the latest products and new arrivals available at Click&Pick UK."
+              : "Browse our collection of electronics, home & kitchen, toys, beauty, fashion, sports and everyday essentials."}
           </p>
         </div>
       </section>
@@ -139,7 +185,7 @@ export default async function ProductsPage({
                 ? "There are currently no flash deals."
                 : newArrivals
                 ? "There are currently no new arrivals."
-                : "No products are available."}
+                : "No products are currently available."}
             </p>
 
             <Link
@@ -176,7 +222,7 @@ export default async function ProductsPage({
                     {product.image ? (
                       <img
                         src={product.image}
-                        alt={product.name}
+                        alt={`${product.name} - Click&Pick UK`}
                         className="h-full w-full object-cover"
                       />
                     ) : (

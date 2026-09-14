@@ -40,6 +40,23 @@ export default async function Home() {
     take: 8,
   });
 
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Click&Pick",
+    url: "https://clickpick.uk/",
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Click&Pick",
+    url: "https://clickpick.uk/",
+    description:
+      "Click&Pick UK is an online shopping store offering electronics, home & kitchen, toys, beauty, fashion, sports and everyday products.",
+    inLanguage: "en-GB",
+  };
+
   return (
     <main className="min-h-screen bg-gray-100 text-gray-900">
       <Header />
@@ -49,18 +66,17 @@ export default async function Home() {
         <div className="overflow-hidden rounded-lg bg-orange-500">
           <div className="flex flex-col justify-center px-8 py-14 text-white md:px-14">
             <p className="mb-3 text-sm font-semibold uppercase tracking-widest">
-              Click&Pick
+              Click&Pick UK
             </p>
 
             <h1 className="text-4xl font-extrabold leading-tight md:text-5xl">
-              Great Products.
-              <br />
-              Great Prices.
+              Online Shopping in the UK
             </h1>
 
             <p className="mt-5 max-w-md text-lg text-orange-50">
-              Discover amazing products at competitive prices. Shop
-              electronics, toys, home essentials and more.
+              Shop online with Click&Pick UK for electronics, home & kitchen,
+              toys, beauty, fashion, sports and everyday essentials at
+              competitive prices with UK delivery.
             </p>
 
             <Link
@@ -81,7 +97,7 @@ export default async function Home() {
               <h2 className="text-2xl font-bold">Shop by Category</h2>
 
               <p className="mt-1 text-sm text-gray-500">
-                Find the products you need.
+                Explore our range of products available for UK shoppers.
               </p>
             </div>
 
@@ -133,7 +149,7 @@ export default async function Home() {
               <h2 className="text-2xl font-bold">🔥 Flash Deals</h2>
 
               <p className="mt-1 text-sm text-gray-500">
-                Limited-time offers
+                Limited-time offers on selected products available in the UK.
               </p>
             </div>
 
@@ -161,7 +177,7 @@ export default async function Home() {
                     {product.image ? (
                       <img
                         src={product.image}
-                        alt={product.name}
+                        alt={`${product.name} - Click&Pick UK`}
                         className="h-full w-full object-cover"
                       />
                     ) : (
@@ -219,7 +235,7 @@ export default async function Home() {
               <h2 className="text-2xl font-bold">🆕 New Arrivals</h2>
 
               <p className="mt-1 text-sm text-gray-500">
-                Our latest products
+                Discover our latest products available to UK shoppers.
               </p>
             </div>
 
@@ -247,7 +263,7 @@ export default async function Home() {
                     {product.image ? (
                       <img
                         src={product.image}
-                        alt={product.name}
+                        alt={`${product.name} - Click&Pick UK`}
                         className="h-full w-full object-cover"
                       />
                     ) : (
@@ -306,7 +322,7 @@ export default async function Home() {
             <h3 className="mt-3 font-bold">UK Delivery</h3>
 
             <p className="mt-1 text-sm text-gray-500">
-              Reliable delivery across the UK
+              Reliable delivery options across the UK
             </p>
           </div>
 
@@ -316,7 +332,7 @@ export default async function Home() {
             <h3 className="mt-3 font-bold">Secure Shopping</h3>
 
             <p className="mt-1 text-sm text-gray-500">
-              Your information is protected
+              Shop online with secure checkout and protected information
             </p>
           </div>
 
@@ -326,7 +342,7 @@ export default async function Home() {
             <h3 className="mt-3 font-bold">Great Prices</h3>
 
             <p className="mt-1 text-sm text-gray-500">
-              Quality products at great prices
+              Quality products at competitive prices
             </p>
           </div>
 
@@ -339,7 +355,7 @@ export default async function Home() {
             <h3 className="mt-3 font-bold">Customer Support</h3>
 
             <p className="mt-1 text-sm text-gray-500">
-              We are here to help
+              Our support team is here to help
             </p>
           </Link>
         </div>
@@ -359,7 +375,9 @@ export default async function Home() {
               </Link>
 
               <p className="mt-3 text-sm text-gray-400">
-                Quality products at competitive prices.
+                Click&Pick UK offers electronics, home & kitchen, toys,
+                beauty, fashion, sports and everyday products at competitive
+                prices.
               </p>
 
               <Link
@@ -468,6 +486,16 @@ export default async function Home() {
           </div>
         </div>
       </footer>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            organizationSchema,
+            websiteSchema,
+          ]),
+        }}
+      />
     </main>
   );
 }

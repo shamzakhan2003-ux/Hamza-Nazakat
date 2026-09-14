@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -100,7 +100,10 @@ export default function Header() {
     return () => {
       window.removeEventListener("cartUpdated", handleCartUpdated);
       window.removeEventListener("storage", handleStorage);
-      window.removeEventListener("customerUpdated", handleCustomerUpdated);
+      window.removeEventListener(
+        "customerUpdated",
+        handleCustomerUpdated
+      );
     };
   }, []);
 
@@ -161,28 +164,31 @@ export default function Header() {
 
           <Link
             href="/"
+            aria-label="Click&Pick UK - Online Shopping Home"
             className="min-w-fit text-xl font-extrabold tracking-tight md:text-2xl"
           >
             Click&Pick
           </Link>
 
-          {/* SEARCH */}
+          {/* DESKTOP SEARCH */}
 
           <div className="hidden flex-1 overflow-hidden rounded-md border-2 border-orange-500 sm:flex">
             <input
-              type="text"
+              type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               onKeyDown={handleSearchKeyDown}
               placeholder="Search products..."
+              aria-label="Search products at Click&Pick UK"
+              autoComplete="off"
               className="w-full px-4 py-3 text-sm outline-none"
             />
 
             <button
               type="button"
               onClick={handleSearch}
+              aria-label="Search Click&Pick UK products"
               className="bg-orange-500 px-6 text-white transition hover:bg-orange-600"
-              aria-label="Search"
             >
               {"\u{1F50D}"}
             </button>
@@ -194,6 +200,7 @@ export default function Header() {
             {loadingCustomer ? (
               <button
                 type="button"
+                aria-label="Account and orders"
                 className="min-w-fit text-left text-sm"
               >
                 <span className="block text-xs text-gray-500">
@@ -208,6 +215,7 @@ export default function Header() {
               <div className="relative">
                 <Link
                   href="/account"
+                  aria-label="View your Click&Pick account and orders"
                   className="block min-w-fit text-left text-sm"
                 >
                   <span className="block text-xs text-gray-500">
@@ -222,6 +230,7 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={handleLogout}
+                  aria-label="Sign out of Click&Pick account"
                   className="mt-1 text-xs text-gray-500 hover:text-red-500"
                 >
                   Sign out
@@ -230,6 +239,7 @@ export default function Header() {
             ) : (
               <Link
                 href="/login"
+                aria-label="Sign in to your Click&Pick account"
                 className="block min-w-fit text-sm"
               >
                 <span className="block text-xs text-gray-500">
@@ -247,6 +257,9 @@ export default function Header() {
 
           <Link
             href="/cart"
+            aria-label={`Shopping cart${
+              cartCount > 0 ? ` with ${cartCount} items` : ""
+            }`}
             className="relative min-w-fit text-xl"
           >
             {"\u{1F6D2}"}
@@ -256,7 +269,10 @@ export default function Header() {
             </span>
 
             {cartCount > 0 && (
-              <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-xs font-bold text-white">
+              <span
+                aria-hidden="true"
+                className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-xs font-bold text-white"
+              >
                 {cartCount > 99 ? "99+" : cartCount}
               </span>
             )}
@@ -268,19 +284,21 @@ export default function Header() {
         <div className="px-4 pb-4 sm:hidden">
           <div className="flex overflow-hidden rounded-md border-2 border-orange-500">
             <input
-              type="text"
+              type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               onKeyDown={handleSearchKeyDown}
               placeholder="Search products..."
+              aria-label="Search products at Click&Pick UK"
+              autoComplete="off"
               className="w-full px-3 py-2.5 text-sm outline-none"
             />
 
             <button
               type="button"
               onClick={handleSearch}
+              aria-label="Search Click&Pick UK products"
               className="bg-orange-500 px-4 text-white"
-              aria-label="Search"
             >
               {"\u{1F50D}"}
             </button>
@@ -292,12 +310,16 @@ export default function Header() {
       {/* NAVIGATION */}
       {/* ========================= */}
 
-      <div className="bg-gray-900 text-white">
+      <nav
+        className="bg-gray-900 text-white"
+        aria-label="Main navigation"
+      >
         <div className="mx-auto flex max-w-7xl items-center gap-5 overflow-x-auto px-4">
           {/* CATEGORIES */}
 
           <Link
             href="/categories"
+            aria-label="Browse all Click&Pick UK product categories"
             className="whitespace-nowrap py-3 font-semibold hover:text-orange-400"
           >
             {"\u{2630}"} Categories
@@ -307,6 +329,7 @@ export default function Header() {
 
           <Link
             href="/"
+            aria-label="Click&Pick UK home"
             className="whitespace-nowrap py-3 hover:text-orange-400"
           >
             Home
@@ -316,6 +339,7 @@ export default function Header() {
 
           <Link
             href="/products"
+            aria-label="Browse all Click&Pick UK products"
             className="whitespace-nowrap py-3 hover:text-orange-400"
           >
             All Products
@@ -325,6 +349,7 @@ export default function Header() {
 
           <Link
             href="/products?deals=true"
+            aria-label="View Click&Pick UK flash deals"
             className="whitespace-nowrap py-3 hover:text-orange-400"
           >
             {"\u{1F525}"} Flash Deals
@@ -334,6 +359,7 @@ export default function Header() {
 
           <Link
             href="/products?new=true"
+            aria-label="View Click&Pick UK new arrivals"
             className="whitespace-nowrap py-3 hover:text-orange-400"
           >
             {"\u{1F195}"} New Arrivals
@@ -343,12 +369,13 @@ export default function Header() {
 
           <Link
             href="/contact"
+            aria-label="Contact Click&Pick UK"
             className="whitespace-nowrap py-3 hover:text-orange-400"
           >
             Contact
           </Link>
         </div>
-      </div>
+      </nav>
     </header>
   );
 }
