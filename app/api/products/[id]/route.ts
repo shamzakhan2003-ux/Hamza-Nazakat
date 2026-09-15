@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "../../../lib/prisma";
+import { v2 as cloudinary } from "cloudinary";
 
 type RouteContext = {
   params: Promise<{
@@ -13,6 +14,103 @@ async function checkAdmin() {
   const adminSession = cookieStore.get("admin_session");
 
   return adminSession?.value === "authenticated";
+}
+
+// =====================================================
+// CLOUDINARY CONFIGURATION
+// =====================================================
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// =====================================================
+// CLOUDINARY PUBLIC ID
+// =====================================================
+
+function getCloudinaryPublicId(
+  imageUrl: string | null
+) {
+  if (!imageUrl) {
+    return null;
+  }
+
+  try {
+    const url = new URL(imageUrl);
+    const pathname = decodeURIComponent(url.pathname);
+
+    const uploadMarker = "/upload/";
+
+    const uploadIndex =
+      pathname.indexOf(uploadMarker);
+
+    if (uploadIndex === -1) {
+      return null;
+    }
+
+    let publicPath =
+      pathname.substring(
+        uploadIndex + uploadMarker.length
+      );
+
+    // Remove Cloudinary version number
+    publicPath = publicPath.replace(
+      /^v\d+\//,
+      ""
+    );
+
+    // Remove file extension
+    publicPath = publicPath.replace(
+      /\.[^/.]+$/,
+      ""
+    );
+
+    return publicPath || null;
+  } catch {
+    return null;
+  }
+}
+
+// =====================================================
+// DELETE CLOUDINARY IMAGE
+// =====================================================
+
+async function deleteCloudinaryImage(
+  imageUrl: string | null
+) {
+  const publicId =
+    getCloudinaryPublicId(imageUrl);
+
+  if (!publicId) {
+    return;
+  }
+
+  try {
+    const result =
+      await cloudinary.uploader.destroy(
+        publicId,
+        {
+          resource_type: "image",
+          type: "upload",
+          invalidate: true,
+        }
+      );
+
+    console.log(
+      "Cloudinary delete:",
+      publicId,
+      "=>",
+      result.result
+    );
+  } catch (error) {
+    console.error(
+      "Cloudinary image delete error:",
+      publicId,
+      error
+    );
+  }
 }
 
 // =====================================================
@@ -230,7 +328,6 @@ function normalizeManualCategory(category: string) {
     return "Other";
   }
 
-  // Mobile Phone & Accessories
   const mobileAliases = [
     "mobile phone and accessories",
     "mobile phone and accerories",
@@ -251,7 +348,6 @@ function normalizeManualCategory(category: string) {
     return "Mobile Phone & Accessories";
   }
 
-  // Electronics
   const electronicsAliases = [
     "electronics",
     "electronic",
@@ -263,7 +359,6 @@ function normalizeManualCategory(category: string) {
     return "Electronics";
   }
 
-  // Audio
   const audioAliases = [
     "audio",
     "sound",
@@ -275,7 +370,6 @@ function normalizeManualCategory(category: string) {
     return "Audio";
   }
 
-  // Toys
   const toyAliases = [
     "toy",
     "toys",
@@ -287,7 +381,6 @@ function normalizeManualCategory(category: string) {
     return "Toys";
   }
 
-  // Home & Garden
   const homeAliases = [
     "home",
     "home garden",
@@ -300,7 +393,6 @@ function normalizeManualCategory(category: string) {
     return "Home & Garden";
   }
 
-  // Sports
   const sportsAliases = [
     "sport",
     "sports",
@@ -312,7 +404,6 @@ function normalizeManualCategory(category: string) {
     return "Sports";
   }
 
-  // Beauty
   const beautyAliases = [
     "beauty",
     "beauty products",
@@ -325,7 +416,6 @@ function normalizeManualCategory(category: string) {
     return "Beauty";
   }
 
-  // Other
   const otherAliases = [
     "other",
     "others",
@@ -337,7 +427,6 @@ function normalizeManualCategory(category: string) {
     return "Other";
   }
 
-  // New manually created category is allowed
   return category.trim();
 }
 
@@ -474,10 +563,6 @@ export async function PUT(
   { params }: RouteContext
 ) {
   try {
-    // ===================================================
-    // ADMIN AUTHENTICATION
-    // ===================================================
-
     const isAdmin = await checkAdmin();
 
     if (!isAdmin) {
@@ -503,10 +588,6 @@ export async function PUT(
     }
 
     const body = await request.json();
-
-    // ===================================================
-    // PRODUCT FIELDS
-    // ===================================================
 
     const name = String(
       body.name || ""
@@ -582,10 +663,6 @@ export async function PUT(
     const newArrival =
       body.newArrival === true;
 
-    // ===================================================
-    // CATEGORY
-    // ===================================================
-
     const category =
       getFinalCategory(
         requestedCategory,
@@ -599,10 +676,6 @@ export async function PUT(
       "=>",
       category
     );
-
-    // ===================================================
-    // VALIDATION
-    // ===================================================
 
     if (!name) {
       return NextResponse.json(
@@ -739,10 +812,6 @@ export async function PUT(
       );
     }
 
-    // ===================================================
-    // CHECK PRODUCT
-    // ===================================================
-
     const existingProduct =
       await prisma.product.findUnique({
         where: {
@@ -759,10 +828,6 @@ export async function PUT(
         { status: 404 }
       );
     }
-
-    // ===================================================
-    // UPDATE
-    // ===================================================
 
     const product =
       await prisma.product.update({
@@ -893,16 +958,39 @@ export async function DELETE(
       );
     }
 
+    // ===================================================
+    // DELETE PRODUCT FROM DATABASE
+    // ===================================================
+
     await prisma.product.delete({
       where: {
         id: productId,
       },
     });
 
+    // ===================================================
+    // DELETE PRODUCT IMAGES FROM CLOUDINARY
+    // ===================================================
+
+    const cloudinaryImages = [
+      existingProduct.image,
+      existingProduct.image2,
+      existingProduct.image3,
+      existingProduct.image4,
+      existingProduct.descriptionImage,
+    ];
+
+    await Promise.all(
+      cloudinaryImages.map(
+        (imageUrl) =>
+          deleteCloudinaryImage(imageUrl)
+      )
+    );
+
     return NextResponse.json({
       success: true,
       message:
-        "Product deleted successfully.",
+        "Product and its Cloudinary images deleted successfully.",
     });
   } catch (error) {
     console.error(
