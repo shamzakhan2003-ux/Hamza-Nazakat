@@ -491,12 +491,14 @@ export async function POST(request: Request) {
       body.descriptionImage || ""
     ).trim();
 
-    const handlingTime = String(
-      body.handlingTime || ""
-    ).trim();
+    const color =
+      body.color === null ||
+      body.color === undefined
+        ? ""
+        : String(body.color).trim();
 
-    const deliveryTime = String(
-      body.deliveryTime || ""
+    const dispatchTime = String(
+      body.dispatchTime || ""
     ).trim();
 
     const price = Number(body.price);
@@ -573,19 +575,10 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!handlingTime) {
+    if (!dispatchTime) {
       return NextResponse.json(
         {
-          error: "Handling Time is required.",
-        },
-        { status: 400 }
-      );
-    }
-
-    if (!deliveryTime) {
-      return NextResponse.json(
-        {
-          error: "Delivery Time is required.",
+          error: "Dispatch Time is required.",
         },
         { status: 400 }
       );
@@ -681,9 +674,9 @@ export async function POST(request: Request) {
 
         description,
 
-        // Delivery Information
-        handlingTime,
-        deliveryTime,
+        // Product Information
+        color: color || null,
+        dispatchTime,
 
         // Images
         image: image || null,

@@ -28,8 +28,8 @@ model Product {
   image4           String?
   descriptionImage String?
   newArrival       Boolean  @default(false)
-  handlingTime     String?
-  deliveryTime     String?
+  color            String?
+  dispatchTime     String?
 }
 
 model Customer {
@@ -149,6 +149,6 @@ model PendingCustomerSignup {
   emailOtpHash     String
   emailOtpExpiresAt DateTime
   emailOtpAttempts  Int      @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }

@@ -49,8 +49,8 @@ export default function NewProductPage() {
   const [oldPriceValue, setOldPriceValue] = useState("");
   const [discount, setDiscount] = useState("");
 
-  const [handlingTime, setHandlingTime] = useState("");
-  const [deliveryTime, setDeliveryTime] = useState("");
+  const [color, setColor] = useState("");
+  const [dispatchTime, setDispatchTime] = useState("");
 
   const [categories, setCategories] = useState<string[]>([]);
   const [categoryMode, setCategoryMode] = useState<"select" | "manual">(
@@ -81,9 +81,7 @@ export default function NewProductPage() {
         const uniqueCategories: string[] = Array.from(
           new Set<string>(
             products
-              .map((product) =>
-                String(product.category || "").trim()
-              )
+              .map((product) => String(product.category || "").trim())
               .filter(Boolean)
           )
         ).sort((a, b) => a.localeCompare(b));
@@ -198,9 +196,7 @@ export default function NewProductPage() {
 
     const price = Number(priceValue);
 
-    const oldPrice = oldPriceValue
-      ? Number(oldPriceValue)
-      : null;
+    const oldPrice = oldPriceValue ? Number(oldPriceValue) : null;
 
     const stock = Number(
       (document.getElementById("stock") as HTMLInputElement).value
@@ -219,12 +215,10 @@ export default function NewProductPage() {
     ).checked;
 
     const discountNumber =
-      flashDeal && discount
-        ? Number(discount)
-        : null;
+      flashDeal && discount ? Number(discount) : null;
 
-    const trimmedHandlingTime = handlingTime.trim();
-    const trimmedDeliveryTime = deliveryTime.trim();
+    const trimmedColor = color.trim();
+    const trimmedDispatchTime = dispatchTime.trim();
 
     if (!name) {
       setError("Product name is required.");
@@ -269,14 +263,8 @@ export default function NewProductPage() {
       return;
     }
 
-    if (!trimmedHandlingTime) {
-      setError("Handling Time is required.");
-      setLoading(false);
-      return;
-    }
-
-    if (!trimmedDeliveryTime) {
-      setError("Delivery Time is required.");
+    if (!trimmedDispatchTime) {
+      setError("Dispatch Time is required.");
       setLoading(false);
       return;
     }
@@ -340,8 +328,8 @@ export default function NewProductPage() {
 
           discount: flashDeal ? discountNumber : null,
 
-          handlingTime: trimmedHandlingTime,
-          deliveryTime: trimmedDeliveryTime,
+          color: trimmedColor || null,
+          dispatchTime: trimmedDispatchTime,
 
           image: images.image,
           image2: images.image2 || null,
@@ -611,29 +599,58 @@ export default function NewProductPage() {
 
             <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
               <h3 className="text-lg font-bold text-gray-900">
-                Delivery Information
+                Product Information
               </h3>
 
               <p className="mt-1 text-sm text-gray-600">
-                Set the handling and delivery time for this product.
+                Set the product colour and dispatch time.
               </p>
 
               <div className="mt-5 grid gap-5 md:grid-cols-2">
                 <div>
                   <label
-                    htmlFor="handlingTime"
+                    htmlFor="color"
                     className="mb-2 block font-semibold"
                   >
-                    Handling Time
-                    <span className="ml-1 text-red-500">*</span>
+                    Colour
+                    <span className="ml-2 text-sm font-normal text-gray-400">
+                      Optional
+                    </span>
                   </label>
 
                   <input
-                    id="handlingTime"
+                    id="color"
                     type="text"
-                    value={handlingTime}
+                    value={color}
                     onChange={(event) =>
-                      setHandlingTime(event.target.value)
+                      setColor(event.target.value)
+                    }
+                    placeholder="Example: Black"
+                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                  />
+
+                  <p className="mt-2 text-xs text-gray-500">
+                    Enter the main colour of the product.
+                  </p>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="dispatchTime"
+                    className="mb-2 block font-semibold"
+                  >
+                    Dispatch Time
+                    <span className="ml-1 text-red-500">
+                      *
+                    </span>
+                  </label>
+
+                  <input
+                    id="dispatchTime"
+                    type="text"
+                    value={dispatchTime}
+                    onChange={(event) =>
+                      setDispatchTime(event.target.value)
                     }
                     placeholder="Example: 1–2 working days"
                     className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
@@ -641,31 +658,6 @@ export default function NewProductPage() {
 
                   <p className="mt-2 text-xs text-gray-500">
                     Time required to prepare and dispatch the order.
-                  </p>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="deliveryTime"
-                    className="mb-2 block font-semibold"
-                  >
-                    Delivery Time
-                    <span className="ml-1 text-red-500">*</span>
-                  </label>
-
-                  <input
-                    id="deliveryTime"
-                    type="text"
-                    value={deliveryTime}
-                    onChange={(event) =>
-                      setDeliveryTime(event.target.value)
-                    }
-                    placeholder="Example: 3–5 working days"
-                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-                  />
-
-                  <p className="mt-2 text-xs text-gray-500">
-                    Estimated time for the parcel to reach the customer.
                   </p>
                 </div>
               </div>

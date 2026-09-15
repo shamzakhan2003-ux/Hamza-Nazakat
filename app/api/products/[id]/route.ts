@@ -474,7 +474,9 @@ export async function PUT(
   { params }: RouteContext
 ) {
   try {
+    // ===================================================
     // ADMIN AUTHENTICATION
+    // ===================================================
 
     const isAdmin = await checkAdmin();
 
@@ -502,7 +504,9 @@ export async function PUT(
 
     const body = await request.json();
 
+    // ===================================================
     // PRODUCT FIELDS
+    // ===================================================
 
     const name = String(
       body.name || ""
@@ -516,12 +520,14 @@ export async function PUT(
       body.description || ""
     ).trim();
 
-    const handlingTime = String(
-      body.handlingTime || ""
-    ).trim();
+    const color =
+      body.color === null ||
+      body.color === undefined
+        ? ""
+        : String(body.color).trim();
 
-    const deliveryTime = String(
-      body.deliveryTime || ""
+    const dispatchTime = String(
+      body.dispatchTime || ""
     ).trim();
 
     const image = String(
@@ -576,7 +582,9 @@ export async function PUT(
     const newArrival =
       body.newArrival === true;
 
+    // ===================================================
     // CATEGORY
+    // ===================================================
 
     const category =
       getFinalCategory(
@@ -592,7 +600,9 @@ export async function PUT(
       category
     );
 
+    // ===================================================
     // VALIDATION
+    // ===================================================
 
     if (!name) {
       return NextResponse.json(
@@ -624,21 +634,11 @@ export async function PUT(
       );
     }
 
-    if (!handlingTime) {
+    if (!dispatchTime) {
       return NextResponse.json(
         {
           error:
-            "Handling Time is required.",
-        },
-        { status: 400 }
-      );
-    }
-
-    if (!deliveryTime) {
-      return NextResponse.json(
-        {
-          error:
-            "Delivery Time is required.",
+            "Dispatch Time is required.",
         },
         { status: 400 }
       );
@@ -739,7 +739,9 @@ export async function PUT(
       );
     }
 
+    // ===================================================
     // CHECK PRODUCT
+    // ===================================================
 
     const existingProduct =
       await prisma.product.findUnique({
@@ -758,7 +760,9 @@ export async function PUT(
       );
     }
 
+    // ===================================================
     // UPDATE
+    // ===================================================
 
     const product =
       await prisma.product.update({
@@ -771,9 +775,11 @@ export async function PUT(
           category,
           description,
 
-          handlingTime,
-          deliveryTime,
+          // Product Information
+          color: color || null,
+          dispatchTime,
 
+          // Pricing
           price:
             price.toFixed(2),
 
@@ -782,14 +788,21 @@ export async function PUT(
               ? null
               : oldPrice.toFixed(2),
 
+          // Stock
           stock,
+
+          // Reviews
           reviews,
+
+          // Discount
           discount,
 
+          // Status
           featured,
           flashDeal,
           newArrival,
 
+          // Images
           image:
             image || null,
 

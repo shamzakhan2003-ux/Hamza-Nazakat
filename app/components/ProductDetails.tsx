@@ -16,8 +16,8 @@ type Product = {
   description: string | null;
   stock: number;
   reviews: number;
-  handlingTime: string | null;
-  deliveryTime: string | null;
+  color: string | null;
+  dispatchTime: string | null;
 };
 
 type CartItem = {
@@ -260,44 +260,44 @@ export default function ProductDetails({
               )}
             </div>
 
-            {/* DELIVERY INFORMATION */}
+            {/* PRODUCT INFORMATION */}
 
             <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-5">
               <h2 className="text-lg font-bold text-gray-900">
-                Delivery Information
+                Product Information
               </h2>
 
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
 
-                {/* HANDLING TIME */}
+                {/* COLOUR */}
 
                 <div className="rounded-md bg-white p-4">
                   <p className="text-sm font-semibold text-gray-500">
-                    Handling Time
+                    Colour
                   </p>
 
                   <p className="mt-1 font-bold text-gray-900">
-                    {product.handlingTime || "To be confirmed"}
+                    {product.color || "Not specified"}
+                  </p>
+
+                  <p className="mt-1 text-xs text-gray-500">
+                    Available product colour.
+                  </p>
+                </div>
+
+                {/* DISPATCH TIME */}
+
+                <div className="rounded-md bg-white p-4">
+                  <p className="text-sm font-semibold text-gray-500">
+                    Dispatch Time
+                  </p>
+
+                  <p className="mt-1 font-bold text-gray-900">
+                    {product.dispatchTime || "To be confirmed"}
                   </p>
 
                   <p className="mt-1 text-xs text-gray-500">
                     Time required to prepare and dispatch your order.
-                  </p>
-                </div>
-
-                {/* DELIVERY TIME */}
-
-                <div className="rounded-md bg-white p-4">
-                  <p className="text-sm font-semibold text-gray-500">
-                    Delivery Time
-                  </p>
-
-                  <p className="mt-1 font-bold text-gray-900">
-                    {product.deliveryTime || "To be confirmed"}
-                  </p>
-
-                  <p className="mt-1 text-xs text-gray-500">
-                    Estimated time for your parcel to arrive.
                   </p>
                 </div>
 

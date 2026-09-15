@@ -29,8 +29,8 @@ type Product = {
   featured: boolean;
   flashDeal: boolean;
   newArrival: boolean;
-  handlingTime: string | null;
-  deliveryTime: string | null;
+  color: string | null;
+  dispatchTime: string | null;
 };
 
 type CloudinaryInfo = {
@@ -64,8 +64,8 @@ export default function EditProductPage({
   const [description, setDescription] = useState("");
   const [reviews, setReviews] = useState("0");
 
-  const [handlingTime, setHandlingTime] = useState("");
-  const [deliveryTime, setDeliveryTime] = useState("");
+  const [color, setColor] = useState("");
+  const [dispatchTime, setDispatchTime] = useState("");
 
   const [images, setImages] = useState<Record<ImageField, string>>({
     image: "",
@@ -121,8 +121,8 @@ export default function EditProductPage({
         setDescription(item.description || "");
         setReviews(String(item.reviews));
 
-        setHandlingTime(item.handlingTime || "");
-        setDeliveryTime(item.deliveryTime || "");
+        setColor(item.color || "");
+        setDispatchTime(item.dispatchTime || "");
 
         setImages({
           image: item.image || "",
@@ -215,13 +215,8 @@ export default function EditProductPage({
       return;
     }
 
-    if (!handlingTime.trim()) {
-      setError("Handling Time is required.");
-      return;
-    }
-
-    if (!deliveryTime.trim()) {
-      setError("Delivery Time is required.");
+    if (!dispatchTime.trim()) {
+      setError("Dispatch Time is required.");
       return;
     }
 
@@ -265,13 +260,16 @@ export default function EditProductPage({
           oldPrice: oldPriceNumber,
           stock: stockNumber,
           description: description.trim(),
-          handlingTime: handlingTime.trim(),
-          deliveryTime: deliveryTime.trim(),
+
+          color: color.trim() || null,
+          dispatchTime: dispatchTime.trim(),
+
           reviews: reviewsNumber,
           featured,
           flashDeal,
           newArrival,
           discount: discountNumber,
+
           image: images.image,
           image2: images.image2 || null,
           image3: images.image3 || null,
@@ -470,32 +468,59 @@ export default function EditProductPage({
               />
             </div>
 
-            {/* DELIVERY INFORMATION */}
+            {/* PRODUCT INFORMATION */}
             <div className="rounded-lg border border-blue-200 bg-blue-50 p-5">
               <h3 className="text-lg font-bold text-gray-900">
-                Delivery Information
+                Product Information
               </h3>
 
               <p className="mt-1 text-sm text-gray-600">
-                Set the handling and delivery time for this product.
+                Add the colour and dispatch time for this product.
               </p>
 
               <div className="mt-5 grid gap-5 md:grid-cols-2">
+                {/* COLOUR */}
                 <div>
                   <label
-                    htmlFor="handlingTime"
+                    htmlFor="color"
                     className="mb-2 block font-semibold"
                   >
-                    Handling Time
+                    Colour
+                    <span className="ml-1 text-sm font-normal text-gray-400">
+                      Optional
+                    </span>
+                  </label>
+
+                  <input
+                    id="color"
+                    type="text"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    placeholder="Example: Black"
+                    className="w-full rounded-md border bg-white px-4 py-3 outline-none focus:border-orange-500"
+                  />
+
+                  <p className="mt-2 text-xs text-gray-500">
+                    Enter the available or primary product colour.
+                  </p>
+                </div>
+
+                {/* DISPATCH TIME */}
+                <div>
+                  <label
+                    htmlFor="dispatchTime"
+                    className="mb-2 block font-semibold"
+                  >
+                    Dispatch Time
                     <span className="ml-1 text-red-500">*</span>
                   </label>
 
                   <input
-                    id="handlingTime"
+                    id="dispatchTime"
                     type="text"
-                    value={handlingTime}
+                    value={dispatchTime}
                     onChange={(e) =>
-                      setHandlingTime(e.target.value)
+                      setDispatchTime(e.target.value)
                     }
                     placeholder="Example: 1–2 working days"
                     className="w-full rounded-md border bg-white px-4 py-3 outline-none focus:border-orange-500"
@@ -503,31 +528,6 @@ export default function EditProductPage({
 
                   <p className="mt-2 text-xs text-gray-500">
                     Time required to prepare and dispatch the order.
-                  </p>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="deliveryTime"
-                    className="mb-2 block font-semibold"
-                  >
-                    Delivery Time
-                    <span className="ml-1 text-red-500">*</span>
-                  </label>
-
-                  <input
-                    id="deliveryTime"
-                    type="text"
-                    value={deliveryTime}
-                    onChange={(e) =>
-                      setDeliveryTime(e.target.value)
-                    }
-                    placeholder="Example: 3–5 working days"
-                    className="w-full rounded-md border bg-white px-4 py-3 outline-none focus:border-orange-500"
-                  />
-
-                  <p className="mt-2 text-xs text-gray-500">
-                    Estimated time for the parcel to reach the customer.
                   </p>
                 </div>
               </div>

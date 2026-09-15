@@ -133,9 +133,9 @@ export default async function ProductPage({
     stock: product.stock,
     reviews: product.reviews,
 
-    // Delivery Information
-    handlingTime: product.handlingTime,
-    deliveryTime: product.deliveryTime,
+    // Product Information
+    color: product.color,
+    dispatchTime: product.dispatchTime,
   };
 
   const productDescription =
@@ -160,6 +160,13 @@ export default async function ProductPage({
       "@type": "Brand",
       name: "Click&Pick",
     },
+
+    ...(product.color
+      ? {
+          color: product.color,
+        }
+      : {}),
+
     offers: {
       "@type": "Offer",
       url: productUrl,
