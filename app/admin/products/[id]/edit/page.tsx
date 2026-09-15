@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { CldUploadWidget } from "next-cloudinary";
@@ -29,6 +29,8 @@ type Product = {
   featured: boolean;
   flashDeal: boolean;
   newArrival: boolean;
+  handlingTime: string | null;
+  deliveryTime: string | null;
 };
 
 type CloudinaryInfo = {
@@ -61,6 +63,9 @@ export default function EditProductPage({
   const [stock, setStock] = useState("");
   const [description, setDescription] = useState("");
   const [reviews, setReviews] = useState("0");
+
+  const [handlingTime, setHandlingTime] = useState("");
+  const [deliveryTime, setDeliveryTime] = useState("");
 
   const [images, setImages] = useState<Record<ImageField, string>>({
     image: "",
@@ -105,14 +110,19 @@ export default function EditProductPage({
         setName(item.name);
         setCategory(item.category);
         setPrice(String(item.price));
+
         setOldPrice(
           item.oldPrice !== null && item.oldPrice !== undefined
             ? String(item.oldPrice)
             : ""
         );
+
         setStock(String(item.stock));
         setDescription(item.description || "");
         setReviews(String(item.reviews));
+
+        setHandlingTime(item.handlingTime || "");
+        setDeliveryTime(item.deliveryTime || "");
 
         setImages({
           image: item.image || "",
@@ -125,6 +135,7 @@ export default function EditProductPage({
         setFeatured(item.featured);
         setFlashDeal(item.flashDeal);
         setNewArrival(item.newArrival);
+
         setDiscount(
           item.discount !== null && item.discount !== undefined
             ? String(item.discount)
@@ -204,6 +215,16 @@ export default function EditProductPage({
       return;
     }
 
+    if (!handlingTime.trim()) {
+      setError("Handling Time is required.");
+      return;
+    }
+
+    if (!deliveryTime.trim()) {
+      setError("Delivery Time is required.");
+      return;
+    }
+
     if (!images.image) {
       setError("Main Image is required.");
       return;
@@ -244,6 +265,8 @@ export default function EditProductPage({
           oldPrice: oldPriceNumber,
           stock: stockNumber,
           description: description.trim(),
+          handlingTime: handlingTime.trim(),
+          deliveryTime: deliveryTime.trim(),
           reviews: reviewsNumber,
           featured,
           flashDeal,
@@ -347,7 +370,6 @@ export default function EditProductPage({
           )}
 
           <div className="mt-8 space-y-6">
-
             {/* PRODUCT NAME */}
             <div>
               <label
@@ -390,7 +412,7 @@ export default function EditProductPage({
                   htmlFor="price"
                   className="mb-2 block font-semibold"
                 >
-                  Price (�)
+                  Price (£)
                 </label>
 
                 <input
@@ -411,7 +433,7 @@ export default function EditProductPage({
                 htmlFor="oldPrice"
                 className="mb-2 block font-semibold"
               >
-                Old Price (�)
+                Old Price (£)
                 <span className="ml-2 text-sm font-normal text-gray-400">
                   Optional
                 </span>
@@ -448,6 +470,69 @@ export default function EditProductPage({
               />
             </div>
 
+            {/* DELIVERY INFORMATION */}
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-5">
+              <h3 className="text-lg font-bold text-gray-900">
+                Delivery Information
+              </h3>
+
+              <p className="mt-1 text-sm text-gray-600">
+                Set the handling and delivery time for this product.
+              </p>
+
+              <div className="mt-5 grid gap-5 md:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="handlingTime"
+                    className="mb-2 block font-semibold"
+                  >
+                    Handling Time
+                    <span className="ml-1 text-red-500">*</span>
+                  </label>
+
+                  <input
+                    id="handlingTime"
+                    type="text"
+                    value={handlingTime}
+                    onChange={(e) =>
+                      setHandlingTime(e.target.value)
+                    }
+                    placeholder="Example: 1–2 working days"
+                    className="w-full rounded-md border bg-white px-4 py-3 outline-none focus:border-orange-500"
+                  />
+
+                  <p className="mt-2 text-xs text-gray-500">
+                    Time required to prepare and dispatch the order.
+                  </p>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="deliveryTime"
+                    className="mb-2 block font-semibold"
+                  >
+                    Delivery Time
+                    <span className="ml-1 text-red-500">*</span>
+                  </label>
+
+                  <input
+                    id="deliveryTime"
+                    type="text"
+                    value={deliveryTime}
+                    onChange={(e) =>
+                      setDeliveryTime(e.target.value)
+                    }
+                    placeholder="Example: 3–5 working days"
+                    className="w-full rounded-md border bg-white px-4 py-3 outline-none focus:border-orange-500"
+                  />
+
+                  <p className="mt-2 text-xs text-gray-500">
+                    Estimated time for the parcel to reach the customer.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* PRODUCT STATUS */}
             <div className="rounded-lg border bg-gray-50 p-5">
               <h3 className="text-lg font-bold">
@@ -459,7 +544,6 @@ export default function EditProductPage({
               </p>
 
               <div className="mt-5 space-y-4">
-
                 {/* FLASH DEAL */}
                 <div className="rounded-md border bg-white p-4">
                   <div className="flex items-center gap-3">
@@ -477,7 +561,7 @@ export default function EditProductPage({
                       htmlFor="flashDeal"
                       className="font-semibold"
                     >
-                      ?? Flash Deal
+                      ⚡ Flash Deal
                     </label>
                   </div>
 
@@ -537,7 +621,7 @@ export default function EditProductPage({
                       htmlFor="newArrival"
                       className="font-semibold"
                     >
-                      ? New Arrival
+                      ✨ New Arrival
                     </label>
                   </div>
 
@@ -563,7 +647,7 @@ export default function EditProductPage({
                       htmlFor="featured"
                       className="font-semibold"
                     >
-                      ? Featured Product
+                      ⭐ Featured Product
                     </label>
                   </div>
 
@@ -571,7 +655,6 @@ export default function EditProductPage({
                     Turn this ON if you want to feature this product on the store.
                   </p>
                 </div>
-
               </div>
             </div>
 
@@ -773,14 +856,13 @@ export default function EditProductPage({
                   : "Save Changes"}
               </button>
             </div>
-
           </div>
         </div>
       </section>
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          � 2026 Click&Pick
+          © 2026 Click&Pick
         </p>
       </footer>
     </main>

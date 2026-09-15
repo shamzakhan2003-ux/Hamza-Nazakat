@@ -516,6 +516,14 @@ export async function PUT(
       body.description || ""
     ).trim();
 
+    const handlingTime = String(
+      body.handlingTime || ""
+    ).trim();
+
+    const deliveryTime = String(
+      body.deliveryTime || ""
+    ).trim();
+
     const image = String(
       body.image || ""
     ).trim();
@@ -611,6 +619,26 @@ export async function PUT(
         {
           error:
             "Description is required.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!handlingTime) {
+      return NextResponse.json(
+        {
+          error:
+            "Handling Time is required.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!deliveryTime) {
+      return NextResponse.json(
+        {
+          error:
+            "Delivery Time is required.",
         },
         { status: 400 }
       );
@@ -743,6 +771,9 @@ export async function PUT(
           category,
           description,
 
+          handlingTime,
+          deliveryTime,
+
           price:
             price.toFixed(2),
 
@@ -826,8 +857,7 @@ export async function DELETE(
     if (!Number.isInteger(productId)) {
       return NextResponse.json(
         {
-          error:
-            "Invalid product ID.",
+          error: "Invalid product ID.",
         },
         { status: 400 }
       );

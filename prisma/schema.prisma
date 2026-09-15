@@ -28,6 +28,8 @@ model Product {
   image4           String?
   descriptionImage String?
   newArrival       Boolean  @default(false)
+  handlingTime     String?
+  deliveryTime     String?
 }
 
 model Customer {
@@ -127,16 +129,17 @@ model AdminAccount {
 }
 
 model AdminOtp {
-  id         Int       @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   email      String
   otpHash    String
   expiresAt  DateTime
-  attempts   Int       @default(0)
-  createdAt  DateTime  @default(now())
+  attempts   Int      @default(0)
+  createdAt  DateTime @default(now())
   verifiedAt DateTime?
 
   @@index([email])
 }
+
 model PendingCustomerSignup {
   id               Int      @id @default(autoincrement())
   fullName         String

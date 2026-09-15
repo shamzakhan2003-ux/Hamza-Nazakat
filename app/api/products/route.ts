@@ -491,6 +491,14 @@ export async function POST(request: Request) {
       body.descriptionImage || ""
     ).trim();
 
+    const handlingTime = String(
+      body.handlingTime || ""
+    ).trim();
+
+    const deliveryTime = String(
+      body.deliveryTime || ""
+    ).trim();
+
     const price = Number(body.price);
 
     const oldPrice =
@@ -560,6 +568,24 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error: "Description is required.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!handlingTime) {
+      return NextResponse.json(
+        {
+          error: "Handling Time is required.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!deliveryTime) {
+      return NextResponse.json(
+        {
+          error: "Delivery Time is required.",
         },
         { status: 400 }
       );
@@ -654,6 +680,10 @@ export async function POST(request: Request) {
         category,
 
         description,
+
+        // Delivery Information
+        handlingTime,
+        deliveryTime,
 
         // Images
         image: image || null,

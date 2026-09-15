@@ -49,6 +49,9 @@ export default function NewProductPage() {
   const [oldPriceValue, setOldPriceValue] = useState("");
   const [discount, setDiscount] = useState("");
 
+  const [handlingTime, setHandlingTime] = useState("");
+  const [deliveryTime, setDeliveryTime] = useState("");
+
   const [categories, setCategories] = useState<string[]>([]);
   const [categoryMode, setCategoryMode] = useState<"select" | "manual">(
     "select"
@@ -220,6 +223,9 @@ export default function NewProductPage() {
         ? Number(discount)
         : null;
 
+    const trimmedHandlingTime = handlingTime.trim();
+    const trimmedDeliveryTime = deliveryTime.trim();
+
     if (!name) {
       setError("Product name is required.");
       setLoading(false);
@@ -259,6 +265,18 @@ export default function NewProductPage() {
 
     if (!Number.isInteger(stock) || stock < 0) {
       setError("Please enter a valid stock quantity.");
+      setLoading(false);
+      return;
+    }
+
+    if (!trimmedHandlingTime) {
+      setError("Handling Time is required.");
+      setLoading(false);
+      return;
+    }
+
+    if (!trimmedDeliveryTime) {
+      setError("Delivery Time is required.");
       setLoading(false);
       return;
     }
@@ -321,6 +339,9 @@ export default function NewProductPage() {
           newArrival,
 
           discount: flashDeal ? discountNumber : null,
+
+          handlingTime: trimmedHandlingTime,
+          deliveryTime: trimmedDeliveryTime,
 
           image: images.image,
           image2: images.image2 || null,
@@ -586,6 +607,68 @@ export default function NewProductPage() {
                 placeholder="0"
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
               />
+            </div>
+
+            <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
+              <h3 className="text-lg font-bold text-gray-900">
+                Delivery Information
+              </h3>
+
+              <p className="mt-1 text-sm text-gray-600">
+                Set the handling and delivery time for this product.
+              </p>
+
+              <div className="mt-5 grid gap-5 md:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="handlingTime"
+                    className="mb-2 block font-semibold"
+                  >
+                    Handling Time
+                    <span className="ml-1 text-red-500">*</span>
+                  </label>
+
+                  <input
+                    id="handlingTime"
+                    type="text"
+                    value={handlingTime}
+                    onChange={(event) =>
+                      setHandlingTime(event.target.value)
+                    }
+                    placeholder="Example: 1–2 working days"
+                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                  />
+
+                  <p className="mt-2 text-xs text-gray-500">
+                    Time required to prepare and dispatch the order.
+                  </p>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="deliveryTime"
+                    className="mb-2 block font-semibold"
+                  >
+                    Delivery Time
+                    <span className="ml-1 text-red-500">*</span>
+                  </label>
+
+                  <input
+                    id="deliveryTime"
+                    type="text"
+                    value={deliveryTime}
+                    onChange={(event) =>
+                      setDeliveryTime(event.target.value)
+                    }
+                    placeholder="Example: 3–5 working days"
+                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                  />
+
+                  <p className="mt-2 text-xs text-gray-500">
+                    Estimated time for the parcel to reach the customer.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">

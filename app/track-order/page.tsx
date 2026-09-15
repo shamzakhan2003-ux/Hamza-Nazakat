@@ -75,17 +75,13 @@ export default function TrackOrderPage() {
     }
   }
 
-  const currentIndex = order
-    ? steps.indexOf(order.status)
-    : -1;
+  const currentIndex = order ? steps.indexOf(order.status) : -1;
 
   return (
     <main className="min-h-screen bg-gray-100 text-gray-900">
       <header className="bg-gray-900 px-4 py-6 text-white">
         <div className="mx-auto max-w-5xl">
-          <h1 className="text-2xl font-bold">
-            Click&Pick
-          </h1>
+          <h1 className="text-2xl font-bold">Click&Pick</h1>
 
           <p className="mt-1 text-sm text-gray-400">
             Track Your Order
@@ -161,11 +157,9 @@ export default function TrackOrderPage() {
 
               <div className="mt-8">
                 {steps.map((step, index) => {
-                  const completed =
-                    currentIndex >= index;
+                  const completed = currentIndex >= index;
 
-                  const active =
-                    currentIndex === index;
+                  const active = currentIndex === index;
 
                   return (
                     <div
@@ -189,7 +183,7 @@ export default function TrackOrderPage() {
                             : "bg-gray-200 text-gray-500"
                         }`}
                       >
-                        {completed ? "?" : index + 1}
+                        {completed ? "✓" : index + 1}
                       </div>
 
                       <div>
@@ -305,7 +299,7 @@ export default function TrackOrderPage() {
 
       <footer className="mt-10 bg-gray-900 py-8 text-center text-white">
         <p className="text-sm text-gray-400">
-          ? 2026 Click&Pick. All rights reserved.
+          © 2026 Click&Pick. All rights reserved.
         </p>
       </footer>
     </main>

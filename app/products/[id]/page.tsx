@@ -132,6 +132,10 @@ export default async function ProductPage({
     description: product.description,
     stock: product.stock,
     reviews: product.reviews,
+
+    // Delivery Information
+    handlingTime: product.handlingTime,
+    deliveryTime: product.deliveryTime,
   };
 
   const productDescription =

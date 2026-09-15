@@ -16,6 +16,8 @@ type Product = {
   description: string | null;
   stock: number;
   reviews: number;
+  handlingTime: string | null;
+  deliveryTime: string | null;
 };
 
 type CartItem = {
@@ -256,6 +258,50 @@ export default function ProductDetails({
                   />
                 </div>
               )}
+            </div>
+
+            {/* DELIVERY INFORMATION */}
+
+            <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-5">
+              <h2 className="text-lg font-bold text-gray-900">
+                Delivery Information
+              </h2>
+
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+
+                {/* HANDLING TIME */}
+
+                <div className="rounded-md bg-white p-4">
+                  <p className="text-sm font-semibold text-gray-500">
+                    Handling Time
+                  </p>
+
+                  <p className="mt-1 font-bold text-gray-900">
+                    {product.handlingTime || "To be confirmed"}
+                  </p>
+
+                  <p className="mt-1 text-xs text-gray-500">
+                    Time required to prepare and dispatch your order.
+                  </p>
+                </div>
+
+                {/* DELIVERY TIME */}
+
+                <div className="rounded-md bg-white p-4">
+                  <p className="text-sm font-semibold text-gray-500">
+                    Delivery Time
+                  </p>
+
+                  <p className="mt-1 font-bold text-gray-900">
+                    {product.deliveryTime || "To be confirmed"}
+                  </p>
+
+                  <p className="mt-1 text-xs text-gray-500">
+                    Estimated time for your parcel to arrive.
+                  </p>
+                </div>
+
+              </div>
             </div>
 
             {/* STOCK */}
