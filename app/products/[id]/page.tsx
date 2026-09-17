@@ -49,8 +49,13 @@ export async function generateMetadata({
 
   const canonicalUrl = `https://clickpick.uk/products/${product.id}`;
 
+  const seoTitle =
+    product.name.length > 50
+      ? `${product.name.slice(0, 50).trim()} | Click&Pick UK`
+      : `${product.name} | Click&Pick UK`;
+
   return {
-    title: `${product.name} | Click&Pick UK`,
+    title: seoTitle,
     description: description.slice(0, 160),
 
     alternates: {
@@ -60,7 +65,7 @@ export async function generateMetadata({
     openGraph: {
       type: "website",
       url: canonicalUrl,
-      title: `${product.name} | Click&Pick UK`,
+      title: seoTitle,
       description: description.slice(0, 160),
       siteName: "Click&Pick",
       locale: "en_GB",
@@ -76,7 +81,7 @@ export async function generateMetadata({
 
     twitter: {
       card: "summary_large_image",
-      title: `${product.name} | Click&Pick UK`,
+      title: seoTitle,
       description: description.slice(0, 160),
       images: product.image ? [product.image] : undefined,
     },
