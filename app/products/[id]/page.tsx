@@ -51,8 +51,8 @@ export async function generateMetadata({
 
   const seoTitle =
     product.name.length > 50
-      ? `${product.name.slice(0, 50).trim()} | Click&Pick UK`
-      : `${product.name} | Click&Pick UK`;
+      ? product.name.slice(0, 50).trim()
+      : product.name;
 
   return {
     title: seoTitle,
