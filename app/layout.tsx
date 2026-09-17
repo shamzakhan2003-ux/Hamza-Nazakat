@@ -65,6 +65,12 @@ export const metadata: Metadata = {
   },
 
   category: "ecommerce",
+
+  verification: {
+    other: {
+      "msvalidate.01": "B9E14579FBAE83DEAA81EE6511D457A5",
+    },
+  },
 };
 
 type RootLayoutProps = {
