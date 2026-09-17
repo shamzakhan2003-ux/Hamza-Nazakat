@@ -8,12 +8,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     select: {
       id: true,
       category: true,
+      updatedAt: true,
     },
   });
 
   const productUrls: MetadataRoute.Sitemap = products.map((product) => ({
     url: `${baseUrl}/products/${product.id}`,
-    lastModified: new Date(),
+    lastModified: product.updatedAt,
     changeFrequency: "weekly",
     priority: 0.8,
   }));
