@@ -83,13 +83,16 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en-GB">
-      <body className="min-h-screen flex flex-col">
+      <head>
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9414083639772230"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
         />
+      </head>
+
+      <body className="min-h-screen flex flex-col">
         {children}
       </body>
     </html>
